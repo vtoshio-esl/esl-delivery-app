@@ -8,15 +8,13 @@ export const AppPaperTheme = {
         ...MD3LightTheme.colors,
         ...defaultColors,
         
-        primary100: '#EEF6FC',
-        primary200: '#CBE5F6',
-        primary300: '#97CAED',
-        primary400: '#63B0E3',
+        eslBlue: '#475CC7',
+        eslDarkBlue: '#102050',
 
-        secondary100: '#3498DB',
-        secondary200: '#2280BF',
-        secondary300: '#185D8B',
-        secondary400: '#0F3A57',
+        primary100: '#E1E5F6',
+        primary200: '#7588EC',
+        primary300: '#3649AC',
+        primary400: '#0F2480',
     }
 };
 

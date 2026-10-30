@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { IDisposer } from "mobx-state-tree";
 
-import { createEnvironment } from "../helpers/environment";
+import { createEnvironment } from "../services/environment";
 import { RootStore, RootStoreModel } from "./RootStore";
 import { setupRootStore } from "./setupRootStore";
 
@@ -29,7 +29,7 @@ export function useInitialRootStore() {
             })
             .catch((error) => {
                 const message = error instanceof Error ? error.message : 'Erro desconhecido.';
-                console.log('[RootStore] Erro no setup:', error)
+                console.log('[RootStore] Erro no setup:', message)
             })
             .finally(() => { 
                 if (!cancelled) setRehydrated(true)

@@ -9,19 +9,24 @@ import { observer } from 'mobx-react-lite';
 
 export const HomeScreen = observer(function HomeScreen() {
   const theme = useTheme<AppTheme>()
-  const rootStore = useStores();
+  const { userStore } = useStores();
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text style={{fontSize: 25, color: theme.colors.textPrimary }}>
         Hello Application!
       </Text>
-      <Text style={{ fontSize: 15, color: theme.colors.textSecondary }}>
-        { rootStore.counter }
+      <Text>
+        { userStore.driver?.name }
       </Text>
-      <Button
-        title='Incrementar'
-        onPress={rootStore.incrementToCounter}
+      <Text>
+        { userStore.corporation?.main_address.city.name }
+      </Text>
+
+      <Button 
+        title='Logout'
+        onPress={userStore.logout}
+        color={'red'}
       />
     </SafeAreaView>
   );

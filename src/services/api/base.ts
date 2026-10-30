@@ -1,4 +1,5 @@
-import { AxiosInstance, create, isAxiosError } from "axios"
+import { AxiosInstance, create } from "axios"
+import { setupInterceptors } from "./interceptors"
 
 const DEFAULT_TIMEOUT = 10000
 
@@ -23,25 +24,9 @@ export class Api {
         });
 
 
-        this.client.interceptors.response.use(
-            (response) => response,
-            (error) => {
-                if (isAxiosError(error)) {
-                    console.log(
-                        '[API]',
-                        error.config?.method?.toUpperCase(),
-                        `${error.config?.baseURL}${error.config?.url}`,
-                        error.response?.status,
-                        error.response?.data
-                    );
-
-                    if (error.response?.status === 401) {
-                        this.onUnauthorized?.();
-                    }
-                }
-                return Promise.reject(error);
-            }
-        );
+        setupInterceptors(this.client, {
+            onUnauthorized: () => this.onUnauthorized?.(),
+        })
 
         if (config.token) this.setToken(config.token);
     }

@@ -61,13 +61,10 @@ export function LoginScreen() {
     try {
       await userStore.login(tenant, email, password);
     } catch (e) {
-      const error_message = e instanceof Error ? e.message : 'Erro desconhecido.'
+      const message = e instanceof Error ? e.message : 'Erro desconhecido.'
 
-      ToastMessage.error(
-        'Autenticação', 
-        'Erro ao realizar login. Por gentileza, tente novamente.'
-      )
-      console.log('[LOGIN] Erro login: ', error_message);
+      ToastMessage.error('Autenticação', message)
+      console.log('[LOGIN] Erro login: ', e);
     } finally {
       setIsLoading(false);
     }

@@ -15,7 +15,8 @@ export class UserApi {
     async login(email: string, password: string): Promise<LoginResponse> {
         const response = await this.api.client.post(
             '/drivers/sign_in.json',
-            { driver: { email: email, password: password } }
+            { driver: { email: email, password: password } },
+            { skipUnauthorizedHandler: true }
         )
 
         return response.data;

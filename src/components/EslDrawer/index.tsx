@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   DrawerContentComponentProps, 
   DrawerContentScrollView, 
@@ -20,15 +20,31 @@ import { styles } from './styles';
 import { EslButton } from '../shared/EslButton';
 import { openMaps } from '../../helpers/openMaps';
 import { ToastMessage } from '../../helpers/toastMessage';
+import { observer } from 'mobx-react-lite';
 
-export function EslDrawer(props: DrawerContentComponentProps) {
-  const { userStore } = useStores();
+export const EslDrawer = observer(function EslDrawer(props: DrawerContentComponentProps) {
+  const { userStore, occurrencesStore } = useStores();
   const theme = useTheme<AppTheme>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const userPfp = (userStore.driver?.logo) ?
     userStore.driver.logo :
     require('../../../assets/images/user_placeholder.png');
 
+  const handleFetchOcccurrences = async () => {
+    setIsLoading(true);
+
+    try {
+      await occurrencesStore.fetchOccurrences();
+      ToastMessage.success('Ocorrências', 'Ocorrências sincronizadas com sucesso.')
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Erro ao registrar ocorrências'
+      ToastMessage.error('Ocorrências', message);
+      console.log('[API ERROR] Erro da api: ', e)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleNavigateToCorporation = () => {
     const latitude = userStore.corporation?.main_address?.lat
@@ -109,7 +125,7 @@ export function EslDrawer(props: DrawerContentComponentProps) {
           icon={({color, size}) => (
             <Lucide name='loader' size={size} color={color}/>
           )}
-          onPress={() => {}}
+          onPress={handleFetchOcccurrences}
           style={{ borderRadius: 10 }}
           inactiveTintColor={theme.colors.textSecondary}
         />
@@ -144,4 +160,4 @@ export function EslDrawer(props: DrawerContentComponentProps) {
       </View>
     </View>
   );
-}
+})

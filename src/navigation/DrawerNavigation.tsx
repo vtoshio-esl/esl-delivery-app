@@ -32,7 +32,7 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
   return (
     <Drawer.Navigator 
       initialRouteName='manifests'
-      drawerContent={EslDrawer}
+      drawerContent={(props) => <EslDrawer {...props}/>}
       screenOptions={{
         drawerActiveBackgroundColor: theme.colors.primary100,
         drawerActiveTintColor: theme.colors.primary300,

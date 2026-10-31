@@ -2,14 +2,16 @@ import {
   createNativeStackNavigator,
   NativeStackScreenProps
 } from "@react-navigation/native-stack";
-import { HomeScreen } from "../screens/HomeScreen";
-import { useStores } from "../stores/useStores";
-import { LoginScreen } from "../screens/LoginScreen";
 import { observer } from "mobx-react-lite";
 
+import { useStores } from "../stores/useStores";
+import { LoginScreen } from "../screens/LoginScreen";
+import { AppDrawerNavigator, AppDrawerParamList } from "./DrawerNavigation";
+import { NavigatorScreenParams } from "@react-navigation/native";
+
 export type RootNativeStackParamList = {
-  home: undefined,
   login: undefined,
+  home: NavigatorScreenParams<AppDrawerParamList>,
 }
 
 export type RootNativeStackScreenProps<T extends keyof RootNativeStackParamList> = NativeStackScreenProps<
@@ -27,7 +29,7 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
       { userStore.isAuthenticated ? (
         <Stack.Screen 
           name="home" 
-          component={HomeScreen} 
+          component={AppDrawerNavigator} 
           options={{ headerShown: false }}
         />
       ) : (

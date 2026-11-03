@@ -32,6 +32,18 @@ export const UserStoreModel = types
             api.setTenant(self.tenant);
             api.setToken(self.token);
         },
+        async validateSession() {
+            if (!self.isAuthenticated) return;
+
+            const { userApi } = getEnv<Environment>(self);
+
+            try {
+                await userApi.fetchDriverData();
+            } catch {
+                // 401 é tratado pelo interceptor
+                // Erros de rede/timeout mantêm a sessão
+            }
+        },
         setSession(session: Session) {
             self.token = session.token
             self.tenant = session.tenant

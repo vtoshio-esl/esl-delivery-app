@@ -12,6 +12,9 @@ import { AppTheme } from '../themes/AppPaperTheme';
 import { ManifestsScreen } from '../screens/Drawer/ManifestsScreen';
 import { OccurrencesScreen } from '../screens/Drawer/OccurrencesScreen';
 import { SyncHistoryScreen } from '../screens/Drawer/SyncHistoryScreen';
+import { useStores } from '../stores/useStores';
+import { useEffect } from 'react';
+import { AppState } from 'react-native';
 
 export type AppDrawerParamList = {
   manifests: undefined;
@@ -28,7 +31,18 @@ const Drawer = createDrawerNavigator<AppDrawerParamList>()
 
 export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
   const theme = useTheme<AppTheme>();
-  
+  const { userStore } = useStores();
+
+  useEffect(() => {
+    userStore.validateSession();
+
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') userStore.validateSession();
+    })
+
+    return () => subscription.remove();
+  }, [userStore])
+
   return (
     <Drawer.Navigator 
       initialRouteName='manifests'

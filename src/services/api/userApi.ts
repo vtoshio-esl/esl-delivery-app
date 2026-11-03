@@ -1,3 +1,4 @@
+import { AxiosRequestConfig } from "axios";
 import { DriverSnapshotIn } from "../../models/Driver";
 import { Api } from "./base";
 
@@ -22,8 +23,8 @@ export class UserApi {
         return response.data;
     }
 
-    async fetchDriverData(): Promise<DriverSnapshotIn> {
-        const { data } = await this.api.client.get('/api/driver/data')
+    async fetchDriverData(config?: AxiosRequestConfig): Promise<DriverSnapshotIn> {
+        const { data } = await this.api.client.get('/api/driver/data', config)
 
         return data;
     }

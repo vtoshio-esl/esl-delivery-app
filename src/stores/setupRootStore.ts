@@ -22,6 +22,9 @@ export async function setupRootStore(rootStore: RootStore) {
         ToastMessage.info('Sessão expirada', 'Por gentileza, faça login novamente.');
     }
 
+    api.onRequestStart = () => rootStore.uiStore.requestStarted();
+    api.onRequestEnd = () => rootStore.uiStore.requestFinished();
+
     // Passos assíncronos antes da primeira tela entram aqui, por exemplo:
     // await rootStore.userStore.restoreSession();
     rootStore.userStore.syncApi();

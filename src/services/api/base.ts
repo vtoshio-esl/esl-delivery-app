@@ -12,6 +12,8 @@ export interface BaseApiConfig {
 export class Api {
     client: AxiosInstance
     onUnauthorized?: () => void
+    onRequestStart?: () => void
+    onRequestEnd?: () => void
 
     constructor(config: BaseApiConfig) {
         this.client = create({
@@ -26,6 +28,8 @@ export class Api {
 
         setupInterceptors(this.client, {
             onUnauthorized: () => this.onUnauthorized?.(),
+            onRequestStart: () => this.onRequestStart?.(),
+            onRequestEnd: () => this.onRequestEnd?.()
         })
 
         if (config.token) this.setToken(config.token);

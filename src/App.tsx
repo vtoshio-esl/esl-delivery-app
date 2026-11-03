@@ -12,6 +12,7 @@ import { PaperProvider } from 'react-native-paper';
 import { AppPaperTheme } from './themes/AppPaperTheme';
 
 import { RootStoreProvider, useInitialRootStore } from './stores/useStores';
+import { LoadingOverlay } from './components/shared/LoadingOverlay';
 
 export function App() {
   const { rootStore, rehydrated } = useInitialRootStore();
@@ -27,6 +28,7 @@ export function App() {
             <AppNativeStackNavigator />
           </NavigationContainer>
 
+          <LoadingOverlay />
           <Toast/>
           <StatusBar style='auto' />
         </SafeAreaProvider>

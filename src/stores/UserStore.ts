@@ -38,7 +38,7 @@ export const UserStoreModel = types
             const { userApi } = getEnv<Environment>(self);
 
             try {
-                await userApi.fetchDriverData();
+                await userApi.fetchDriverData({ skipLoading: true });
             } catch {
                 // 401 é tratado pelo interceptor
                 // Erros de rede/timeout mantêm a sessão

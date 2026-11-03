@@ -1,5 +1,5 @@
 export const defaultColors = {
-    background: '#EEF6FC',
+    background: '#F2F2F2',
     
     white: '#FFFFFF',
     black: '#000000',

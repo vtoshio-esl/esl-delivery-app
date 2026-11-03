@@ -7,8 +7,6 @@ export const CorporationModel = types
         id: types.optional(types.number, 0),
         name: types.optional(types.string, ''),
         main_address: types.optional(AddressModel, {}),
-        latitude: types.maybeNull(types.number),
-        longitude: types.maybeNull(types.number)
     })
 
 export interface Corporation extends Instance<typeof CorporationModel> {};

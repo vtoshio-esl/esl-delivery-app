@@ -72,7 +72,10 @@ export function EslTextInput(props: EslTextInputProps) {
         renderLabel()
       ) }
       <TextInput
-        style={[styles.textInput]}
+        style={[
+          styles.textInput,
+          { backgroundColor: theme.colors.background }
+        ]}
         { ...rest }
       />
     </View>

@@ -76,7 +76,7 @@ export const EslDrawer = observer(function EslDrawer(props: DrawerContentCompone
   return (
     <View style={styles.drawerContainer}>
       <View style={[
-        { backgroundColor: theme.colors.eslBlue }
+        { backgroundColor: theme.colors.eslBlue, borderTopRightRadius: 15 }
       ]}>
         <View style={styles.logoContainer}>
           <Image 

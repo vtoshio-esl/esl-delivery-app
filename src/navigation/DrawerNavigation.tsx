@@ -46,6 +46,8 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
         component={ManifestsScreen}
         options={{
           headerShown: true,
+          headerTintColor: theme.colors.white,
+          headerStyle: { backgroundColor: theme.colors.eslBlue },
           title: 'Manifestos',
           drawerLabel: 'Manifestos',
           drawerIcon: ({color, size}) => (
@@ -58,6 +60,8 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
         component={OccurrencesScreen}
         options={{
           headerShown: true,
+          headerTintColor: theme.colors.white,
+          headerStyle: { backgroundColor: theme.colors.eslBlue },
           title: 'Ocorrências',
           drawerLabel: 'Ocorrências',
           drawerIcon: ({color, size}) => (
@@ -70,6 +74,8 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
         component={SyncHistoryScreen}
         options={{
           headerShown: true,
+          headerTintColor: theme.colors.white,
+          headerStyle: { backgroundColor: theme.colors.eslBlue },
           title: 'Histórico de Integrações',
           drawerLabel: 'Histórico de Integrações',
           drawerIcon: ({color, size}) => (

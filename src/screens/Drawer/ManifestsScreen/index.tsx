@@ -3,15 +3,17 @@ import React, { useCallback, useState } from 'react';
 import {
   View, 
   Text,
-  StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { useTheme } from 'react-native-paper';
-import { AppTheme } from '../../../themes/AppPaperTheme';
-import { useStores } from '../../../stores/useStores';
 import { FlashList } from '@shopify/flash-list';
 import { getSnapshot } from 'mobx-state-tree';
+
+import { useStores } from '../../../stores/useStores';
+import { useTheme } from 'react-native-paper';
+import { AppTheme } from '../../../themes/AppPaperTheme';
+import { styles } from './styles';
+
+import { ManifestCard } from '../../../components/ManifestCard';
 
 export const ManifestsScreen = observer(function ManifestsScreen() {
   const theme = useTheme<AppTheme>();
@@ -31,9 +33,12 @@ export const ManifestsScreen = observer(function ManifestsScreen() {
 
   return (
     <SafeAreaView style={[
-      styles.screenContainer,
+      styles.manifestsContainer,
       { backgroundColor: theme.colors.background }
     ]}>
+      <Text style={{ textAlign: 'center', marginBottom: 5, }}>
+        Arraste para baixo para atualizar a lista.
+      </Text>
       <FlashList 
         data={manifests}
         keyExtractor={(item) => String(item.id)}
@@ -41,36 +46,21 @@ export const ManifestsScreen = observer(function ManifestsScreen() {
         onRefresh={handleRefreshManifests}
         ListEmptyComponent={
           <View style={[
-            styles.screenContainer,
+            styles.noManifestContainer,
             { backgroundColor: theme.colors.background }
           ]}>
             <Text>
               Nenhum manifesto sincronizado no momento.
             </Text>
             <Text>
-              Arraste para cima para atualizar a lista de manifestos.
+              Arraste para baixo para atualizar a lista de manifestos.
             </Text>
           </View>
         }
-        renderItem={({item}) => 
-          <View key={item.id}>
-            <Text>
-              { item.sequence_code } - {item.vehicle_license_plate}
-            </Text>
-            <Text>
-              { item.service_date }
-            </Text>
-          </View>
+        renderItem={({item}) =>
+          <ManifestCard key={item.id} manifest={item} />
         }
       />
     </SafeAreaView>
   );
-})
-
-const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    width: '100%',
-    paddingHorizontal: 10,
-  }
 })

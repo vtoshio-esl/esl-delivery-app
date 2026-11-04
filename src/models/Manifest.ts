@@ -22,11 +22,13 @@ export const ManifestModel = types
         required_operational_checklist: types.optional(types.boolean, false),
         vehicle_check_temperature: types.optional(types.boolean, false),
 
-        // Dados de Itens do Manifesto
+        // Dados das Invoices
         invoices_volumes: types.optional(types.number, 0),
         invoices_weight: types.optional(types.string, ''),
-        pending_items_count: types.optional(types.number, 0),
+        
+        // Dados dos Items do Manifesto
         manifest_items_count: types.optional(types.number, 0),
+        pending_items_count: types.optional(types.number, 0),
         delivery_manifest_items_count: types.optional(types.number, 0),
         transfer_manifest_items_count: types.optional(types.number, 0),
         pick_manifest_items_count: types.optional(types.number, 0),

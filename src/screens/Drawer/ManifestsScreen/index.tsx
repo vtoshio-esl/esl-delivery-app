@@ -7,6 +7,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import { getSnapshot } from 'mobx-state-tree';
+import { AppDrawerScreenProps } from '../../../navigation/DrawerNavigation';
 
 import { useStores } from '../../../stores/useStores';
 import { useTheme } from 'react-native-paper';
@@ -14,8 +15,11 @@ import { AppTheme } from '../../../themes/AppPaperTheme';
 import { styles } from './styles';
 
 import { ManifestCard } from '../../../components/ManifestCard';
+import { ToastMessage } from '../../../helpers/toastMessage';
 
-export const ManifestsScreen = observer(function ManifestsScreen() {
+type Props = AppDrawerScreenProps<'manifests'>;
+
+export const ManifestsScreen = observer(function ManifestsScreen({ navigation }: Props) {
   const theme = useTheme<AppTheme>();
   const { manifestStore } = useStores();
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -30,6 +34,17 @@ export const ManifestsScreen = observer(function ManifestsScreen() {
       setRefreshing(false);
     }
   }, [manifestStore]);
+
+  const handleManifestCardPress = async (manifestId: number, sequenceCode: number) => {
+    try {
+      navigation.navigate('manifestDetail', { manifestId, sequenceCode })
+    } catch {
+      ToastMessage.error(
+        'Manifesto',
+        `Erro ao exibir o Manifesto ${sequenceCode}.`
+      )
+    }
+  }
 
   return (
     <SafeAreaView style={[
@@ -58,7 +73,11 @@ export const ManifestsScreen = observer(function ManifestsScreen() {
           </View>
         }
         renderItem={({item}) =>
-          <ManifestCard key={item.id} manifest={item} />
+          <ManifestCard 
+            key={item.id} 
+            manifest={item}
+            onPress={() => handleManifestCardPress(item.id, item.sequence_code)} 
+          />
         }
       />
     </SafeAreaView>

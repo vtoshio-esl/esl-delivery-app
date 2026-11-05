@@ -11,8 +11,20 @@ export class ManifestApi {
     }
 
     async fetchManifests(config?: AxiosRequestConfig): Promise<ManifestSnapshotIn[]> {
-        const response = await this.api.client.get('/api/manifests', config);
+        const response = await this.api.client.get(
+            '/api/manifests', 
+            config
+        );
     
         return response.data
+    }
+
+    async fetchManifest(manifestId: number, config?: AxiosRequestConfig): Promise<ManifestSnapshotIn> {
+        const response = await this.api.client.get(
+            `/api/manifests/${manifestId}`, 
+            config
+        );
+
+        return response.data;
     }
 }

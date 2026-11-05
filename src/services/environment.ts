@@ -18,6 +18,6 @@ export const createEnvironment = (): Environment => {
         api: api, 
         userApi: new UserApi(api),
         occurrencesApi: new OccurrencesApi(api),
-        manifestApi: new ManifestApi(api)
+        manifestApi: new ManifestApi(api),
     }
 };

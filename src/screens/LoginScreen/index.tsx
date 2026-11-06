@@ -14,6 +14,7 @@ import { ToastMessage } from '../../helpers/toastMessage';
 import { styles } from './styles';
 import { EslTextInput } from '../../components/shared/EslTextInput';
 import { EslButton } from '../../components/shared/EslButton';
+import { observer } from 'mobx-react-lite';
 
 type LoginData = {
   tenant: string;
@@ -21,7 +22,7 @@ type LoginData = {
   password: string;
 }
 
-export function LoginScreen() {
+export const LoginScreen = observer(function LoginScreen() {
   const theme = useTheme<AppTheme>();
   const { userStore } = useStores();
 
@@ -137,4 +138,4 @@ export function LoginScreen() {
       </View>
     </SafeAreaView>
   );
-}
+})

@@ -154,6 +154,7 @@ export const EslDrawer = observer(function EslDrawer(props: DrawerContentCompone
           icon='log-out'
           backgroundColor={theme.colors.danger}
           lightTitle={true}
+          style={{ width: '100%' }}
           fontSize={12}
           onPress={userStore.logout}
         />

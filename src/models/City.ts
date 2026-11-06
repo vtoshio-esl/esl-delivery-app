@@ -13,6 +13,11 @@ export const CityModel = types
         longitude: types.maybeNull(types.number),
         state: types.optional(StateModel, {}),
     })
+    .views((self) => ({
+        get formattedCityWithUF() {
+            return `${self.name} - ${self.state.code}`
+        }
+    }))
 
 export interface City extends Instance<typeof CityModel> {};
 export interface CitySnapshotIn extends SnapshotIn<typeof CityModel> {};

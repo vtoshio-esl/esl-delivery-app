@@ -34,6 +34,7 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
     longitude,
     mapsLabel,
     documentNumber,
+    disabled,
     ...rest
   } = props;
   
@@ -51,10 +52,15 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
   }
 
   return (
-    <TouchableOpacity style={[
-      styles.container,
-      { backgroundColor: theme.colors.background, borderColor: theme.colors.primary300 }
-    ]} {...rest}>
+    <TouchableOpacity
+      disabled={disabled}
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background, borderColor: theme.colors.primary300 },
+        disabled && { backgroundColor: theme.colors.backdrop, elevation: 0 },
+      ]} 
+      {...rest}
+    >
       <View style={{ marginBottom: 5 }}>
         <Text>
           { manifestItem.freight?.documentNumber }
@@ -91,6 +97,7 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
           title='Navegar'
           icon='map'
           fontSize={12}
+          disabled={disabled}
           onPress={handleNavigateToRecipient}
           style={{ width: '30%' }}
           lightTitle={true}

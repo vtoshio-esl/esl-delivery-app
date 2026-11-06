@@ -62,7 +62,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
         if (!isActive) return;
         const message = e instanceof ApiError ? e.message : 'Erro ao carregar dados do manifesto.'
         
-        ToastMessage.error(`Manifest ${manifestSequenceCode}`, message);
+        ToastMessage.error(`Manifesto ${manifestSequenceCode}`, message);
         navigation.goBack();
       } finally {
         if (isActive) setIsLoading(false);
@@ -88,6 +88,31 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
       </SafeAreaView>
     )
   }
+
+  // Handlers
+  const handleAcceptManifest = async () => {
+    try {
+      await manifestStore.acceptManifest(manifestId);
+    } catch (e) {
+      console.log(e)
+      const message = e instanceof ApiError ? e.message : 'Erro ao aceitar o serviço'
+    
+      ToastMessage.error(`Manifesto ${manifestSequenceCode}`, message)
+    }
+  }
+  
+  const handleStartTransport = async () => {
+    try {
+      await manifestStore.startTransport(manifestId);
+    } catch (e) {
+      console.log(e)
+      const message = e instanceof ApiError ? e.message : 'Erro ao iniciar o serviço'
+    
+      ToastMessage.error(`Manifesto ${manifestSequenceCode}`, message)
+    }
+  }
+
+  // SubComponentes
 
   const renderDatesCard = (title: string, value: string | null) => (
     <View style={[
@@ -137,6 +162,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
               fontSize={14}
               style={{ flex: 1 }}
               backgroundColor={theme.colors.warning}
+              onPress={handleAcceptManifest}
             />) : renderDatesCard('Serviço aceito', manifest.getMobileAcceptedAt) }
           
           {(!manifest.departured_at) ? (
@@ -146,6 +172,8 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
               fontSize={14}
               style={{ flex: 1 }}
               backgroundColor={theme.colors.warning} 
+              disabled={!manifest.canStartTransport}
+              onPress={handleStartTransport}
             />) : renderDatesCard('Serviço iniciado', manifest.getDeparturedAt) }
         </View>
 
@@ -190,6 +218,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
         renderItem={({ item }) => (
           <ManifestItemCard
             manifestItem={item}
+            disabled={!manifest.isStarted}
             documentNumber={item.freight?.documentNumber}
             mapsLabel={item.recipient?.name}
             latitude={item.recipient?.main_address.lat}

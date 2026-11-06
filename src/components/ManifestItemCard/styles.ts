@@ -1,3 +1,4 @@
+import { disabled } from "@expo/ui/swift-ui/modifiers";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({

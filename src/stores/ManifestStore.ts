@@ -29,5 +29,23 @@ export const ManifestStoreModel = types
             const manifest = await manifestApi.fetchManifest(manifestId, { skipLoading: true });
 
             self.setSelectedManifest(manifest);
+        },
+    }))
+    .actions((self) => ({
+        acceptManifest: async (manifestId: number) => {
+            const { manifestApi } = getEnv<Environment>(self);
+    
+            await manifestApi.acceptManifest(manifestId);
+            await self.fetchSelectedManifest(manifestId);
+        },
+        startTransport: async (manifestId: number) => {
+            const { manifestApi } = getEnv<Environment>(self);
+    
+            if (!self.selectedManifest?.canStartTransport) {
+                throw new Error('O manifesto precisa ser aceito antes de iniciar o serviço.')
+            };
+
+            await manifestApi.startTransport(manifestId);
+            await self.fetchSelectedManifest(manifestId);
         }
     }))

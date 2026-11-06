@@ -27,4 +27,20 @@ export class ManifestApi {
 
         return response.data;
     }
+
+    async acceptManifest(manifestId: number, config?: AxiosRequestConfig) {
+        await this.api.client.post(
+            `/api/manifests/${manifestId}/accept`,
+            { accepted_at: new Date().toISOString() },
+            config
+        )
+    }
+
+    async startTransport(manifestId: number, config?: AxiosRequestConfig) {
+        await this.api.client.post(
+            `/api/manifests/${manifestId}/start_transport`,
+            { departured_at: new Date().toISOString() },
+            config
+        )
+    }
 }

@@ -41,9 +41,17 @@ export const ManifestDetailedModel = ManifestModel
                 ...self.dispatch_draft_manifest_items,
                 ...self.consolidation_manifest_items
             ].sort((a, b) => a.position - b.position);
-        }
+        },
+        get isAccepted() {
+            return !!self.mobile_accepted_at;
+        },
+        get isStarted() {
+            return !!self.departured_at;
+        },
+        get canStartTransport() {
+            return !!self.mobile_accepted_at && !self.departured_at
+        },
     }))
-    
 
 export interface ManifestDetailed extends Instance<typeof ManifestDetailedModel>{};
 export interface ManifestDetailedSnapshotIn extends SnapshotIn<typeof ManifestDetailedModel>{};

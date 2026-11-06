@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   cardContainer: {
     flexDirection: 'column',
-    elevation: 1,
+    elevation: 3,
     width: '100%',
     padding: 10,
     marginBottom: 10,
@@ -11,6 +11,11 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'red',
     borderRadius: 20,
+  },
+  manifestCardHeaderContainer: {
+    marginTop: 10,
+    alignSelf: 'center',
+    width: '90%',
   },
   manifestTitleContainer: {
     flexDirection: 'row',
@@ -74,7 +79,9 @@ export const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     alignSelf: 'center',
+    gap: 10,
     
     marginTop: 5,
     paddingVertical: 10,

@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TouchableOpacityProps
+  TouchableOpacityProps,
 } from 'react-native';
 
 import { styles } from './styles';
@@ -12,24 +12,23 @@ import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../../../themes/AppPaperTheme';
 
 export interface EslButtonProps extends TouchableOpacityProps {
-  title: string,
-  fontSize?: number,
+  title?: string
+  fontSize?: number
   icon?: LucideIconName
   backgroundColor?: string
   lightTitle?: boolean
 }
 
-const DEFAULT_FONT_SIZE = 14
-
 export function EslButton(props: EslButtonProps) {
   const theme = useTheme<AppTheme>();
   const {
-    title,
-    fontSize,
+    title = '',
+    fontSize = 14,
     icon,
     backgroundColor,
     lightTitle,
     disabled,
+    style,
     ...rest
   } = props
 
@@ -44,26 +43,36 @@ export function EslButton(props: EslButtonProps) {
         ]}>
           <Lucide 
             name={icon}
-            size={fontSize ?? DEFAULT_FONT_SIZE}
+            size={fontSize}
             color={titleColor}
           />
           <Text style={[
             styles.titleText,
-            { color: titleColor, fontSize: fontSize ?? DEFAULT_FONT_SIZE}
+            { color: titleColor, fontSize}
           ]}>
             { title.toUpperCase() }
           </Text>
         </View>
       );
-    } else {
+    } else if (!icon && title) {
       return (
         <View style={styles.titleTextContainer}>
           <Text style={[
             styles.titleText,
-            { color: titleColor, fontSize: fontSize ?? DEFAULT_FONT_SIZE }
+            { color: titleColor, fontSize }
           ]}>
             { title.toUpperCase() }
           </Text>
+        </View>
+      )
+    } else if (icon && !title) {
+      return (
+        <View style={styles.titleTextContainer}>
+          <Lucide 
+            name={icon}
+            size={fontSize}
+            color={titleColor}
+          />
         </View>
       )
     }
@@ -75,7 +84,8 @@ export function EslButton(props: EslButtonProps) {
       style={[
         styles.buttonContainer,
         { backgroundColor: backgroundColor ?? theme.colors.eslDarkBlue },
-        disabled && styles.disabled
+        disabled && styles.disabled,
+        style,
       ]} 
       { ...rest }
     >

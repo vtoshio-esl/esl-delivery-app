@@ -17,7 +17,7 @@ export const defaultColors = {
     textDisabled: '#A0A8B2',
     textOnPrimary: '#FFFFFF',
     
-    success: '#2ECC71',
+    success: '#25af5e',
     successLight: '#E8F8EF',
     successDark: '#1E8449',
     

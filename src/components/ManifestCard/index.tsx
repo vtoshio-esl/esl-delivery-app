@@ -15,9 +15,12 @@ import { styles } from './styles';
 import { ManifestSnapshotOut } from '../../models/Manifest';
 import { SyncProgressBar } from '../SyncProgressBar';
 import { formatDateToLocale, formatDateTimeToLocale } from '../../helpers/dateFormat';
+import { LabeledValue } from '../LabeledValue';
+import { EslButton } from '../shared/EslButton';
 
 export interface ManifestCardProps extends TouchableOpacityProps {
-  manifest: ManifestSnapshotOut
+  manifest: ManifestSnapshotOut,
+  onPressComments: () => void;
 }
 
 export function ManifestCard(props: ManifestCardProps) {
@@ -25,6 +28,7 @@ export function ManifestCard(props: ManifestCardProps) {
   
   const { 
     manifest,
+    onPressComments,
     ...rest 
   } = props;
 
@@ -38,29 +42,26 @@ export function ManifestCard(props: ManifestCardProps) {
   const renderMobileDate = (date: string, title: string) => (
     <View style={[
       styles.mobileDateContainer,
-      { backgroundColor: theme.colors.success, borderColor: theme.colors.successDark }
+      { backgroundColor: theme.colors.successLight, borderColor: theme.colors.success }
     ]} >
       <Text style={[
         styles.mobileDateTitleText,
-        { color: theme.colors.white }
+        { color: theme.colors.success }
       ]}>
         { title }
       </Text>
-      <Text style={{ color: theme.colors.white }}>
+      <Text style={{ color: theme.colors.success }}>
         { date }
       </Text>
     </View>
   );
 
   const renderManifestData = (title: string, data: string | number) => (
-    <View style={styles.manifestDataContainer}>
-      <Text style={{ fontWeight: 'bold' }}>
-        { title }
-      </Text>
-      <Text>
-        { data }
-      </Text>
-    </View>
+    <LabeledValue 
+      title={title}
+      value={data}
+      style={{ width: '33.33%' }}
+    />
   );
 
   return (
@@ -70,36 +71,38 @@ export function ManifestCard(props: ManifestCardProps) {
     ]} 
     {...rest}
     >
-      <View style={styles.manifestTitleContainer}>
-        <View style={[
-          styles.iconContainer,
-          { backgroundColor: theme.colors.primary100, borderColor: theme.colors.primary300 }
-        ]}>
-          <Lucide name='truck' size={30} color={theme.colors.primary300} />
-        </View>
-
-        <View>
-          <Text style={[
-            styles.titleText,
-            { color: theme.colors.primary300 }
+      <View style={styles.manifestCardHeaderContainer}>
+        <View style={styles.manifestTitleContainer}>
+          <View style={[
+            styles.iconContainer,
+            { backgroundColor: theme.colors.primary100, borderColor: theme.colors.primary300 }
           ]}>
-            Manifesto {manifest.sequence_code}
-          </Text>
-          <Text style={styles.secondaryText}>
-            Veículo { manifest.vehicle_license_plate }
-          </Text>
-          <Text style={styles.secondaryText}>
-            { manifestServiceDate }
-          </Text>
+            <Lucide name='truck' size={30} color={theme.colors.primary300} />
+          </View>
+
+          <View>
+            <Text style={[
+              styles.titleText,
+              { color: theme.colors.primary300 }
+            ]}>
+              Manifesto {manifest.sequence_code}
+            </Text>
+            <Text style={styles.secondaryText}>
+              Veículo { manifest.vehicle_license_plate }
+            </Text>
+            <Text style={styles.secondaryText}>
+              { manifestServiceDate }
+            </Text>
+          </View>
         </View>
+        { (manifestMobileAcceptedAt || manifestMobileDeparturedAt) && (  
+          <View style={styles.mobileDatesContainer}>
+            { manifestMobileAcceptedAt && renderMobileDate(manifestMobileAcceptedAt, 'Data de Aceite') }
+            { manifestMobileDeparturedAt && renderMobileDate(manifestMobileDeparturedAt, 'Data de Saída')}
+          </View>
+        )}
       </View>
 
-      { (manifestMobileAcceptedAt || manifestMobileDeparturedAt) && (  
-        <View style={styles.mobileDatesContainer}>
-          { manifestMobileAcceptedAt && renderMobileDate(manifestMobileAcceptedAt, 'Data de Aceite') }
-          { manifestMobileDeparturedAt && renderMobileDate(manifestMobileDeparturedAt, 'Data de Saída')}
-        </View>
-      )}
         
       <View style={styles.volumesContainer}>
         { renderManifestData('Serviços', manifest.manifest_items_count) }
@@ -120,6 +123,14 @@ export function ManifestCard(props: ManifestCardProps) {
         styles.progressData,
         { borderColor: theme.colors.primary300 }
       ]}>
+        { manifest.mobile_comments && (
+          <EslButton 
+            icon='message-circle-warning'
+            lightTitle={true}
+            fontSize={20}
+            onPress={onPressComments}
+          /> 
+        )}
         <SyncProgressBar progress={syncPercentage} />
       </View>
     </TouchableOpacity>

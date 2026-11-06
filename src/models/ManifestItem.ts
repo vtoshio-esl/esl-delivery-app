@@ -1,4 +1,5 @@
 import { types, SnapshotIn, SnapshotOut, Instance } from "mobx-state-tree";
+import { getManifestItemTypeLabel, MANIFEST_ITEM_TYPES, ManifestItemType } from "./types/ManifestItemType";
 import { FreightModel } from "./Freight";
 import { PersonModel } from "./Person";
 
@@ -12,9 +13,16 @@ export const ManifestItemModel = types
     .model('ManifestItem')
     .props({
         id: types.optional(types.identifierNumber, 0),
-        type: types.optional(types.string, 'ManifestItem::Delivery'),
+        type: types.optional(
+            types.union(
+                types.enumeration<ManifestItemType>('ManifestItemType', [...MANIFEST_ITEM_TYPES]),
+                types.string,
+            ), 
+            'ManifestItem::Delivery'
+        ),
         attempt_number: types.optional(types.number, 0),
         position: types.optional(types.number, 0),
+        comments: types.maybeNull(types.string),
 
         manifest_id: types.optional(types.number, 0),
         manifestable_type: types.optional(types.string, 'Freight::Base'),
@@ -33,10 +41,11 @@ export const ManifestItemModel = types
         // Validações
         payer_requires_volume_check_on_mobile: false,
 
-        // Imagens
+        // Mobile flags
         mobile_image: types.optional(types.boolean, false),
         mobile_receipt: types.optional(types.boolean, false),
-        
+        mobile_occurrence: types.optional(types.boolean, false),
+
         // Volumes
         read_volumes_count: types.optional(types.number, 0),
 
@@ -52,8 +61,14 @@ export const ManifestItemModel = types
         updated_at: types.optional(types.string, ''),
     })
     .views((self) => ({
-        isTransfer: () => {
+        get isTransfer(): boolean {
             return self.type === 'ManifestItem::Transfer'
+        },
+        get deliveryAddress() {
+            return self.recipient?.main_address;
+        },
+        get typeLabel() {
+            return getManifestItemTypeLabel(self.type);
         }
     }))
 

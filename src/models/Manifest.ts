@@ -1,4 +1,5 @@
 import { types, SnapshotIn, SnapshotOut, Instance } from "mobx-state-tree";
+import { formatDateTimeToLocale, formatDateToLocale } from "../helpers/dateFormat";
 
 export const ManifestModel = types
     .model('Manifest')
@@ -46,6 +47,26 @@ export const ManifestModel = types
         mobile_read_at: types.maybeNull(types.string),
         mobile_accepted_at: types.maybeNull(types.string),
     })
+    .views((self) => ({
+        get getServiceDate() {
+            return formatDateToLocale(self.service_date);
+        },
+        get getMobileReadAt() {
+            if (!self.mobile_read_at) return null;
+
+            return formatDateTimeToLocale(self.mobile_read_at);
+        },
+        get getMobileAcceptedAt() {
+            if (!self.mobile_accepted_at) return null;
+
+            return formatDateTimeToLocale(self.mobile_accepted_at);
+        },
+        get getDeparturedAt() {
+            if (!self.departured_at) return null;
+
+            return formatDateTimeToLocale(self.departured_at);
+        }
+    }))
 
 export interface Manifest extends Instance<typeof ManifestModel> {};
 export interface ManifestSnapshotIn extends SnapshotIn<typeof ManifestModel> {};

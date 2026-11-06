@@ -8,6 +8,5 @@ export const PersonModel = CorporationModel
             types.enumeration(['Company', 'Individual']),
             'Individual'
         ),
-        cnpj: types.maybeNull(types.string),
         cpf: types.maybeNull(types.string),
     })

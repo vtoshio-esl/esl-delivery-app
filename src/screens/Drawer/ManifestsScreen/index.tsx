@@ -16,13 +16,16 @@ import { styles } from './styles';
 
 import { ManifestCard } from '../../../components/ManifestCard';
 import { ToastMessage } from '../../../helpers/toastMessage';
+import { ManifestCommentsModal } from '../../../components/ManifestCommentsModal';
 
 type Props = AppDrawerScreenProps<'manifests'>;
 
 export const ManifestsScreen = observer(function ManifestsScreen({ navigation }: Props) {
   const theme = useTheme<AppTheme>();
+  
   const { manifestStore } = useStores();
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [selectedComments, setSelectedComments] = useState<string | null>(null);
 
   const manifests = getSnapshot(manifestStore.manifests);
 
@@ -51,6 +54,12 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
       styles.manifestsContainer,
       { backgroundColor: theme.colors.background }
     ]}>
+      <ManifestCommentsModal 
+        comments={selectedComments}
+        visible={selectedComments !== null}
+        onDismiss={() => setSelectedComments(null)}
+      />
+
       <Text style={{ textAlign: 'center', marginBottom: 5, }}>
         Arraste para baixo para atualizar a lista.
       </Text>
@@ -77,6 +86,7 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
             key={item.id} 
             manifest={item}
             onPress={() => handleManifestCardPress(item.id, item.sequence_code)} 
+            onPressComments={() => setSelectedComments(item.mobile_comments ?? '')}
           />
         }
       />

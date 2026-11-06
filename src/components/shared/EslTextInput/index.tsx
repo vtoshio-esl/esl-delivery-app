@@ -3,7 +3,9 @@ import {
   View, 
   Text, 
   TextInput,
-  TextInputProps
+  TextInputProps,
+  StyleProp,
+  ViewStyle
 } from 'react-native';
 
 import { styles } from './styles';
@@ -16,19 +18,20 @@ export interface EslTextInputProps extends TextInputProps {
   fontSize?: number
   icon?: LucideIconName,
   color?: string,
-  disabled?: boolean
+  disabled?: boolean,
+  textInputStyle?: StyleProp<ViewStyle>;
 }
-
-const DEFAULT_FONT_SIZE = 14;
 
 export function EslTextInput(props: EslTextInputProps) {
   const theme = useTheme<AppTheme>();
   const {
     label,
-    fontSize,
+    fontSize = 14,
     icon,
     color,
     disabled,
+    style,
+    textInputStyle,
     ...rest
   } = props
 
@@ -40,7 +43,7 @@ export function EslTextInput(props: EslTextInputProps) {
         <View style={styles.labelWithIconContainer}>
           <Lucide 
             name={icon}
-            size={fontSize ?? DEFAULT_FONT_SIZE}
+            size={fontSize}
             color={color ?? theme.colors.textSecondary}
           />
           <Text style={[
@@ -66,7 +69,8 @@ export function EslTextInput(props: EslTextInputProps) {
   return (
     <View style={[
       styles.inputGroup,
-      isDisabled && styles.disabled
+      isDisabled && styles.disabled,
+      style
     ]}>
       { label && (
         renderLabel()
@@ -74,7 +78,8 @@ export function EslTextInput(props: EslTextInputProps) {
       <TextInput
         style={[
           styles.textInput,
-          { backgroundColor: theme.colors.background }
+          { backgroundColor: theme.colors.background },
+          textInputStyle
         ]}
         { ...rest }
       />

@@ -69,7 +69,7 @@ export function SyncProgressBar(props: SyncProgressBarProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0,
+    flex: 1,
     width: '100%',
   },
   header: {

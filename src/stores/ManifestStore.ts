@@ -26,7 +26,7 @@ export const ManifestStoreModel = types
         },
         fetchSelectedManifest: async (manifestId: number) => {
             const { manifestApi } = getEnv<Environment>(self);
-            const manifest = await manifestApi.fetchManifest(manifestId);
+            const manifest = await manifestApi.fetchManifest(manifestId, { skipLoading: true });
 
             self.setSelectedManifest(manifest);
         }

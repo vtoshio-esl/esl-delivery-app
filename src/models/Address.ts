@@ -15,6 +15,11 @@ export const AddressModel = types
         is_default: types.optional(types.boolean, false),
         city: types.optional(CityModel, {}),
     })
+    .views((self) => ({
+        get formattedAddress() {
+            return `${self.line_1} - ${self.neighborhood}, N° ${self.number} - ${self.city.formattedCityWithUF} - ${self.postal_code}`
+        }
+    }))
 
 export interface Address extends Instance<typeof AddressModel> {};
 export interface AddressSnapshotIn extends SnapshotIn<typeof AddressModel> {};

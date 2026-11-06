@@ -40,7 +40,7 @@ export const ManifestDetailedModel = ManifestModel
                 ...self.reverse_pick_manifest_items,
                 ...self.dispatch_draft_manifest_items,
                 ...self.consolidation_manifest_items
-            ].sort((item) => item.position);
+            ].sort((a, b) => a.position - b.position);
         }
     }))
     

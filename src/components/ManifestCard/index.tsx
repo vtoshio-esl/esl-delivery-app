@@ -17,10 +17,13 @@ import { SyncProgressBar } from '../SyncProgressBar';
 import { formatDateToLocale, formatDateTimeToLocale } from '../../helpers/dateFormat';
 import { LabeledValue } from '../LabeledValue';
 import { EslButton } from '../shared/EslButton';
+import { EslValueLabeledButton } from '../shared/EslValueLabeledButton';
 
 export interface ManifestCardProps extends TouchableOpacityProps {
   manifest: ManifestSnapshotOut,
-  onPressComments: () => void;
+  onPressComments?: () => void;
+  onPressDepartureKm?: () => void;
+  onPressClosingKm?: () => void;
 }
 
 export function ManifestCard(props: ManifestCardProps) {
@@ -29,6 +32,8 @@ export function ManifestCard(props: ManifestCardProps) {
   const { 
     manifest,
     onPressComments,
+    onPressDepartureKm,
+    onPressClosingKm,
     ...rest 
   } = props;
 
@@ -123,6 +128,23 @@ export function ManifestCard(props: ManifestCardProps) {
         styles.progressData,
         { borderColor: theme.colors.primary300 }
       ]}>
+        <SyncProgressBar progress={syncPercentage} />
+        { manifest.status === 'in_transit' && (
+          <EslValueLabeledButton 
+            title='KM Inicial'
+            value={manifest.vehicle_departure_km}
+            onPress={onPressDepartureKm}
+            disabled={manifest.vehicle_departure_km !== 0}
+          />
+        )}
+        { syncPercentage === 1 && (
+          <EslValueLabeledButton 
+            title='KM Final' 
+            value={manifest.closing_km}
+            onPress={onPressClosingKm}
+            disabled={manifest.closing_km !== 0}
+          />
+        )}
         { manifest.mobile_comments && (
           <EslButton 
             icon='message-circle-warning'
@@ -131,7 +153,6 @@ export function ManifestCard(props: ManifestCardProps) {
             onPress={onPressComments}
           /> 
         )}
-        <SyncProgressBar progress={syncPercentage} />
       </View>
     </TouchableOpacity>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { ActivityIndicator, Text } from 'react-native-paper';
+import { ActivityIndicator, Portal, Text } from 'react-native-paper';
 
 import { styles } from './styles';
 import { useStores } from '../../../stores/useStores';
@@ -12,11 +12,13 @@ export const LoadingOverlay = observer(function LoadingOverlay() {
   if (!uiStore.isLoading) return null;
 
   return (
-    <View style={styles.overlay}>
-      <View style={styles.box}>
-        <ActivityIndicator size='large' />
-        <Text style={styles.text}>Carregando...</Text>
+    <Portal>
+      <View style={styles.overlay}>
+        <View style={styles.box}>
+          <ActivityIndicator size='large' />
+          <Text style={styles.text}>Carregando...</Text>
+        </View>
       </View>
-    </View>
+    </Portal>
   );
 });

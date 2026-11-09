@@ -20,8 +20,9 @@ import { ApiError } from '../../services/api/errors';
 import { EslButton } from '../../components/shared/EslButton';
 import { LabeledValue } from '../../components/LabeledValue';
 import { ManifestItemCard } from '../../components/ManifestItemCard';
-import { EslModal } from '../../components/EslModal';
 import { EslTextInput } from '../../components/shared/EslTextInput';
+import { ManifestCommentsModal } from '../../components/ManifestCommentsModal';
+import { ManifestKmModal } from '../../components/ManifestKmModal';
 
 type Props = RootNativeStackScreenProps<'manifestDetail'>;
 
@@ -31,11 +32,12 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
 
   const theme = useTheme<AppTheme>();
   
-  const { manifestStore } = useStores();
+  const [search, setSearch] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [commentsVisible, setCommentsVisible] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>('');
+  const [departureKmVisible, setDepartureKmVisible] = useState<boolean>(false);
 
+  const { manifestStore } = useStores();
   const manifest = manifestStore.selectedManifest;
   const manifestItems = manifest?.allManifestItems;
 
@@ -101,9 +103,11 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     }
   }
   
-  const handleStartTransport = async () => {
+  const handleStartTransport = async (km: number) => {
     try {
+      await manifestStore.updateDepartureKm(manifestId, km);
       await manifestStore.startTransport(manifestId);
+      setDepartureKmVisible(false);
     } catch (e) {
       console.log(e)
       const message = e instanceof ApiError ? e.message : 'Erro ao iniciar o serviço'
@@ -137,25 +141,23 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
       styles.screenContainer,
       { backgroundColor: theme.colors.background }
     ]}>
-      <EslModal
-        title='Comentários do TMS' 
+      <ManifestCommentsModal 
+        comments={manifest.mobile_comments}
         visible={commentsVisible}
         onDismiss={() => setCommentsVisible(false)}
-      >
-        { manifest.mobile_comments && (
-          <Text>
-            { manifest.mobile_comments }
-          </Text>
-        )} 
-        { !manifest.mobile_comments && (
-          <Text style={{ color: theme.colors.textSecondary }}>
-            Nenhum comentário fornecido pelo TMS.
-          </Text>
-        )}
-      </EslModal>
+      />
+
+      <ManifestKmModal 
+        kind='departure'
+        label={`Manifesto ${manifestSequenceCode}`}
+        visible={departureKmVisible}
+        onDismiss={() => setDepartureKmVisible(false)}
+        onConfirm={handleStartTransport}
+      />
+
       <View style={styles.serviceInformationContainer}>
         <View style={styles.datesContainer}>
-          {(!manifest.mobile_accepted_at) ? (
+          {(!manifest.isAccepted) ? (
             <EslButton 
               title='Aceitar Serviço'
               icon='thumbs-up' 
@@ -165,7 +167,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
               onPress={handleAcceptManifest}
             />) : renderDatesCard('Serviço aceito', manifest.getMobileAcceptedAt) }
           
-          {(!manifest.departured_at) ? (
+          {(!manifest.isStarted) ? (
             <EslButton 
               title='Iniciar Serviço'
               icon='truck'
@@ -173,7 +175,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
               style={{ flex: 1 }}
               backgroundColor={theme.colors.warning} 
               disabled={!manifest.canStartTransport}
-              onPress={handleStartTransport}
+              onPress={() => setDepartureKmVisible(true) }
             />) : renderDatesCard('Serviço iniciado', manifest.getDeparturedAt) }
         </View>
 
@@ -185,8 +187,18 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
               titleColor={theme.colors.primary300}
             />
             <LabeledValue 
-              title='Data do Manifesto'
+              title='Data Serviço'
               value={manifest.getServiceDate}
+              titleColor={theme.colors.primary300}
+            />
+            <LabeledValue 
+              title='KM Inicial'
+              value={manifest.vehicle_departure_km === 0 ? 'Não inf.' : manifest.vehicle_departure_km}
+              titleColor={theme.colors.primary300}
+            />
+            <LabeledValue 
+              title='KM Final'
+              value={manifest.closing_km === 0 ? 'Não inf.' : manifest.closing_km}
               titleColor={theme.colors.primary300}
             />
           </View>

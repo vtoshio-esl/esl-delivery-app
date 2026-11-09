@@ -30,6 +30,16 @@ export const ManifestStoreModel = types
 
             self.setSelectedManifest(manifest);
         },
+        updateDepartureKm: async (manifestId: number, departureKm: number) => {
+            const { manifestApi } = getEnv<Environment>(self);
+            
+            await manifestApi.updateDepartureKm(manifestId, departureKm);
+        },
+        updateClosingKm: async (manifestId: number, closingKm: number) => {
+            const { manifestApi } = getEnv<Environment>(self);
+            
+            await manifestApi.updateClosingKm(manifestId, closingKm);
+        }
     }))
     .actions((self) => ({
         acceptManifest: async (manifestId: number) => {
@@ -47,5 +57,5 @@ export const ManifestStoreModel = types
 
             await manifestApi.startTransport(manifestId);
             await self.fetchSelectedManifest(manifestId);
-        }
+        },
     }))

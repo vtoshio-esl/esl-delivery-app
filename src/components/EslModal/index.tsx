@@ -12,7 +12,7 @@ import Lucide from '@react-native-vector-icons/lucide';
 export interface EslModalProps {
   title?: string;
   visible: boolean;
-  onDismiss: () => void;
+  onDismiss?: () => void;
   children?: React.ReactNode,
   actions?: React.ReactNode,
 }

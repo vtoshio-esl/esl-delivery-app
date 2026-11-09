@@ -46,10 +46,10 @@ export const ManifestDetailedModel = ManifestModel
             return !!self.mobile_accepted_at;
         },
         get isStarted() {
-            return !!self.departured_at;
+            return self.status === 'in_transit';
         },
         get canStartTransport() {
-            return !!self.mobile_accepted_at && !self.departured_at
+            return self.status === 'pending';
         },
     }))
 

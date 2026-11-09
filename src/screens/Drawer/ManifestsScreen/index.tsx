@@ -17,17 +17,40 @@ import { styles } from './styles';
 import { ManifestCard } from '../../../components/ManifestCard';
 import { ToastMessage } from '../../../helpers/toastMessage';
 import { ManifestCommentsModal } from '../../../components/ManifestCommentsModal';
+import { EslModal } from '../../../components/EslModal';
+import { EslButton } from '../../../components/shared/EslButton';
+import { EslTextInput } from '../../../components/shared/EslTextInput';
+import { KmKind, ManifestKmModal } from '../../../components/ManifestKmModal';
+import { ApiError } from '../../../services/api/errors';
+import { ManifestSnapshotOut } from '../../../models/Manifest';
 
 type Props = AppDrawerScreenProps<'manifests'>;
+
+type KmTarget = {
+  kind: KmKind;
+  manifestId: number;
+  sequenceCode: number;
+}
 
 export const ManifestsScreen = observer(function ManifestsScreen({ navigation }: Props) {
   const theme = useTheme<AppTheme>();
   
-  const { manifestStore } = useStores();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [selectedComments, setSelectedComments] = useState<string | null>(null);
+  const [kmTarget, setKmTarget] = useState<KmTarget | null>(null);
+  const [modalLabel, setModalLabel] = useState<string>('');
 
+  const { manifestStore } = useStores();
   const manifests = getSnapshot(manifestStore.manifests);
+
+  const setKmTargetWithLabel = (kind: KmKind, item: ManifestSnapshotOut) => {
+    setKmTarget({
+      kind: kind,
+      manifestId: item.id,
+      sequenceCode: item.sequence_code,
+    })
+    setModalLabel(`Manifesto ${item.sequence_code}`)
+  }
 
   const handleRefreshManifests = useCallback(async () => {
     setRefreshing(true);
@@ -49,6 +72,26 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
     }
   }
 
+  const handleConfirmKm = async (km: number) => {
+    if (!kmTarget) return;
+    const { kind, manifestId, sequenceCode } = kmTarget;
+
+    try {
+      if (kind === 'departure') {
+        await manifestStore.updateDepartureKm(manifestId, km);
+      } else { 
+        await manifestStore.updateClosingKm(manifestId, km);
+      }
+
+      await handleRefreshManifests();
+    } catch (e) {
+      const message = e instanceof ApiError ? e.message : 'Erro ao salvar KM.';
+      ToastMessage.error(`Manifesto ${sequenceCode}`, message)
+    } finally {
+      setKmTarget(null);
+    }
+  }
+
   return (
     <SafeAreaView style={[
       styles.manifestsContainer,
@@ -58,6 +101,14 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
         comments={selectedComments}
         visible={selectedComments !== null}
         onDismiss={() => setSelectedComments(null)}
+      />
+
+      <ManifestKmModal
+        label={modalLabel}
+        kind={kmTarget?.kind ?? 'departure'}
+        visible={kmTarget !== null}
+        onDismiss={() => setKmTarget(null)}
+        onConfirm={handleConfirmKm}
       />
 
       <Text style={{ textAlign: 'center', marginBottom: 5, }}>
@@ -87,6 +138,8 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
             manifest={item}
             onPress={() => handleManifestCardPress(item.id, item.sequence_code)} 
             onPressComments={() => setSelectedComments(item.mobile_comments ?? '')}
+            onPressDepartureKm={() => setKmTargetWithLabel('departure', item)}
+            onPressClosingKm={() => setKmTargetWithLabel('closing', item)}
           />
         }
       />

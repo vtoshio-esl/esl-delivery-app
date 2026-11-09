@@ -43,4 +43,20 @@ export class ManifestApi {
             config
         )
     }
+
+    async updateDepartureKm(manifestId: number, departureKm: number, config?: AxiosRequestConfig) {
+        await this.api.client.put(
+            `/api/manifests/${manifestId}`,
+            { vehicle_departure_km: departureKm },
+            config
+        )
+    }
+
+    async updateClosingKm(manifestId: number, closingKm: number, config?: AxiosRequestConfig) {
+        await this.api.client.put(
+            `/api/manifests/${manifestId}`,
+            { closing_km: closingKm },
+            config
+        )
+    }
 }

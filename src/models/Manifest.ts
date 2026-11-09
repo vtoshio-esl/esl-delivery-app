@@ -6,6 +6,7 @@ export const ManifestModel = types
     .props({
         id: types.optional(types.identifierNumber, 0),
         sequence_code: types.optional(types.number, 0),
+        status: types.optional(types.string, ''),
         vehicle_license_plate: types.optional(types.string, '') ,
         service_date: types.optional(types.string, ''),
         manifest_type: types.optional(

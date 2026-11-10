@@ -18,7 +18,7 @@ export const ManifestItemModel = types
                 types.enumeration<ManifestItemType>('ManifestItemType', [...MANIFEST_ITEM_TYPES]),
                 types.string,
             ), 
-            'ManifestItem::Delivery'
+            'ManifestItem::Transfer'
         ),
         attempt_number: types.optional(types.number, 0),
         position: types.optional(types.number, 0),
@@ -62,7 +62,7 @@ export const ManifestItemModel = types
     })
     .views((self) => ({
         get isTransfer(): boolean {
-            return self.type === 'ManifestItem::Transfer'
+            return self.type === 'ManifestItem::Transfer' && self.manifestable_type !== 'container'
         },
         get deliveryAddress() {
             return self.recipient?.main_address;

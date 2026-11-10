@@ -1,7 +1,7 @@
-import { types, SnapshotIn, SnapshotOut, Instance, cast } from "mobx-state-tree";
+import { types, SnapshotIn, SnapshotOut, Instance } from "mobx-state-tree";
 
 import { ManifestModel } from "./Manifest";
-import { ManifestItemModel, ManifestItemSnapshotIn } from "./ManifestItem";
+import { ManifestItemModel } from "./ManifestItem";
 
 export const ManifestDetailedModel = ManifestModel
     .named('ManifestDetailed')
@@ -42,15 +42,9 @@ export const ManifestDetailedModel = ManifestModel
                 ...self.consolidation_manifest_items
             ].sort((a, b) => a.position - b.position);
         },
-        get isAccepted() {
-            return !!self.mobile_accepted_at;
-        },
-        get isStarted() {
-            return self.status === 'in_transit';
-        },
-        get canStartTransport() {
-            return self.status === 'pending';
-        },
+        getManifestItemById(id: number) {
+            return this.allManifestItems.find((item) => item.id === id) 
+        }
     }))
 
 export interface ManifestDetailed extends Instance<typeof ManifestDetailedModel>{};

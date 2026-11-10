@@ -12,11 +12,13 @@ import { ManifestDetailScreen } from "../screens/ManifestDetailScreen";
 
 import { useTheme } from "react-native-paper";
 import { AppTheme } from "../themes/AppPaperTheme";
+import { ManifestItemArrivalScreen } from "../screens/ManifestItemArrivalScreen";
 
 export type RootNativeStackParamList = {
   login: undefined,
   home: NavigatorScreenParams<AppDrawerParamList>,
-  manifestDetail: { manifestId: number; sequenceCode: number }
+  manifestDetail: { manifestId: number; sequenceCode: number },
+  manifestItemArrival: { manifestId: number, manifestSequenceCode: number, itemId: number },
 }
 
 export type RootNativeStackScreenProps<T extends keyof RootNativeStackParamList> = NativeStackScreenProps<
@@ -47,6 +49,15 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
               headerTintColor: theme.colors.white,
               headerStyle: { backgroundColor: theme.colors.eslBlue },
             })}
+          />
+          <Stack.Screen 
+            name="manifestItemArrival"
+            component={ManifestItemArrivalScreen}
+            options={{
+              title: 'Confirmar Chegada',
+              headerTintColor: theme.colors.white,
+              headerStyle: { backgroundColor: theme.colors.eslBlue },
+            }}
           />
         </>
       ) : (

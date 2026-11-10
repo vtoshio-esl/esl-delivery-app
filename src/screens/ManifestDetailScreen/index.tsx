@@ -105,8 +105,9 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
   
   const handleStartTransport = async (km: number) => {
     try {
-      await manifestStore.updateDepartureKm(manifestId, km);
       await manifestStore.startTransport(manifestId);
+      await manifestStore.updateDepartureKm(manifestId, km);
+      await manifestStore.fetchSelectedManifest(manifestId);
       setDepartureKmVisible(false);
     } catch (e) {
       console.log(e)
@@ -114,6 +115,14 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     
       ToastMessage.error(`Manifesto ${manifestSequenceCode}`, message)
     }
+  }
+
+  const handleSelectItem = (manifestItemId: number) => {
+    navigation.navigate('manifestItemArrival', {
+      manifestId,
+      manifestSequenceCode,
+      itemId: manifestItemId
+    })
   }
 
   // SubComponentes
@@ -235,6 +244,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
             mapsLabel={item.recipient?.name}
             latitude={item.recipient?.main_address.lat}
             longitude={item.recipient?.main_address.lng}
+            onPress={() => handleSelectItem(item.id)}
           />
         )}
       />

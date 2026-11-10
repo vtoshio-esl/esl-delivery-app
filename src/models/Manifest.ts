@@ -66,7 +66,16 @@ export const ManifestModel = types
             if (!self.departured_at) return null;
 
             return formatDateTimeToLocale(self.departured_at);
-        }
+        },
+        get isAccepted() {
+            return !!self.mobile_accepted_at;
+        },
+        get isStarted() {
+            return self.status === 'in_transit';
+        },
+        get canStartTransport() {
+            return self.status === 'pending';
+        },
     }))
 
 export interface Manifest extends Instance<typeof ManifestModel> {};

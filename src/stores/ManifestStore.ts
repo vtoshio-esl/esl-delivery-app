@@ -58,4 +58,26 @@ export const ManifestStoreModel = types
             await manifestApi.startTransport(manifestId);
             await self.fetchSelectedManifest(manifestId);
         },
+        // [TODO] Ajustar erro 500 no request
+        confirmArrival: async (manifestId: number, arrivalDate: string, itemIds: number[]) => {
+            const { manifestItemApi } = getEnv<Environment>(self);
+            const items = itemIds
+                .map((id) => self.selectedManifest?.getManifestItemById(id))
+                .filter((item): item is NonNullable<typeof item> => !!item)
+            
+            if (items.length === 0)
+                throw new Error('Nenhum item encontrado para dar baixa.')
+            
+            await Promise.all(items.map((item) => {
+                const params = { manifestId, itemId: item.id, itemType: item.type }
+                const body = { arrivalAt: arrivalDate }
+
+                console.log('[ManifestApi] Confirm Arrival Params:', params);
+                console.log('[ManifestApi] Confirm Arrival Body:', body);
+
+                return manifestItemApi.updateArrivalAt(params, body)
+            }))
+
+            await self.fetchSelectedManifest(manifestId);
+        }
     }))

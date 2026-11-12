@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { observer } from 'mobx-react-lite';
 
@@ -12,28 +12,34 @@ import { EslButton } from '../../components/shared/EslButton';
 import { ApiError } from '../../services/api/errors';
 import { ToastMessage } from '../../helpers/toastMessage';
 import { ManifestServiceCard } from '../../components/ManifestServiceCard';
+import { FlashList } from '@shopify/flash-list';
 
 type Props = RootNativeStackScreenProps<'manifestItemArrival'>;
 
 export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalScreen({route, navigation}: Props) {
-  const { manifestId, manifestSequenceCode, itemId, itemKind } = route.params;
+  const { manifestId, manifestSequenceCode, itemId } = route.params;
   
   const theme = useTheme<AppTheme>();
-  const { manifestStore } = useStores()
+  const { manifestStore, deliveryDraftStore } = useStores()
   
-  const item = manifestStore.selectedManifest?.getServiceById(itemId, itemKind);
+  // [TODO] Refatorar depois para baixa multipla
+  const items = deliveryDraftStore.getSelectedServices;
 
   const handleConfirmArrival = async () => {
-    if (!item) {
+    if (!items || items.length === 0) {
       ToastMessage.error(
         `Serviço ${itemId}`, 
-        'Serviço não foi encontrado para confirmar chegada.'
+        'Serviços não foram encontrados para confirmar chegada.'
       );
       return;
     }
 
     try {
-      await manifestStore.confirmArrival(manifestId, new Date().toISOString(), [item])
+      const arrivalDate = new Date().toISOString();
+      
+      items.forEach(async (item) => {
+        await manifestStore.confirmArrival(manifestId, arrivalDate, [item])
+      })
       
       // [TODO] Incluir navigate para a tela de dados da baixa
       ToastMessage.info(`Manifesto ${manifestSequenceCode}`, 'Chegada confirmada com sucesso!')
@@ -45,18 +51,35 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
   }
 
   useEffect(() => {
-    if (!item) navigation.goBack();
-  }, [item, navigation])
+    if (!items || items.length === 0) navigation.goBack();
+  }, [items, navigation])
     
-  if (!item) return null;
+  if (!items || items.length === 0) return null;
 
   return (
     <SafeAreaView style={[
       styles.arrivalView,
       { backgroundColor: theme.colors.background }
     ]}>
-      <View style={{ flex: 1}}>
-        <ManifestServiceCard service={item} />
+      <View style={{ flex: 1 }}>
+        <View style={styles.counterView}>
+          <Text style={[
+            styles.counterTitle,
+            { color: theme.colors.primary300 }
+          ]}>
+            Serviços selecionados:
+          </Text>
+          <Text>
+            { deliveryDraftStore.countSelectedServices } itens
+          </Text>
+        </View>
+        <FlashList 
+          data={items}
+          keyExtractor={(item) => `${item.kind}:${item.id}`}
+          renderItem={({ item }) => (
+            <ManifestServiceCard service={item}/>
+          )}
+        />
       </View>
 
       <EslButton 
@@ -74,5 +97,15 @@ export const styles = StyleSheet.create({
   arrivalView: {
     flex: 1,
     paddingHorizontal: 10,
+  },
+  counterView: {
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 5,
+    gap: 5
+  },
+  counterTitle: {
+    fontWeight: 'bold',
+    fontSize: 14,
   }
 })

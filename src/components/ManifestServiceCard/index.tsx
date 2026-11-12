@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { ManifestItemCard } from '../ManifestItemCard';
 import { ManifestUnloadingRecipientCard } from '../ManifestUnloadingRecipientCard';
 import { TouchableOpacityProps } from 'react-native';
-import { ManifestService } from '../../models/ManifestDetailed';
+import { ManifestService } from '../../models/ManifestServices/types';
 
 export interface ManifestServiceCardProps extends TouchableOpacityProps {
   service: ManifestService,

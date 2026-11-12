@@ -23,7 +23,7 @@ import { EslTextInput } from '../../components/shared/EslTextInput';
 import { ManifestCommentsModal } from '../../components/ManifestCommentsModal';
 import { ManifestKmModal } from '../../components/ManifestKmModal';
 import { ManifestServiceCard } from '../../components/ManifestServiceCard';
-import { ManifestServiceKind } from '../../models/ManifestServices/types';
+import { ManifestService, ManifestServiceKind } from '../../models/ManifestServices/types';
 
 type Props = RootNativeStackScreenProps<'manifestDetail'>;
 
@@ -38,7 +38,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
   const [commentsVisible, setCommentsVisible] = useState<boolean>(false);
   const [departureKmVisible, setDepartureKmVisible] = useState<boolean>(false);
 
-  const { manifestStore } = useStores();
+  const { manifestStore, deliveryDraftStore } = useStores();
   const manifest = manifestStore.selectedManifest;
   const manifestItems = manifest?.allManifestItems;
 
@@ -124,13 +124,19 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     }
   }
 
-  const handleSelectItem = (manifestItemId: number, kind: ManifestServiceKind) => {
+  const handleSelectItem = (service: ManifestService) => {
+    const id = service.id;
+    const kind = service.kind;
+
+    deliveryDraftStore.clearSelectedServices();
+    deliveryDraftStore.selectService({ id, kind });
+
     navigation.navigate('manifestItemArrival', {
       manifestId,
       manifestSequenceCode,
-      itemId: manifestItemId,
+      itemId: id,
       itemKind: kind,
-    })
+    });
   }
 
   // SubComponentes
@@ -251,7 +257,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
             mapsLabel={item.recipient?.name}
             latitude={item.recipient?.main_address.lat}
             longitude={item.recipient?.main_address.lng}
-            onPress={() => handleSelectItem(item.id, item.kind)}
+            onPress={() => handleSelectItem(item)}
           />
         )}
       />

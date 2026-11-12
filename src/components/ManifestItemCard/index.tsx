@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  StyleSheet, 
   TouchableOpacity, 
   TouchableOpacityProps, 
   View,
@@ -19,7 +18,7 @@ import { ToastMessage } from '../../helpers/toastMessage';
 
 export interface ManifestItemCardProps extends TouchableOpacityProps {
   manifestItem: ManifestItem,
-  documentNumber: string | undefined,
+  documentNumber?: string | undefined,
   mapsLabel?: string,
   latitude?: string | null | undefined,
   longitude?: string | null | undefined,
@@ -62,9 +61,18 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
       {...rest}
     >
       <View style={{ marginBottom: 5 }}>
-        <Text>
-          { manifestItem.freight?.documentNumber }
-        </Text>
+        { manifestItem.freight && 
+          <Text>
+            { manifestItem.freight?.documentNumber }
+          </Text>
+        }
+
+        { manifestItem.pick && 
+          <Text>
+            { manifestItem.pick?.sequence_code }
+          </Text>
+        }
+
         <Text 
           style={[
             styles.recipientName,
@@ -74,20 +82,55 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
           { manifestItem.recipient?.nickname }
         </Text>
         
-        <View style={styles.recipientDataContainer}>
-          <Text style={{ color: theme.colors.primary200 }}>
-            Remetente:
-          </Text>
 
-          <Text style ={{ color: theme.colors.textSecondary }}>
-            { manifestItem.sender?.name }
-          </Text>
-        </View>
+        { manifestItem.sender && (
+          <View style={styles.recipientDataContainer}>
+            <Text style={{ color: theme.colors.primary200 }}>
+              Remetente:
+            </Text>
+
+            <Text style ={{ color: theme.colors.textSecondary }}>
+              { manifestItem.sender?.name }
+            </Text>
+          </View>
+        )}
         
-        <Text style={{ color: theme.colors.textSecondary }}>
-          { manifestItem.deliveryAddress?.formattedAddress }
-        </Text>
+        { manifestItem.destination_address ? (
+          <Text style={{ color: theme.colors.textSecondary }}>
+            { manifestItem.destination_address?.formattedAddress }
+          </Text>
+        ) : (
+          <Text style={{ color: theme.colors.textSecondary }}>
+            { manifestItem.recipient?.main_address.formattedAddress }
+          </Text>
+        )}
       </View>
+
+      { manifestItem.pick && (
+        <View style={[
+          styles.pickDataContainer,
+          { borderColor: theme.colors.primary300 }
+        ]}>
+          <LabeledValue 
+            title='Agendado'
+            value={manifestItem.pick.serviceDateFormatted}
+            titleColor={theme.colors.primary300}
+            style={{ flex: 1 }}
+          />
+          <LabeledValue 
+            title='Coletar entre'
+            value={manifestItem.pick.pickAtInterval}
+            titleColor={theme.colors.primary300}
+            style={{ flex: 1 }}
+          />
+          <LabeledValue 
+            title='Almoço'
+            value={manifestItem.pick.lunchAtInterval}
+            titleColor={theme.colors.primary300}
+            style={{ flex: 1 }}
+          />
+        </View>
+      )}
       
       <View style={[
         styles.footerContainer,
@@ -110,18 +153,34 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
             fontSize={12}
             style={{ flex: 1 }}
           />
-          <LabeledValue
-            title='Vol'
-            value={manifestItem.freight?.invoices_volumes}
-            fontSize={12}
-            style={{ flex: 1 }}
-          />
-          <LabeledValue 
-            title='NFs'
-            value={manifestItem.freight?.allInvoicesListed}
-            fontSize={12}
-            style={{ flex: 1 }}
-          />
+
+          { manifestItem.freight && (
+            <>
+              <LabeledValue
+                title='Vol'
+                value={manifestItem.freight?.invoices_volumes}
+                fontSize={12}
+                style={{ flex: 1 }}
+              />
+              <LabeledValue 
+                title='NFs'
+                value={manifestItem.freight?.allInvoicesListed}
+                fontSize={12}
+                style={{ flex: 1 }}
+              />
+            </>
+          )}
+
+          { manifestItem.pick && (
+            <>
+              <LabeledValue
+                title='Vol'
+                value={manifestItem.pick?.invoices_volumes}
+                fontSize={12}
+                style={{ flex: 1 }}
+              />
+            </>
+          )}
         </View>
       </View>
     </TouchableOpacity>

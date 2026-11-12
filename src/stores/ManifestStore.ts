@@ -1,7 +1,8 @@
 import { types, SnapshotIn, SnapshotOut, Instance, getEnv, cast } from "mobx-state-tree";
 import { ManifestModel, ManifestSnapshotIn } from "../models/Manifest";
 import { Environment } from "../services/environment";
-import { ManifestDetailedModel } from "../models/ManifestDetailed";
+import { ManifestDetailedModel, ManifestService } from "../models/ManifestDetailed";
+import { ApiError, withStep } from "../services/api/errors";
 
 export const ManifestStoreModel = types
     .model('ManifestStore')
@@ -26,7 +27,15 @@ export const ManifestStoreModel = types
         },
         fetchSelectedManifest: async (manifestId: number) => {
             const { manifestApi } = getEnv<Environment>(self);
-            const manifest = await manifestApi.fetchManifest(manifestId, { skipLoading: true });
+
+            const known_manifest = self.manifests.find((m) => m.id === manifestId) ?? 
+                (self.selectedManifest?.id === manifestId ? self.selectedManifest : undefined)
+
+            const manifest = await manifestApi.fetchManifest(
+                manifestId,
+                !(known_manifest?.isContainer ?? false),
+                { skipLoading: true }
+            );
 
             self.setSelectedManifest(manifest);
         },
@@ -39,43 +48,54 @@ export const ManifestStoreModel = types
             const { manifestApi } = getEnv<Environment>(self);
             
             await manifestApi.updateClosingKm(manifestId, closingKm);
-        }
-    }))
-    .actions((self) => ({
-        acceptManifest: async (manifestId: number) => {
-            const { manifestApi } = getEnv<Environment>(self);
-    
-            await manifestApi.acceptManifest(manifestId);
-            await self.fetchSelectedManifest(manifestId);
         },
         startTransport: async (manifestId: number) => {
             const { manifestApi } = getEnv<Environment>(self);
     
-            if (!self.selectedManifest?.canStartTransport) {
-                throw new Error('O manifesto precisa ser aceito antes de iniciar o serviço.')
-            };
-
             await manifestApi.startTransport(manifestId);
+        },
+    }))
+    .actions((self) => ({
+        acceptManifest: async (manifestId: number, acceptedAt: string) => {
+            const { manifestApi } = getEnv<Environment>(self);
+    
+            await manifestApi.acceptManifest(manifestId, acceptedAt);
             await self.fetchSelectedManifest(manifestId);
         },
+        startTransportWithKm: async (manifestId: number, km: number) => {
+            const { manifestApi } = getEnv<Environment>(self);
+
+            if (!self.selectedManifest?.canStartTransport) {
+                throw new Error('O manifesto precisa ser aceito antes de iniciar o serviço')
+            }
+
+            try {
+                await manifestApi.startTransport(manifestId);
+            } catch (e) { 
+                throw withStep(e,'Erro ao iniciar serviço');
+            }
+
+            try {
+                await manifestApi.updateDepartureKm(manifestId, km);
+            } catch (e) { 
+                throw withStep(e, 'Serviço iniciado, mas não foi possível salvar o KM.');
+            } finally {
+                await self.fetchSelectedManifest(manifestId);
+            }
+        },
         // [TODO] Ajustar erro 500 no request
-        confirmArrival: async (manifestId: number, arrivalDate: string, itemIds: number[]) => {
+        confirmArrival: async (manifestId: number, arrivalDate: string, services: ManifestService[]) => {
             const { manifestItemApi } = getEnv<Environment>(self);
-            const items = itemIds
-                .map((id) => self.selectedManifest?.getManifestItemById(id))
-                .filter((item): item is NonNullable<typeof item> => !!item)
             
-            if (items.length === 0)
+            if (services.length === 0)
                 throw new Error('Nenhum item encontrado para dar baixa.')
             
-            await Promise.all(items.map((item) => {
-                const params = { manifestId, itemId: item.id, itemType: item.type }
-                const body = { arrivalAt: arrivalDate }
-
-                console.log('[ManifestApi] Confirm Arrival Params:', params);
-                console.log('[ManifestApi] Confirm Arrival Body:', body);
-
-                return manifestItemApi.updateArrivalAt(params, body)
+            await Promise.all(services.map((item) => {
+                return manifestItemApi.updateArrivalAt({
+                    manifestId,
+                    service: item,
+                    arrivedAt: arrivalDate,
+                })
             }))
 
             await self.fetchSelectedManifest(manifestId);

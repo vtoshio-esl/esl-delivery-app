@@ -13,12 +13,18 @@ import { ManifestDetailScreen } from "../screens/ManifestDetailScreen";
 import { useTheme } from "react-native-paper";
 import { AppTheme } from "../themes/AppPaperTheme";
 import { ManifestItemArrivalScreen } from "../screens/ManifestItemArrivalScreen";
+import { ManifestService } from "../models/ManifestDetailed";
 
 export type RootNativeStackParamList = {
   login: undefined,
   home: NavigatorScreenParams<AppDrawerParamList>,
   manifestDetail: { manifestId: number; sequenceCode: number },
-  manifestItemArrival: { manifestId: number, manifestSequenceCode: number, itemId: number },
+  manifestItemArrival: { 
+    manifestId: number, 
+    manifestSequenceCode: number, 
+    itemId: number,
+    itemKind: ManifestService['kind'],
+  },
 }
 
 export type RootNativeStackScreenProps<T extends keyof RootNativeStackParamList> = NativeStackScreenProps<

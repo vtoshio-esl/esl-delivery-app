@@ -19,6 +19,14 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold'
   },
+  pickDataContainer: { 
+    flex: 1, 
+    flexDirection: 'row', 
+    width: '100%', 
+    borderTopWidth: 1, 
+    padding: 5, 
+    marginTop: 5, 
+  },
   footerContainer: { 
     flexDirection: 'row', 
     gap: 5, 

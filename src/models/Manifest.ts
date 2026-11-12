@@ -1,6 +1,9 @@
 import { types, SnapshotIn, SnapshotOut, Instance } from "mobx-state-tree";
 import { formatDateTimeToLocale, formatDateToLocale } from "../helpers/dateFormat";
 
+export const MANIFEST_TYPES = ['fractionated_cargo', 'closed_cargo', 'container', 'complementary'] as const;
+export type ManifestType = typeof MANIFEST_TYPES[number];
+
 export const ManifestModel = types
     .model('Manifest')
     .props({
@@ -10,7 +13,10 @@ export const ManifestModel = types
         vehicle_license_plate: types.optional(types.string, '') ,
         service_date: types.optional(types.string, ''),
         manifest_type: types.optional(
-            types.enumeration(['fractionated_cargo', 'closed_cargo']),
+            types.union(
+                types.enumeration<ManifestType>('ManifestType', [...MANIFEST_TYPES]),
+                types.string
+            ),
             'fractionated_cargo'
         ),
         mobile_comments: types.optional(types.string, ''),
@@ -29,6 +35,7 @@ export const ManifestModel = types
         invoices_weight: types.optional(types.string, ''),
         
         // Dados dos Items do Manifesto
+        unloading_recipients_count: types.optional(types.number, 0),
         manifest_items_count: types.optional(types.number, 0),
         pending_items_count: types.optional(types.number, 0),
         delivery_manifest_items_count: types.optional(types.number, 0),
@@ -53,17 +60,17 @@ export const ManifestModel = types
             return formatDateToLocale(self.service_date);
         },
         get getMobileReadAt() {
-            if (!self.mobile_read_at) return null;
+            if (!self.mobile_read_at) return '';
 
             return formatDateTimeToLocale(self.mobile_read_at);
         },
         get getMobileAcceptedAt() {
-            if (!self.mobile_accepted_at) return null;
+            if (!self.mobile_accepted_at) return '';
 
             return formatDateTimeToLocale(self.mobile_accepted_at);
         },
         get getDeparturedAt() {
-            if (!self.departured_at) return null;
+            if (!self.departured_at) return '';
 
             return formatDateTimeToLocale(self.departured_at);
         },
@@ -76,7 +83,31 @@ export const ManifestModel = types
         get canStartTransport() {
             return self.status === 'pending';
         },
+        get isContainer() {
+            return self.manifest_type === 'container';
+        },
     }))
+    .views((self) => {
+        const transferCount = () => {
+            return self.isContainer ? self.transfer_manifest_items_count : self.unloading_recipients_count
+        }
+        const totalItemsCount = () => {
+            return self.delivery_manifest_items_count 
+                + self.pick_manifest_items_count
+                + self.reverse_pick_manifest_items_count
+                + self.consolidation_manifest_items_count
+                + transferCount()
+        }
+        const finishedRatio = () => {
+            const totalItems = totalItemsCount();
+
+            return (totalItems > 0) ? 
+                1 - self.pending_items_count / totalItems 
+                : 0
+        }
+
+        return { transferCount, totalItemsCount, finishedRatio }
+    })
 
 export interface Manifest extends Instance<typeof ManifestModel> {};
 export interface ManifestSnapshotIn extends SnapshotIn<typeof ManifestModel> {};

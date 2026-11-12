@@ -7,28 +7,38 @@ import { RootNativeStackScreenProps } from '../../navigation/RootNavigator';
 import { useStores } from '../../stores/useStores';
 import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../../themes/AppPaperTheme';
-import { ManifestItemCard } from '../../components/ManifestItemCard';
+
 import { EslButton } from '../../components/shared/EslButton';
 import { ApiError } from '../../services/api/errors';
 import { ToastMessage } from '../../helpers/toastMessage';
+import { ManifestServiceCard } from '../../components/ManifestServiceCard';
 
 type Props = RootNativeStackScreenProps<'manifestItemArrival'>;
 
 export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalScreen({route, navigation}: Props) {
-  const { manifestId, manifestSequenceCode, itemId } = route.params;
+  const { manifestId, manifestSequenceCode, itemId, itemKind } = route.params;
   
   const theme = useTheme<AppTheme>();
   const { manifestStore } = useStores()
   
-  const item = manifestStore.selectedManifest?.getManifestItemById(itemId);
+  const item = manifestStore.selectedManifest?.getServiceById(itemId, itemKind);
 
   const handleConfirmArrival = async () => {
+    if (!item) {
+      ToastMessage.error(
+        `Serviço ${itemId}`, 
+        'Serviço não foi encontrado para confirmar chegada.'
+      );
+      return;
+    }
+
     try {
-      await manifestStore.confirmArrival(manifestId, "2026-11-10 14:30:00" , [itemId])
+      await manifestStore.confirmArrival(manifestId, new Date().toISOString(), [item])
       
-      ToastMessage.info(`Manifesto ${manifestSequenceCode}`, 'Chegada confirmada com sucesso!')
       // [TODO] Incluir navigate para a tela de dados da baixa
+      ToastMessage.info(`Manifesto ${manifestSequenceCode}`, 'Chegada confirmada com sucesso!')
     } catch (e) {
+      console.log('[ManifestItemArrivalScreen] Erro: ', e)
       const message = (e instanceof ApiError) ? e.message : 'Erro ao confirmar chegada.' 
       ToastMessage.error(`Manifesto ${manifestSequenceCode}`, message);
     }
@@ -45,10 +55,7 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
       { backgroundColor: theme.colors.background }
     ]}>
       <View style={{ flex: 1}}>
-        <ManifestItemCard 
-          manifestItem={item}
-          documentNumber={item?.freight?.documentNumber}
-        />
+        <ManifestServiceCard service={item} />
       </View>
 
       <EslButton 

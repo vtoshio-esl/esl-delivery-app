@@ -1,16 +1,23 @@
 import { types, SnapshotIn, SnapshotOut, Instance } from "mobx-state-tree";
 
 import { ManifestModel } from "./Manifest";
-import { ManifestItemModel } from "./ManifestItem";
+import { ManifestItem, ManifestItemModel } from "./ManifestItem";
+import { UnloadingRecipient, UnloadingRecipientModel } from "./UnloadingRecipient";
+
+export type ManifestService = ManifestItem | UnloadingRecipient
 
 export const ManifestDetailedModel = ManifestModel
     .named('ManifestDetailed')
     .props({
-        delivery_manifest_items: types.optional(
-            types.array(ManifestItemModel), 
+        unloading_recipients: types.optional(
+            types.array(UnloadingRecipientModel),
             []
         ),
         transfer_manifest_items: types.optional(
+            types.array(ManifestItemModel), 
+            []
+        ),
+        delivery_manifest_items: types.optional(
             types.array(ManifestItemModel), 
             []
         ),
@@ -32,18 +39,19 @@ export const ManifestDetailedModel = ManifestModel
         ),
     })
     .views((self) => ({
-        get allManifestItems() {
+        get allManifestItems(): ManifestService[] {
             return [
+                ...self.unloading_recipients,
                 ...self.delivery_manifest_items,
                 ...self.transfer_manifest_items,
                 ...self.pick_manifest_items,
                 ...self.reverse_pick_manifest_items,
                 ...self.dispatch_draft_manifest_items,
-                ...self.consolidation_manifest_items
+                ...self.consolidation_manifest_items,
             ].sort((a, b) => a.position - b.position);
         },
-        getManifestItemById(id: number) {
-            return this.allManifestItems.find((item) => item.id === id) 
+        getServiceById(id: number, kind: ManifestService['kind']) {
+            return this.allManifestItems.find((s) => s.kind === kind && s.id === id) 
         }
     }))
 

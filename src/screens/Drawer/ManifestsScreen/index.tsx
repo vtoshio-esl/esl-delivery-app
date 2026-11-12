@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
-import { getSnapshot } from 'mobx-state-tree';
 import { AppDrawerScreenProps } from '../../../navigation/DrawerNavigation';
 
 import { useStores } from '../../../stores/useStores';
@@ -17,12 +16,9 @@ import { styles } from './styles';
 import { ManifestCard } from '../../../components/ManifestCard';
 import { ToastMessage } from '../../../helpers/toastMessage';
 import { ManifestCommentsModal } from '../../../components/ManifestCommentsModal';
-import { EslModal } from '../../../components/EslModal';
-import { EslButton } from '../../../components/shared/EslButton';
-import { EslTextInput } from '../../../components/shared/EslTextInput';
 import { KmKind, ManifestKmModal } from '../../../components/ManifestKmModal';
 import { ApiError } from '../../../services/api/errors';
-import { ManifestSnapshotOut } from '../../../models/Manifest';
+import { Manifest } from '../../../models/Manifest';
 
 type Props = AppDrawerScreenProps<'manifests'>;
 
@@ -41,9 +37,9 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
   const [modalLabel, setModalLabel] = useState<string>('');
 
   const { manifestStore } = useStores();
-  const manifests = getSnapshot(manifestStore.manifests);
+  const manifests = manifestStore.manifests.slice();
 
-  const setKmTargetWithLabel = (kind: KmKind, item: ManifestSnapshotOut) => {
+  const setKmTargetWithLabel = (kind: KmKind, item: Manifest) => {
     setKmTarget({
       kind: kind,
       manifestId: item.id,
@@ -56,20 +52,18 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
     setRefreshing(true);
     try {
       await manifestStore.syncAvailableManifests();
+    } catch (e) {
+      console.log('[Manifests] Falha ao sincronizar manifestos:', e);
+      const message = e instanceof ApiError ? e.message : 'Falha ao sincronizar manifestos disponíveis.'
+      
+      ToastMessage.error('Manifestos', message)
     } finally {
       setRefreshing(false);
     }
   }, [manifestStore]);
 
   const handleManifestCardPress = async (manifestId: number, sequenceCode: number) => {
-    try {
       navigation.navigate('manifestDetail', { manifestId, sequenceCode })
-    } catch {
-      ToastMessage.error(
-        'Manifesto',
-        `Erro ao exibir o Manifesto ${sequenceCode}.`
-      )
-    }
   }
 
   const handleConfirmKm = async (km: number) => {
@@ -134,7 +128,6 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
         }
         renderItem={({item}) =>
           <ManifestCard 
-            key={item.id} 
             manifest={item}
             onPress={() => handleManifestCardPress(item.id, item.sequence_code)} 
             onPressComments={() => setSelectedComments(item.mobile_comments ?? '')}

@@ -1,5 +1,12 @@
 import { AxiosRequestConfig } from "axios";
 import { Api } from "./base";
+import { ManifestService } from "../../models/ManifestDetailed";
+
+export interface UpdateArrivalAtRequest {
+    manifestId: number
+    service: ManifestService,
+    arrivedAt: string
+}
 
 export class ManifestItemApi {
     api: Api
@@ -10,23 +17,17 @@ export class ManifestItemApi {
     }
 
     async updateArrivalAt(
-        params: { manifestId: number, itemId: number, itemType: string },
-        body: { arrivalAt: string },
+        request: UpdateArrivalAtRequest,
         config?: AxiosRequestConfig
     ) {
-        const { manifestId, itemId, itemType } = params
-        const { arrivalAt } = body
+        const { manifestId, service, arrivedAt } = request
+        const { route } = service.requestRoute
 
-        const route = itemType === 'ManifestItem::Transfer' ? 'unloading_recipients' : 'items'
-        const url = `${this.baseUrl}/${manifestId}/${route}/${itemId}` 
+        const url = `${this.baseUrl}/${manifestId}/${route}/${service.id}` 
 
         await this.api.client.patch(
             url, 
-            {
-                manifest_item: { 
-                    arrived_at: arrivalAt 
-                }
-            }, 
+            { manifest_item: { arrived_at: arrivedAt } }, 
             config
         ) 
     }

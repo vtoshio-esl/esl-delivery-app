@@ -23,6 +23,8 @@ import { ManifestItemCard } from '../../components/ManifestItemCard';
 import { EslTextInput } from '../../components/shared/EslTextInput';
 import { ManifestCommentsModal } from '../../components/ManifestCommentsModal';
 import { ManifestKmModal } from '../../components/ManifestKmModal';
+import { ManifestServiceCard } from '../../components/ManifestServiceCard';
+import { ManifestService } from '../../models/ManifestDetailed';
 
 type Props = RootNativeStackScreenProps<'manifestDetail'>;
 
@@ -46,10 +48,18 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     if (!query) return manifestItems;
 
     return manifestItems?.filter((item) => {
+      if (item.kind === 'unloading_recipient') {
+        const name = item.recipient?.name?.toLowerCase() ?? '';
+        const nickname = item.recipient?.name?.toLowerCase() ?? '';
+        
+        return name.includes(query) || nickname.includes(query);
+      }
+      
       const cte = item.freight?.cte_number?.toString() ?? '';
       const draft = item.freight?.draft_number?.toString() ?? '';
+      const nickname = item.recipient?.nickname?.toLowerCase() ?? '';
 
-      return cte.includes(query) || draft.includes(query);
+      return cte.includes(query) || draft.includes(query) || nickname.includes(query);
     })
   }, [search, manifestItems])
 
@@ -94,7 +104,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
   // Handlers
   const handleAcceptManifest = async () => {
     try {
-      await manifestStore.acceptManifest(manifestId);
+      await manifestStore.acceptManifest(manifestId, new Date().toISOString());
     } catch (e) {
       console.log(e)
       const message = e instanceof ApiError ? e.message : 'Erro ao aceitar o serviço'
@@ -105,9 +115,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
   
   const handleStartTransport = async (km: number) => {
     try {
-      await manifestStore.startTransport(manifestId);
-      await manifestStore.updateDepartureKm(manifestId, km);
-      await manifestStore.fetchSelectedManifest(manifestId);
+      await manifestStore.startTransportWithKm(manifestId, km);
       setDepartureKmVisible(false);
     } catch (e) {
       console.log(e)
@@ -117,11 +125,12 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     }
   }
 
-  const handleSelectItem = (manifestItemId: number) => {
+  const handleSelectItem = (manifestItemId: number, kind: ManifestService['kind']) => {
     navigation.navigate('manifestItemArrival', {
       manifestId,
       manifestSequenceCode,
-      itemId: manifestItemId
+      itemId: manifestItemId,
+      itemKind: kind,
     })
   }
 
@@ -237,14 +246,13 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
           </Text>
         }
         renderItem={({ item }) => (
-          <ManifestItemCard
-            manifestItem={item}
+          <ManifestServiceCard
+            service={item}
             disabled={!manifest.isStarted}
-            documentNumber={item.freight?.documentNumber}
             mapsLabel={item.recipient?.name}
             latitude={item.recipient?.main_address.lat}
             longitude={item.recipient?.main_address.lng}
-            onPress={() => handleSelectItem(item.id)}
+            onPress={() => handleSelectItem(item.id, item.kind)}
           />
         )}
       />

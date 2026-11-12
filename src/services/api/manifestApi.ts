@@ -10,28 +10,34 @@ export class ManifestApi {
         this.api = api;
     }
 
-    async fetchManifests(config?: AxiosRequestConfig): Promise<ManifestSnapshotIn[]> {
+    async fetchManifests(page=1, per=20, config?: AxiosRequestConfig): Promise<ManifestSnapshotIn[]> {
         const response = await this.api.client.get(
             '/api/manifests', 
-            config
+            { 
+                ...config, 
+                params: { ...config?.params, page, per, use_unloading_recipient: true }
+            }
         );
     
         return response.data
     }
 
-    async fetchManifest(manifestId: number, config?: AxiosRequestConfig): Promise<ManifestSnapshotIn> {
+    async fetchManifest(manifestId: number, useUnloadingRecipient: boolean, config?: AxiosRequestConfig): Promise<ManifestSnapshotIn> {
         const response = await this.api.client.get(
             `/api/manifests/${manifestId}`, 
-            config,
+            { 
+                ...config, 
+                params: { ...config?.params, use_unloading_recipient: useUnloadingRecipient }
+            }
         );
 
         return response.data;
     }
 
-    async acceptManifest(manifestId: number, config?: AxiosRequestConfig) {
+    async acceptManifest(manifestId: number, acceptedAt: string, config?: AxiosRequestConfig) {
         await this.api.client.post(
             `/api/manifests/${manifestId}/accept`,
-            { accepted_at: new Date().toISOString() },
+            { accepted_at: acceptedAt },
             config
         )
     }

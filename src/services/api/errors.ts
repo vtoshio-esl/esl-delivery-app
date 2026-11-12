@@ -13,6 +13,7 @@ const DEFAULT_MESSAGES: Record<ApiErrorKind, string> = {
 
 interface ApiErrorBody {
     error?: string
+    formatted_errors?: string[]
 }
 
 export class ApiError extends Error {
@@ -42,7 +43,8 @@ export function toApiError(error: unknown): ApiError {
     if (isAxiosError<ApiErrorBody>(error)) {
         const status = error.response?.status;
         const kind = resolveKind(status, error.code);
-        const bodyMessage = error.response?.data?.error;
+        const data = error.response?.data;
+        const bodyMessage = data?.formatted_errors?.filter(Boolean).join('\n') || data?.error ;
         const message = typeof bodyMessage === 'string' && bodyMessage.trim()
             ? bodyMessage
             : DEFAULT_MESSAGES[kind];
@@ -51,4 +53,9 @@ export function toApiError(error: unknown): ApiError {
     }
 
     return new ApiError('unknown', DEFAULT_MESSAGES.unknown);
+}
+
+export function withStep(error: unknown, step: string): ApiError {
+    const apiError = toApiError(error);
+    return new ApiError(apiError.kind, `${step}: ${apiError.message}`, apiError.status);
 }

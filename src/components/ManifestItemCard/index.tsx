@@ -10,7 +10,7 @@ import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../../themes/AppPaperTheme';
 import { styles } from './styles';
 
-import { ManifestItem } from '../../models/ManifestItem';
+import { ManifestItem } from '../../models/ManifestServices/ManifestItem';
 import { EslButton } from '../shared/EslButton';
 import { LabeledValue } from '../LabeledValue';
 import { openMaps } from '../../helpers/openMaps';

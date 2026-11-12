@@ -13,7 +13,7 @@ import { ManifestDetailScreen } from "../screens/ManifestDetailScreen";
 import { useTheme } from "react-native-paper";
 import { AppTheme } from "../themes/AppPaperTheme";
 import { ManifestItemArrivalScreen } from "../screens/ManifestItemArrivalScreen";
-import { ManifestService } from "../models/ManifestDetailed";
+import { ManifestServiceKind } from "../models/ManifestServices/types";
 
 export type RootNativeStackParamList = {
   login: undefined,
@@ -23,7 +23,7 @@ export type RootNativeStackParamList = {
     manifestId: number, 
     manifestSequenceCode: number, 
     itemId: number,
-    itemKind: ManifestService['kind'],
+    itemKind: ManifestServiceKind,
   },
 }
 

@@ -1,5 +1,4 @@
 import { types, Instance } from "mobx-state-tree";
-import { PersonModel } from "../Person";
 
 import { ManifestServiceBaseModel, ManifestServiceContract } from "./BaseManifestService";
 
@@ -10,7 +9,6 @@ export const UnloadingRecipientModel = ManifestServiceBaseModel
         manifest_id: types.maybeNull(types.number),
         occurrence_id: types.maybeNull(types.number),
 
-        arrived_at: types.maybeNull(types.string),
         estimated_arrival_at: types.maybeNull(types.string),
         vehicle_arrival_km: types.optional(types.number, 0),
         comments: types.maybeNull(types.string),

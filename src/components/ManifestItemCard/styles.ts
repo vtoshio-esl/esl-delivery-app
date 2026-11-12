@@ -1,4 +1,3 @@
-import { disabled } from "@expo/ui/swift-ui/modifiers";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -11,7 +10,6 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
   },
   recipientDataContainer: { 
-    flex: 1, 
     flexDirection: 'row', 
     gap: 10
   },
@@ -20,7 +18,6 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   pickDataContainer: { 
-    flex: 1, 
     flexDirection: 'row', 
     width: '100%', 
     borderTopWidth: 1, 

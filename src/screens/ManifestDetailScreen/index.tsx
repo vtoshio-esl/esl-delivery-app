@@ -19,12 +19,11 @@ import { ApiError } from '../../services/api/errors';
 
 import { EslButton } from '../../components/shared/EslButton';
 import { LabeledValue } from '../../components/LabeledValue';
-import { ManifestItemCard } from '../../components/ManifestItemCard';
 import { EslTextInput } from '../../components/shared/EslTextInput';
 import { ManifestCommentsModal } from '../../components/ManifestCommentsModal';
 import { ManifestKmModal } from '../../components/ManifestKmModal';
 import { ManifestServiceCard } from '../../components/ManifestServiceCard';
-import { ManifestService } from '../../models/ManifestDetailed';
+import { ManifestServiceKind } from '../../models/ManifestServices/types';
 
 type Props = RootNativeStackScreenProps<'manifestDetail'>;
 
@@ -125,7 +124,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     }
   }
 
-  const handleSelectItem = (manifestItemId: number, kind: ManifestService['kind']) => {
+  const handleSelectItem = (manifestItemId: number, kind: ManifestServiceKind) => {
     navigation.navigate('manifestItemArrival', {
       manifestId,
       manifestSequenceCode,

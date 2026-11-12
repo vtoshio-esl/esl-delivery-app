@@ -1,10 +1,9 @@
 import { types, SnapshotIn, SnapshotOut, Instance } from "mobx-state-tree";
 
 import { ManifestModel } from "./Manifest";
-import { ManifestItem, ManifestItemModel } from "./ManifestServices/ManifestItem";
-import { UnloadingRecipient, UnloadingRecipientModel } from "./ManifestServices/UnloadingRecipient";
-
-export type ManifestService = ManifestItem | UnloadingRecipient
+import { ManifestItemModel } from "./ManifestServices/ManifestItem";
+import { UnloadingRecipientModel } from "./ManifestServices/UnloadingRecipient";
+import { ManifestService, ManifestServiceKind } from "./ManifestServices/types";
 
 export const ManifestDetailedModel = ManifestModel
     .named('ManifestDetailed')
@@ -50,7 +49,7 @@ export const ManifestDetailedModel = ManifestModel
                 ...self.consolidation_manifest_items,
             ].sort((a, b) => a.position - b.position);
         },
-        getServiceById(id: number, kind: ManifestService['kind']) {
+        getServiceById(id: number, kind: ManifestServiceKind) {
             return this.allManifestItems.find((s) => s.kind === kind && s.id === id) 
         }
     }))

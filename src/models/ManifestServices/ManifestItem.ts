@@ -16,7 +16,7 @@ export interface Sender {
 export const ManifestItemModel = ManifestServiceBaseModel
     .named('ManifestItem')
     .props({
-        id: types.optional(types.identifierNumber, 0),
+        id: types.identifierNumber,
         type: types.optional(
             types.union(
                 types.enumeration<ManifestItemType>('ManifestItemType', [...MANIFEST_ITEM_TYPES]),
@@ -55,7 +55,6 @@ export const ManifestItemModel = ManifestServiceBaseModel
         // Geolocalização
         latitude: types.maybeNull(types.number),
         longitude: types.maybeNull(types.number),
-        arrived_at: types.maybeNull(types.string),
         arrived_latitude: types.maybeNull(types.number),
         arrived_longitude: types.maybeNull(types.number),
         exited_at: types.maybeNull(types.string),

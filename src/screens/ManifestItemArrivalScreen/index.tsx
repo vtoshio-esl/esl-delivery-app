@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { observer } from 'mobx-react-lite';
 
@@ -44,11 +44,12 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
     }
   }
 
-  if (!item) {
-    navigation.goBack();
-    return;
-  }
+  useEffect(() => {
+    if (!item) navigation.goBack();
+  }, [item, navigation])
     
+  if (!item) return null;
+
   return (
     <SafeAreaView style={[
       styles.arrivalView,

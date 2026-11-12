@@ -1,8 +1,10 @@
-import { types, SnapshotIn, SnapshotOut, Instance, getEnv, cast } from "mobx-state-tree";
+import { types, getEnv, cast } from "mobx-state-tree";
 import { ManifestModel, ManifestSnapshotIn } from "../models/Manifest";
 import { Environment } from "../services/environment";
-import { ManifestDetailedModel, ManifestService } from "../models/ManifestDetailed";
-import { ApiError, withStep } from "../services/api/errors";
+import { ManifestDetailedModel } from "../models/ManifestDetailed";
+
+import { ManifestService } from "../models/ManifestServices/types";
+import { withStep } from "../services/api/errors";
 
 export const ManifestStoreModel = types
     .model('ManifestStore')
@@ -83,14 +85,13 @@ export const ManifestStoreModel = types
                 await self.fetchSelectedManifest(manifestId);
             }
         },
-        // [TODO] Ajustar erro 500 no request
         confirmArrival: async (manifestId: number, arrivalDate: string, services: ManifestService[]) => {
             const { manifestItemApi } = getEnv<Environment>(self);
             
             if (services.length === 0)
                 throw new Error('Nenhum item encontrado para dar baixa.')
             
-            await Promise.all(services.map((item) => {
+            await Promise.allSettled(services.map((item) => {
                 return manifestItemApi.updateArrivalAt({
                     manifestId,
                     service: item,

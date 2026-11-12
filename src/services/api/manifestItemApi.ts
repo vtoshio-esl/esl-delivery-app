@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from "axios";
 import { Api } from "./base";
-import { ManifestService } from "../../models/ManifestDetailed";
+import { ManifestService } from "../../models/ManifestServices/types";
 
 export interface UpdateArrivalAtRequest {
     manifestId: number

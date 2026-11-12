@@ -1,9 +1,9 @@
-import { types } from "mobx-state-tree";
+import { Instance, types } from "mobx-state-tree";
 import { PersonModel } from "../Person";
 
 export interface ManifestServiceContract<K extends string = string> {
-    readonly kind: K,
-    readonly resourceRoute: string,
+    readonly kind: K;
+    readonly resourceRoute: string;
 }
 
 export const ManifestServiceBaseModel = types
@@ -19,3 +19,5 @@ export const ManifestServiceBaseModel = types
             return !!self.arrived_at
         }
     }))
+
+export interface ManifestServiceBase extends Instance<typeof ManifestServiceBaseModel>{};

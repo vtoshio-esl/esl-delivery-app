@@ -1,8 +1,8 @@
 import { types, SnapshotIn, SnapshotOut, Instance } from "mobx-state-tree";
 
 import { ManifestModel } from "./Manifest";
-import { ManifestItem, ManifestItemModel } from "./ManifestItem";
-import { UnloadingRecipient, UnloadingRecipientModel } from "./UnloadingRecipient";
+import { ManifestItem, ManifestItemModel } from "./ManifestServices/ManifestItem";
+import { UnloadingRecipient, UnloadingRecipientModel } from "./ManifestServices/UnloadingRecipient";
 
 export type ManifestService = ManifestItem | UnloadingRecipient
 

@@ -21,7 +21,7 @@ export class ManifestItemApi {
         config?: AxiosRequestConfig
     ) {
         const { manifestId, service, arrivedAt } = request
-        const { route } = service.requestRoute
+        const route = service.resourceRoute
 
         const url = `${this.baseUrl}/${manifestId}/${route}/${service.id}` 
 

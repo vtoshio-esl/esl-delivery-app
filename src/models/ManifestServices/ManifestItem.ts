@@ -1,9 +1,11 @@
 import { types, SnapshotIn, SnapshotOut, Instance } from "mobx-state-tree";
-import { getManifestItemTypeLabel, MANIFEST_ITEM_TYPES, ManifestItemType } from "./types/ManifestItemType";
-import { FreightModel } from "./Freight";
-import { PersonModel } from "./Person";
-import { PickModel } from "./Pick";
-import { AddressModel } from "./Address";
+
+import { getManifestItemTypeLabel, MANIFEST_ITEM_TYPES, ManifestItemType } from "../types/ManifestItemType";
+import { ManifestServiceBaseModel, ManifestServiceContract } from "./BaseManifestService";
+
+import { FreightModel } from "../Freight";
+import { PickModel } from "../Pick";
+import { AddressModel } from "../Address";
 
 export interface Sender {
     id: number,
@@ -11,8 +13,8 @@ export interface Sender {
     nickname: string | null,
 }
 
-export const ManifestItemModel = types
-    .model('ManifestItem')
+export const ManifestItemModel = ManifestServiceBaseModel
+    .named('ManifestItem')
     .props({
         id: types.optional(types.identifierNumber, 0),
         type: types.optional(
@@ -23,8 +25,6 @@ export const ManifestItemModel = types
             'ManifestItem::Transfer'
         ),
         attempt_number: types.optional(types.number, 0),
-        position: types.optional(types.number, 0),
-        comments: types.maybeNull(types.string),
 
         manifest_id: types.optional(types.number, 0),
         manifestable_type: types.optional(types.string, 'Freight::Base'),
@@ -32,7 +32,6 @@ export const ManifestItemModel = types
         recipient_id: types.maybeNull(types.number),
         
         // Associações
-        recipient: types.maybeNull(PersonModel),
         sender: types.maybeNull(types.frozen<Sender>()),
         freight: types.maybeNull(FreightModel),
         pick: types.maybeNull(PickModel),
@@ -66,13 +65,11 @@ export const ManifestItemModel = types
         created_at: types.optional(types.string, ''),
         updated_at: types.optional(types.string, ''),
     })
+    .views((self): ManifestServiceContract<'manifest_item'> => ({
+        get kind() { return 'manifest_item' as const },
+        get resourceRoute() { return 'items' as const},
+    }))
     .views((self) => ({
-        get kind() {
-            return 'manifest_item' as const
-        },
-        get requestRoute() {
-            return { route: 'items' } as const
-        },
         get isTransfer(): boolean {
             return self.type === 'ManifestItem::Transfer' && self.manifestable_type !== 'container'
         },

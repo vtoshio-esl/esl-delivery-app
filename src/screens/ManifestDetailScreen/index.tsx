@@ -130,13 +130,17 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
 
     deliveryDraftStore.clearSelectedServices();
     deliveryDraftStore.selectService({ id, kind });
-
-    navigation.navigate('manifestItemArrival', {
-      manifestId,
-      manifestSequenceCode,
-      itemId: id,
-      itemKind: kind,
-    });
+    
+    if (service.hasArrived) {
+      navigation.navigate('deliveryDraft', { manifestSequenceCode });
+    } else {
+      navigation.navigate('manifestItemArrival', {
+        manifestId,
+        manifestSequenceCode,
+        itemId: id,
+        itemKind: kind,
+      });
+    }
   }
 
   // SubComponentes

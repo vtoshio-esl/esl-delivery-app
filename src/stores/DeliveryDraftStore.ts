@@ -1,6 +1,7 @@
 import { getRoot, types } from "mobx-state-tree";
 
 import { ManifestService, ManifestServiceKind } from "../models/ManifestServices/types";
+import { ManifestItem } from "../models/ManifestServices/ManifestItem";
 import { RootStore } from "./RootStore";
 
 export type ServiceKey = {
@@ -24,7 +25,14 @@ export const DeliveryDraftStore = types
             return self.selectedKeys
                 .map((k) => manifest.getServiceById(k.id, k.kind))
                 .filter((s): s is ManifestService => s !== undefined)
-        }
+        },
+    }))
+    .views((self) => ({
+        get getExitedAtReference(): ManifestItem | undefined {
+            return self.getSelectedServices.find(
+                (s): s is ManifestItem => s.kind === 'manifest_item'
+            )
+        },
     }))
     .actions((self) => ({
         selectService: (service: ServiceKey) => {

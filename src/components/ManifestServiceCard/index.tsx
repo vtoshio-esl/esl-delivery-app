@@ -7,6 +7,7 @@ import { ManifestService } from '../../models/ManifestServices/types';
 export interface ManifestServiceCardProps extends TouchableOpacityProps {
   service: ManifestService,
   mapsLabel?: string,
+  simplified?: boolean,
   latitude?: string | null,
   longitude?: string | null
 }
@@ -14,13 +15,15 @@ export interface ManifestServiceCardProps extends TouchableOpacityProps {
 export const ManifestServiceCard = observer((props: ManifestServiceCardProps) => {
   const {
     service,
+    simplified,
     ...componentProps
   } = props;
 
   if (service.kind === 'unloading_recipient') {
     return (
       <ManifestUnloadingRecipientCard 
-        unloadingRecipient={service} 
+        unloadingRecipient={service}
+        simplified={simplified}
         { ...componentProps } 
       />
     )
@@ -29,6 +32,7 @@ export const ManifestServiceCard = observer((props: ManifestServiceCardProps) =>
   return (
     <ManifestItemCard 
       manifestItem={service}
+      simplified={simplified}
       documentNumber={service.freight?.documentNumber}
       { ...componentProps }
     />

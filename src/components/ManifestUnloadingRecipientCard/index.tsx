@@ -18,6 +18,7 @@ import { ToastMessage } from '../../helpers/toastMessage';
 
 export interface ManifestUnloadingRecipientCardProps extends TouchableOpacityProps {
   unloadingRecipient: UnloadingRecipient,
+  simplified?: boolean,
   mapsLabel?: string,
   latitude?: string | null | undefined,
   longitude?: string | null | undefined,
@@ -28,6 +29,7 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
   
   const {
     unloadingRecipient,
+    simplified = false,
     latitude,
     longitude,
     mapsLabel,
@@ -73,47 +75,49 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
         </Text>
       </View>
       
-      <View style={[
-        styles.footerContainer,
-        { borderColor: theme.colors.primary300 }
-      ]}>
-        <EslButton 
-          title='Navegar'
-          icon='map'
-          fontSize={12}
-          disabled={disabled}
-          onPress={handleNavigateToRecipient}
-          style={{ width: '30%' }}
-          lightTitle={true}
-        />
+      { !simplified && (
+        <View style={[
+            styles.footerContainer,
+            { borderColor: theme.colors.primary300 }
+          ]}>
+            <EslButton 
+              title='Navegar'
+              icon='map'
+              fontSize={12}
+              disabled={disabled}
+              onPress={handleNavigateToRecipient}
+              style={{ width: '30%' }}
+              lightTitle={true}
+            />
 
-        <View style={styles.freightData}>
-          <LabeledValue 
-            title='Tipo'
-            value={'Transf.'}
-            fontSize={12}
-            style={{ flex: 1 }}
-          />
-          <LabeledValue 
-            title='Qt. Docs'
-            value={unloadingRecipient.freights_count}
-            fontSize={12}
-            style={{ flex: 1 }}
-          />
-          <LabeledValue 
-            title='Qt. NFs'
-            value={unloadingRecipient.invoices_count}
-            fontSize={12}
-            style={{ flex: 1 }}
-          />
-          <LabeledValue 
-            title='Qt. Vol.'
-            value={unloadingRecipient.freights_volumes}
-            fontSize={12}
-            style={{ flex: 1 }}
-          />
+            <View style={styles.freightData}>
+              <LabeledValue 
+                title='Tipo'
+                value={'Transf.'}
+                fontSize={12}
+                style={{ flex: 1 }}
+              />
+              <LabeledValue 
+                title='Qt. Docs'
+                value={unloadingRecipient.freights_count}
+                fontSize={12}
+                style={{ flex: 1 }}
+              />
+              <LabeledValue 
+                title='Qt. NFs'
+                value={unloadingRecipient.invoices_count}
+                fontSize={12}
+                style={{ flex: 1 }}
+              />
+              <LabeledValue 
+                title='Qt. Vol.'
+                value={unloadingRecipient.freights_volumes}
+                fontSize={12}
+                style={{ flex: 1 }}
+              />
+            </View>
         </View>
-      </View>
+      )}
     </TouchableOpacity>
   );
 }

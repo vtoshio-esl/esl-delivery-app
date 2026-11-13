@@ -19,6 +19,7 @@ import { ToastMessage } from '../../helpers/toastMessage';
 export interface ManifestItemCardProps extends TouchableOpacityProps {
   manifestItem: ManifestItem,
   documentNumber?: string | undefined,
+  simplified?: boolean,
   mapsLabel?: string,
   latitude?: string | null | undefined,
   longitude?: string | null | undefined,
@@ -29,6 +30,7 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
   
   const {
     manifestItem,
+    simplified = false,
     latitude,
     longitude,
     mapsLabel,
@@ -106,7 +108,7 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
         )}
       </View>
 
-      { manifestItem.pick && (
+      { manifestItem.pick && !simplified && (
         <View style={[
           styles.pickDataContainer,
           { borderColor: theme.colors.primary300 }
@@ -132,57 +134,59 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
         </View>
       )}
       
-      <View style={[
-        styles.footerContainer,
-        { borderColor: theme.colors.primary300 }
-      ]}>
-        <EslButton 
-          title='Navegar'
-          icon='map'
-          fontSize={12}
-          disabled={disabled}
-          onPress={handleNavigateToRecipient}
-          style={{ width: '30%' }}
-          lightTitle={true}
-        />
-
-        <View style={styles.freightData}>
-          <LabeledValue 
-            title='Tipo'
-            value={manifestItem.typeLabel}
+      { !simplified && (
+        <View style={[
+          styles.footerContainer,
+          { borderColor: theme.colors.primary300 }
+        ]}>
+          <EslButton 
+            title='Navegar'
+            icon='map'
             fontSize={12}
-            style={{ flex: 1 }}
+            disabled={disabled}
+            onPress={handleNavigateToRecipient}
+            style={{ width: '30%' }}
+            lightTitle={true}
           />
 
-          { manifestItem.freight && (
-            <>
-              <LabeledValue
-                title='Vol'
-                value={manifestItem.freight?.invoices_volumes}
-                fontSize={12}
-                style={{ flex: 1 }}
-              />
-              <LabeledValue 
-                title='NFs'
-                value={manifestItem.freight?.allInvoicesListed}
-                fontSize={12}
-                style={{ flex: 1 }}
-              />
-            </>
-          )}
+          <View style={styles.freightData}>
+            <LabeledValue 
+              title='Tipo'
+              value={manifestItem.typeLabel}
+              fontSize={12}
+              style={{ flex: 1 }}
+            />
 
-          { manifestItem.pick && (
-            <>
-              <LabeledValue
-                title='Vol'
-                value={manifestItem.pick?.invoices_volumes}
-                fontSize={12}
-                style={{ flex: 1 }}
-              />
-            </>
-          )}
+            { manifestItem.freight && (
+              <>
+                <LabeledValue
+                  title='Vol'
+                  value={manifestItem.freight?.invoices_volumes}
+                  fontSize={12}
+                  style={{ flex: 1 }}
+                />
+                <LabeledValue 
+                  title='NFs'
+                  value={manifestItem.freight?.allInvoicesListed}
+                  fontSize={12}
+                  style={{ flex: 1 }}
+                />
+              </>
+            )}
+
+            { manifestItem.pick && (
+              <>
+                <LabeledValue
+                  title='Vol'
+                  value={manifestItem.pick?.invoices_volumes}
+                  fontSize={12}
+                  style={{ flex: 1 }}
+                />
+              </>
+            )}
+          </View>
         </View>
-      </View>
+      )}
     </TouchableOpacity>
   );
 }

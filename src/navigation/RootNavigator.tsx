@@ -14,6 +14,7 @@ import { useTheme } from "react-native-paper";
 import { AppTheme } from "../themes/AppPaperTheme";
 import { ManifestItemArrivalScreen } from "../screens/ManifestItemArrivalScreen";
 import { ManifestServiceKind } from "../models/ManifestServices/types";
+import { DeliveryDraftScreen } from "../screens/DeliveryDraft/DeliveryDraftScreen";
 
 export type RootNativeStackParamList = {
   login: undefined,
@@ -25,6 +26,7 @@ export type RootNativeStackParamList = {
     itemId: number,
     itemKind: ManifestServiceKind,
   },
+  deliveryDraft: { manifestSequenceCode: number },
 }
 
 export type RootNativeStackScreenProps<T extends keyof RootNativeStackParamList> = NativeStackScreenProps<
@@ -64,6 +66,13 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
               headerTintColor: theme.colors.white,
               headerStyle: { backgroundColor: theme.colors.eslBlue },
             }}
+          />
+          <Stack.Screen 
+            name="deliveryDraft"
+            component={DeliveryDraftScreen}
+            options={({route}) => ({
+              title: `Manifesto ${route.params.manifestSequenceCode}`
+            })}
           />
         </>
       ) : (

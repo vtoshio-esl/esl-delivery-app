@@ -6,6 +6,7 @@ import { ManifestServiceBaseModel, ManifestServiceContract } from "./BaseManifes
 import { FreightModel } from "../Freight";
 import { PickModel } from "../Pick";
 import { AddressModel } from "../Address";
+import { formatDateTimeToLocale } from "../../helpers/dateFormat";
 
 export interface Sender {
     id: number,
@@ -77,6 +78,11 @@ export const ManifestItemModel = ManifestServiceBaseModel
         },
         get typeLabel() {
             return getManifestItemTypeLabel(self.type);
+        },
+        get formattedExitedAt() {
+            if (!self.exited_at) return null;
+
+            return formatDateTimeToLocale(self.exited_at);
         },
     }))
 

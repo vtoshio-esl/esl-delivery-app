@@ -71,7 +71,9 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
             name="deliveryDraft"
             component={DeliveryDraftScreen}
             options={({route}) => ({
-              title: `Manifesto ${route.params.manifestSequenceCode}`
+              title: `Manifesto ${route.params.manifestSequenceCode}`,
+              headerTintColor: theme.colors.white,
+              headerStyle: { backgroundColor: theme.colors.eslBlue },
             })}
           />
         </>

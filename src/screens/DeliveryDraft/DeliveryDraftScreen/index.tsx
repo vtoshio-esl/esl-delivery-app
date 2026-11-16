@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Text, View } from 'react-native';
 import { RootNativeStackScreenProps } from '../../../navigation/RootNavigator';
 
 import { AppTheme } from '../../../themes/AppPaperTheme';
@@ -7,7 +7,6 @@ import { useTheme } from 'react-native-paper';
 import { useStores } from '../../../stores/useStores';
 import { observer } from 'mobx-react-lite';
 
-import { ManifestServiceCard } from '../../../components/ManifestServiceCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeliveryDraftTabs } from '../../../navigation/TopTabsNavigation';
 
@@ -17,7 +16,10 @@ export const DeliveryDraftScreen = observer(({navigation, route}: RootNativeStac
   const theme = useTheme<AppTheme>();
   const { deliveryDraftStore } = useStores()
 
-  const selectedItems = deliveryDraftStore.getSelectedServices;
+  useEffect(() => {
+    deliveryDraftStore.clearForm();
+  }, [deliveryDraftStore])
+
   const reference = deliveryDraftStore.getExitedAtReference;
 
   const renderDates = (kind: 'arrival' | 'exit') => {
@@ -58,11 +60,6 @@ export const DeliveryDraftScreen = observer(({navigation, route}: RootNativeStac
           { renderDates('arrival') }
           { renderDates('exit') }
         </View>
-        <ScrollView contentContainerStyle={{ width: '100%' }} horizontal={true}>
-          { selectedItems.map((item) => (
-            <ManifestServiceCard key={`${item.kind}:${item.id}`} service={item} simplified={true} />
-          ))}
-        </ScrollView>
       </View>
       
       <SafeAreaView style={styles.tabsContainer}>

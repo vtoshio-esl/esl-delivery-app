@@ -1,5 +1,5 @@
 import { cast, getEnv, types } from "mobx-state-tree";
-import { OccurrenceModel, OccurrenceSnapshotIn } from "../models/Occurrence";
+import { Occurrence, OccurrenceModel, OccurrenceSnapshotIn } from "../models/Occurrence";
 import { Environment } from "../services/environment";
 
 export const OccurrencesStoreModel = types
@@ -7,6 +7,21 @@ export const OccurrencesStoreModel = types
     .props({
         occurrences: types.optional(types.array(OccurrenceModel), [])
     })
+    .views((self) => ({
+        get occurrencesForFinish(): Occurrence[] {
+            return self.occurrences
+                .filter((o) => o.isFinisher)
+        },
+        get occurrencesForDealing() : Occurrence[] {
+            return self.occurrences
+                .filter((o) => o.isDealing)
+        },
+        occurrenceFromId: (id: number | null): Occurrence | undefined => {
+            if (!id) return;
+
+            return self.occurrences.find((o) => o.id === id)
+        }
+    }))
     .actions((self) => ({
         setOccurrences: (occurrences: OccurrenceSnapshotIn[]) => {
             self.occurrences = cast(occurrences);

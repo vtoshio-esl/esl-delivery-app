@@ -1,5 +1,5 @@
 import { types, SnapshotIn, SnapshotOut, Instance } from "mobx-state-tree";
-import { FINISHER_TRIGGERS, getTriggerLabel, OccurrenceTrigger, TRIGGERS } from "./types/OccurrenceTrigger";
+import { DEALING_TRIGGERS, FINISHER_TRIGGERS, getTriggerLabel, OccurrenceTrigger, TRIGGERS } from "./types/OccurrenceTrigger";
 import { AVAILABLE_FOR_LABELS, AvailableFor, getAvailableForLabel } from "./types/OccurrenceAvailableFor";
 
 export const OccurrenceModel = types
@@ -27,8 +27,8 @@ export const OccurrenceModel = types
         ),
         
         closes_performance: types.optional(types.boolean, true),
-        requires_photo_on_mobile: types.optional(types.boolean, true),
-        require_receiver: types.optional(types.boolean, true)
+        require_photo_on_mobile: types.optional(types.boolean, false),
+        require_receiver: types.optional(types.boolean, false)
     })
     .views((self) => ({
         get triggerLabel(): string {
@@ -36,6 +36,9 @@ export const OccurrenceModel = types
         },
         get isFinisher(): boolean {
             return (FINISHER_TRIGGERS as readonly string[]).includes(self.trigger);
+        },
+        get isDealing(): boolean {
+            return (DEALING_TRIGGERS as readonly string[]).includes(self.trigger);
         },
         get availableForLabel() {
             return self.available_for.map(getAvailableForLabel);

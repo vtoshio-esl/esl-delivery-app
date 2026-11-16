@@ -8,6 +8,23 @@ export interface UpdateArrivalAtRequest {
     arrivedAt: string
 }
 
+export type SetOccurrenceManifestItemData = {
+    mobile_uuid?: string;
+    occurrence_id?: number;
+    occurrence_at?: string;
+    receiver?: string;
+    document_number?: string;
+    comments?: string;
+    latitude?: string;
+    longitude?: string;
+}
+
+export interface SetOccurrenceRequest {
+    manifestId: number,
+    service: ManifestService,
+    payload: SetOccurrenceManifestItemData;
+}
+
 export class ManifestItemApi {
     api: Api
     baseUrl: string = '/api/manifests'
@@ -30,5 +47,13 @@ export class ManifestItemApi {
             { manifest_item: { arrived_at: arrivedAt } }, 
             config
         ) 
+    }
+
+    async setOccurrence(request: SetOccurrenceRequest, config?: AxiosRequestConfig) {
+        const { manifestId, service, payload } = request;
+
+        const url = `${this.baseUrl}/${manifestId}/${service.resourceRoute}/${service.id}/set_occurrences`
+        
+        await this.api.client.post(url, { item_occurrence: payload }, config)
     }
 }

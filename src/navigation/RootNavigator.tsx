@@ -15,6 +15,7 @@ import { AppTheme } from "../themes/AppPaperTheme";
 import { ManifestItemArrivalScreen } from "../screens/ManifestItemArrivalScreen";
 import { ManifestServiceKind } from "../models/ManifestServices/types";
 import { DeliveryDraftScreen } from "../screens/DeliveryDraft/DeliveryDraftScreen";
+import { EslStackHeader } from "../components/shared/EslStackHeader";
 
 export type RootNativeStackParamList = {
   login: undefined,
@@ -38,7 +39,7 @@ const Stack = createNativeStackNavigator<RootNativeStackParamList>();
 
 export const AppNativeStackNavigator = observer(function AppNativeStackNavigator() {
   const theme = useTheme<AppTheme>();
-  const { userStore } = useStores();
+  const { userStore, syncStore } = useStores();
 
   return (
     <Stack.Navigator>
@@ -54,8 +55,7 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
             component={ManifestDetailScreen}
             options={({ route}) => ({
               title: `Manifesto ${route.params.sequenceCode}`,
-              headerTintColor: theme.colors.white,
-              headerStyle: { backgroundColor: theme.colors.eslBlue },
+              header: (props) => <EslStackHeader {...props}/>,
             })}
           />
           <Stack.Screen 
@@ -63,8 +63,7 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
             component={ManifestItemArrivalScreen}
             options={{
               title: 'Confirmar Chegada',
-              headerTintColor: theme.colors.white,
-              headerStyle: { backgroundColor: theme.colors.eslBlue },
+              header: (props) => <EslStackHeader showSync={false} {...props}/>,
             }}
           />
           <Stack.Screen 
@@ -72,8 +71,7 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
             component={DeliveryDraftScreen}
             options={({route}) => ({
               title: `Manifesto ${route.params.manifestSequenceCode}`,
-              headerTintColor: theme.colors.white,
-              headerStyle: { backgroundColor: theme.colors.eslBlue },
+              header: (props) => <EslStackHeader {...props}/>,
             })}
           />
         </>

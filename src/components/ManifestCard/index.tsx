@@ -13,10 +13,10 @@ import { AppTheme } from '../../themes/AppPaperTheme';
 import { styles } from './styles';
 
 import { Manifest } from '../../models/Manifest';
-import { SyncProgressBar } from '../SyncProgressBar';
+import { SyncProgressBar } from '../shared/SyncProgressBar';
 import { LabeledValue } from '../LabeledValue';
-import { EslButton } from '../shared/EslButton';
-import { EslValueLabeledButton } from '../shared/EslValueLabeledButton';
+import { EslButton } from '../forms/EslButton';
+import { EslValueLabeledButton } from '../forms/EslValueLabeledButton';
 import { observer } from 'mobx-react-lite';
 
 export interface ManifestCardProps extends TouchableOpacityProps {

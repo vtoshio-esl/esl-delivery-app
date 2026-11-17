@@ -17,9 +17,9 @@ import { styles } from './styles';
 import { ToastMessage } from '../../helpers/toastMessage';
 import { ApiError } from '../../services/api/errors';
 
-import { EslButton } from '../../components/shared/EslButton';
+import { EslButton } from '../../components/forms/EslButton';
 import { LabeledValue } from '../../components/LabeledValue';
-import { EslTextInput } from '../../components/shared/EslTextInput';
+import { EslTextInput } from '../../components/forms/EslTextInput';
 import { ManifestCommentsModal } from '../../components/ManifestCommentsModal';
 import { ManifestKmModal } from '../../components/ManifestKmModal';
 import { ManifestServiceCard } from '../../components/ManifestServiceCard';

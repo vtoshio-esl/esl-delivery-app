@@ -5,7 +5,7 @@ import {
   ViewProps,
 } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { AppTheme } from '../../themes/AppPaperTheme';
+import { AppTheme } from '../../../themes/AppPaperTheme';
 
 export interface SyncProgressBarProps extends ViewProps {
   /** Progresso entre 0 e 1 (ex.: 0.5 = 50%) */

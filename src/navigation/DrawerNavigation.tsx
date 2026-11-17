@@ -4,7 +4,7 @@ import { CompositeScreenProps } from '@react-navigation/native';
 import Lucide from '@react-native-vector-icons/lucide';
 
 import { RootNativeStackScreenProps } from './RootNavigator';
-import { EslDrawer } from '../components/EslDrawer';
+import { EslDrawer } from '../components/shared/EslDrawer';
 
 import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../themes/AppPaperTheme';

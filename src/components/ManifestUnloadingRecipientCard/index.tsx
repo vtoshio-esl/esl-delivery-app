@@ -11,7 +11,7 @@ import { AppTheme } from '../../themes/AppPaperTheme';
 import { styles } from './styles';
 
 import { UnloadingRecipient } from '../../models/ManifestServices/UnloadingRecipient';
-import { EslButton } from '../shared/EslButton';
+import { EslButton } from '../forms/EslButton';
 import { LabeledValue } from '../LabeledValue';
 import { openMaps } from '../../helpers/openMaps';
 import { ToastMessage } from '../../helpers/toastMessage';

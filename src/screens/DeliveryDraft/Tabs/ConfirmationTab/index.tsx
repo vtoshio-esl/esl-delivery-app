@@ -8,7 +8,7 @@ import { AppTheme } from '../../../../themes/AppPaperTheme';
 import { useStores } from '../../../../stores/useStores';
 import { styles } from './styles';
 
-import { EslButton } from '../../../../components/shared/EslButton';
+import { EslButton } from '../../../../components/forms/EslButton';
 import { ToastMessage } from '../../../../helpers/toastMessage';
 import { ApiError } from '../../../../services/api/errors';
 

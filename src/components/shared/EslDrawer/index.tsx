@@ -12,14 +12,14 @@ import {
 } from 'react-native';
 import Lucide from '@react-native-vector-icons/lucide';
 
-import { useStores } from '../../stores/useStores';
+import { useStores } from '../../../stores/useStores';
 import { useTheme } from 'react-native-paper';
-import { AppTheme } from '../../themes/AppPaperTheme';
+import { AppTheme } from '../../../themes/AppPaperTheme';
 import { styles } from './styles';
 
-import { EslButton } from '../shared/EslButton';
-import { openMaps } from '../../helpers/openMaps';
-import { ToastMessage } from '../../helpers/toastMessage';
+import { EslButton } from '../../forms/EslButton';
+import { openMaps } from '../../../helpers/openMaps';
+import { ToastMessage } from '../../../helpers/toastMessage';
 import { observer } from 'mobx-react-lite';
 
 export const EslDrawer = observer(function EslDrawer(props: DrawerContentComponentProps) {
@@ -29,7 +29,7 @@ export const EslDrawer = observer(function EslDrawer(props: DrawerContentCompone
 
   const userPfp = (userStore.driver?.logo) ?
     userStore.driver.logo :
-    require('../../../assets/images/user_placeholder.png');
+    require('../../../../assets/images/user_placeholder.png');
 
   const handleFetchOcccurrences = async () => {
     setIsLoading(true);
@@ -80,7 +80,7 @@ export const EslDrawer = observer(function EslDrawer(props: DrawerContentCompone
       ]}>
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../../../assets/logo/logo_branca.png')} 
+            source={require('../../../../assets/logo/logo_branca.png')} 
             style={styles.logoImage}
             resizeMode='contain'
           />

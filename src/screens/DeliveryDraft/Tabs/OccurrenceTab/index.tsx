@@ -9,8 +9,8 @@ import { AppTheme } from '../../../../themes/AppPaperTheme';
 import { styles } from './styles';
 
 import { ToastMessage } from '../../../../helpers/toastMessage';
-import { EslSelect2 } from '../../../../components/shared/EslSelect2';
-import { EslTextInput } from '../../../../components/shared/EslTextInput';
+import { EslSelect2 } from '../../../../components/forms/EslSelect2';
+import { EslTextInput } from '../../../../components/forms/EslTextInput';
 import { ManifestServiceCard } from '../../../../components/ManifestServiceCard';
 
 type OccurrenceKind = 'finish' | 'treatment'

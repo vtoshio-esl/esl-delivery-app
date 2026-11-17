@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { EslModal } from '../EslModal';
-import { EslButton } from '../shared/EslButton';
-import { EslTextInput } from '../shared/EslTextInput';
+import { EslButton } from '../forms/EslButton';
+import { EslTextInput } from '../forms/EslTextInput';
 
 import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../../themes/AppPaperTheme';

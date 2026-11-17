@@ -10,7 +10,7 @@ import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../../../themes/AppPaperTheme';
 
 import { OccurrenceCard } from '../../../components/OccurrenceCard';
-import { EslTextInput } from '../../../components/shared/EslTextInput';
+import { EslTextInput } from '../../../components/forms/EslTextInput';
 import { styles } from './styles';
 
 export const OccurrencesScreen = observer(function OccurrencesScreen() {

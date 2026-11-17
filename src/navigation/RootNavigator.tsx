@@ -12,11 +12,22 @@ import { ManifestDetailScreen } from "../screens/ManifestDetailScreen";
 
 import { useTheme } from "react-native-paper";
 import { AppTheme } from "../themes/AppPaperTheme";
+import { ManifestItemArrivalScreen } from "../screens/ManifestItemArrivalScreen";
+import { ManifestServiceKind } from "../models/ManifestServices/types";
+import { DeliveryDraftScreen } from "../screens/DeliveryDraft/DeliveryDraftScreen";
+import { EslStackHeader } from "../components/shared/EslStackHeader";
 
 export type RootNativeStackParamList = {
   login: undefined,
   home: NavigatorScreenParams<AppDrawerParamList>,
-  manifestDetail: { manifestId: number; sequenceCode: number }
+  manifestDetail: { manifestId: number; sequenceCode: number },
+  manifestItemArrival: { 
+    manifestId: number, 
+    manifestSequenceCode: number, 
+    itemId: number,
+    itemKind: ManifestServiceKind,
+  },
+  deliveryDraft: { manifestSequenceCode: number },
 }
 
 export type RootNativeStackScreenProps<T extends keyof RootNativeStackParamList> = NativeStackScreenProps<
@@ -28,7 +39,7 @@ const Stack = createNativeStackNavigator<RootNativeStackParamList>();
 
 export const AppNativeStackNavigator = observer(function AppNativeStackNavigator() {
   const theme = useTheme<AppTheme>();
-  const { userStore } = useStores();
+  const { userStore, syncStore } = useStores();
 
   return (
     <Stack.Navigator>
@@ -44,8 +55,23 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
             component={ManifestDetailScreen}
             options={({ route}) => ({
               title: `Manifesto ${route.params.sequenceCode}`,
-              headerTintColor: theme.colors.white,
-              headerStyle: { backgroundColor: theme.colors.eslBlue },
+              header: (props) => <EslStackHeader {...props}/>,
+            })}
+          />
+          <Stack.Screen 
+            name="manifestItemArrival"
+            component={ManifestItemArrivalScreen}
+            options={{
+              title: 'Confirmar Chegada',
+              header: (props) => <EslStackHeader showSync={false} {...props}/>,
+            }}
+          />
+          <Stack.Screen 
+            name="deliveryDraft"
+            component={DeliveryDraftScreen}
+            options={({route}) => ({
+              title: `Manifesto ${route.params.manifestSequenceCode}`,
+              header: (props) => <EslStackHeader {...props}/>,
             })}
           />
         </>

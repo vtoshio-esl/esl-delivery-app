@@ -12,8 +12,8 @@ import { useStores } from '../../stores/useStores';
 import { ToastMessage } from '../../helpers/toastMessage';
 
 import { styles } from './styles';
-import { EslTextInput } from '../../components/shared/EslTextInput';
-import { EslButton } from '../../components/shared/EslButton';
+import { EslTextInput } from '../../components/forms/EslTextInput';
+import { EslButton } from '../../components/forms/EslButton';
 import { observer } from 'mobx-react-lite';
 
 type LoginData = {

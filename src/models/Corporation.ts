@@ -6,7 +6,7 @@ export const CorporationModel = types
     .props({
         id: types.optional(types.number, 0),
         name: types.optional(types.string, ''),
-        nickname: types.optional(types.string, ''),
+        nickname: types.maybeNull(types.string),
         cnpj: types.maybeNull(types.string),
         type: types.optional(
             types.enumeration(['Company', 'Individual']),

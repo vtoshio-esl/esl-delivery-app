@@ -4,7 +4,8 @@ import { CompositeScreenProps } from '@react-navigation/native';
 import Lucide from '@react-native-vector-icons/lucide';
 
 import { RootNativeStackScreenProps } from './RootNavigator';
-import { EslDrawer } from '../components/EslDrawer';
+import { EslDrawer } from '../components/shared/EslDrawer';
+import { EslDrawerHeader } from '../components/shared/EslDrawerHeader';
 
 import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../themes/AppPaperTheme';
@@ -60,10 +61,9 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
         component={ManifestsScreen}
         options={{
           headerShown: true,
-          headerTintColor: theme.colors.white,
-          headerStyle: { backgroundColor: theme.colors.eslBlue },
           title: 'Manifestos',
           drawerLabel: 'Manifestos',
+          header: (props) => <EslDrawerHeader {...props}/>,
           drawerIcon: ({color, size}) => (
             <Lucide name='truck' size={size} color={color} />
           )
@@ -74,10 +74,9 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
         component={OccurrencesScreen}
         options={{
           headerShown: true,
-          headerTintColor: theme.colors.white,
-          headerStyle: { backgroundColor: theme.colors.eslBlue },
           title: 'Ocorrências',
           drawerLabel: 'Ocorrências',
+          header: (props) => <EslDrawerHeader {...props}/>,
           drawerIcon: ({color, size}) => (
             <Lucide name='clock' size={size} color={color} />
           )
@@ -88,10 +87,9 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
         component={SyncHistoryScreen}
         options={{
           headerShown: true,
-          headerTintColor: theme.colors.white,
-          headerStyle: { backgroundColor: theme.colors.eslBlue },
           title: 'Histórico de Integrações',
           drawerLabel: 'Histórico de Integrações',
+          header: (props) => <EslDrawerHeader {...props}/>,
           drawerIcon: ({color, size}) => (
             <Lucide name='history' size={size} color={color} />
           )

@@ -1,0 +1,141 @@
+import React, { useEffect, useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import Lucide from '@react-native-vector-icons/lucide';
+import { observer } from 'mobx-react-lite';
+import { useStores } from '../../../../stores/useStores';
+
+import { useTheme } from 'react-native-paper';
+import { AppTheme } from '../../../../themes/AppPaperTheme';
+import { styles } from './styles';
+
+import { ToastMessage } from '../../../../helpers/toastMessage';
+import { EslSelect2 } from '../../../../components/forms/EslSelect2';
+import { EslTextInput } from '../../../../components/forms/EslTextInput';
+import { ManifestServiceCard } from '../../../../components/ManifestServiceCard';
+
+type OccurrenceKind = 'finish' | 'treatment'
+
+export const OccurrenceTab = observer(() => {
+  const theme = useTheme<AppTheme>();
+  const { deliveryDraftStore, occurrencesStore } = useStores()
+  
+  const [occurrenceKind, setOccurrenceKind] = useState<OccurrenceKind>('finish');
+  
+  const selectedItems = deliveryDraftStore.getSelectedServices;
+  
+  const finishOccurrences = occurrencesStore.occurrencesForFinish;
+  const dealingOccurrences = occurrencesStore.occurrencesForDealing;
+
+  useEffect(() => {
+    if (finishOccurrences.length === 0 || dealingOccurrences.length === 0) {
+      ToastMessage.info(
+        'Ocorrências',
+        'Nenhuma ocorrência de baixa encontrada. Por gentileza sincronize as ocorrências no menu.'
+      )
+    }
+  }, [finishOccurrences.length, dealingOccurrences.length])
+
+  const occurrencesOptions =  (): {label: string, value: number}[] => {
+    const data = (occurrenceKind === 'finish') ? finishOccurrences : dealingOccurrences; 
+
+    return data.map((o) => ({ label: `${o.code} - ${o.description}`, value: o.id }))
+  } 
+
+  const handleOccurrenceKindChange = (kind: OccurrenceKind) => {
+    deliveryDraftStore.clearForm();
+    setOccurrenceKind(kind);
+  }
+
+  const renderOccurrenceKindOption = (kind: OccurrenceKind, label: string, color: string) => {
+    const isSelected = (kind === occurrenceKind)
+    
+    return (
+      <TouchableOpacity 
+        style={styles.occurrenceKindContainer}
+        onPress={() => handleOccurrenceKindChange(kind)}
+      >
+        <Lucide
+          name={ isSelected ? 'circle-dot' : 'circle' }
+          size={25}
+          color={color} 
+        />
+        <Text>
+          { label }
+        </Text>
+      </TouchableOpacity>
+    )
+  }
+
+  return (
+    <View style={styles.tabContainer}>
+      <ScrollView contentContainerStyle={{ width: '100%' }} horizontal={true}>
+        { selectedItems.map((item) => (
+          <ManifestServiceCard key={`${item.kind}:${item.id}`} service={item} simplified={true} />
+        ))}
+      </ScrollView>
+
+      <View style={styles.occurrenceKindOptionsContainer}>
+        { renderOccurrenceKindOption(
+            'finish', 
+            'Entrega com Sucesso',
+            theme.colors.success
+        )}
+        { renderOccurrenceKindOption(
+          'treatment',
+          'Tratativa de Entrega',
+          theme.colors.danger
+        )}
+      </View>
+
+      <View style={styles.mainFormDataContainer}>
+        <EslSelect2 
+          label='Ocorrência'
+          icon='triangle-alert'
+          placeholder='Selecionar ocorrência...'
+          searchPlaceholder='Pesquisar ocorrência...'
+          labelFontSize={12}
+          searchable
+          value={deliveryDraftStore.occurrenceId}
+          onChange={(v) => deliveryDraftStore.setOccurrence(v)}
+          options={occurrencesOptions()}
+        />
+        
+        { occurrenceKind !== 'treatment' && (
+          <>
+            <EslSelect2 
+              label='Grau de Parentesco'
+              icon='person-standing'
+              searchable
+              value={deliveryDraftStore.receiverKinship}
+              onChange={deliveryDraftStore.setKinship}
+              options={deliveryDraftStore.kinshipForSelect}
+            />
+            <EslTextInput 
+              label='Recebedor'
+              icon='user'
+              fontSize={12}
+              value={deliveryDraftStore?.receiverName ?? ''}
+              onChangeText={deliveryDraftStore.setReceiverName}
+            />
+            <EslTextInput 
+              label='Documento'
+              icon='id-card'
+              fontSize={12}
+              value={deliveryDraftStore.receiverDocument ?? ''}
+              onChangeText={deliveryDraftStore.setReceiverDocument}
+            />
+          </>
+        ) }
+
+        <EslTextInput 
+          label='Comentários'
+          icon='message-circle'
+          fontSize={12}
+          value={deliveryDraftStore.comments}
+          onChangeText={deliveryDraftStore.setComments}
+          numberOfLines={3}
+        />
+      </View>
+    </View>
+  );
+})

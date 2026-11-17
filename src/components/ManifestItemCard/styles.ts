@@ -10,13 +10,19 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
   },
   recipientDataContainer: { 
-    flex: 1, 
     flexDirection: 'row', 
     gap: 10
   },
   recipientName: {
     fontSize: 18,
     fontWeight: 'bold'
+  },
+  pickDataContainer: { 
+    flexDirection: 'row', 
+    width: '100%', 
+    borderTopWidth: 1, 
+    padding: 5, 
+    marginTop: 5, 
   },
   footerContainer: { 
     flexDirection: 'row', 

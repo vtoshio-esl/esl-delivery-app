@@ -39,7 +39,7 @@ export function LabeledValue(props: LabeledValueProps) {
       ]}>
         { title }
       </Text>
-      <Text style={{ fontSize }}>
+      <Text style={{ fontSize, textAlign: 'center' }}>
         { value ?? fallback }
       </Text>
     </View>

@@ -17,11 +17,13 @@ import { styles } from './styles';
 import { ToastMessage } from '../../helpers/toastMessage';
 import { ApiError } from '../../services/api/errors';
 
-import { EslButton } from '../../components/shared/EslButton';
+import { EslButton } from '../../components/forms/EslButton';
 import { LabeledValue } from '../../components/LabeledValue';
-import { ManifestItemCard } from '../../components/ManifestItemCard';
-import { EslModal } from '../../components/EslModal';
-import { EslTextInput } from '../../components/shared/EslTextInput';
+import { EslTextInput } from '../../components/forms/EslTextInput';
+import { ManifestCommentsModal } from '../../components/ManifestCommentsModal';
+import { ManifestKmModal } from '../../components/ManifestKmModal';
+import { ManifestServiceCard } from '../../components/ManifestServiceCard';
+import { ManifestService, ManifestServiceKind } from '../../models/ManifestServices/types';
 
 type Props = RootNativeStackScreenProps<'manifestDetail'>;
 
@@ -31,11 +33,12 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
 
   const theme = useTheme<AppTheme>();
   
-  const { manifestStore } = useStores();
+  const [search, setSearch] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [commentsVisible, setCommentsVisible] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>('');
+  const [departureKmVisible, setDepartureKmVisible] = useState<boolean>(false);
 
+  const { manifestStore, deliveryDraftStore } = useStores();
   const manifest = manifestStore.selectedManifest;
   const manifestItems = manifest?.allManifestItems;
 
@@ -44,10 +47,18 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     if (!query) return manifestItems;
 
     return manifestItems?.filter((item) => {
+      if (item.kind === 'unloading_recipient') {
+        const name = item.recipient?.name?.toLowerCase() ?? '';
+        const nickname = item.recipient?.name?.toLowerCase() ?? '';
+        
+        return name.includes(query) || nickname.includes(query);
+      }
+      
       const cte = item.freight?.cte_number?.toString() ?? '';
       const draft = item.freight?.draft_number?.toString() ?? '';
+      const nickname = item.recipient?.nickname?.toLowerCase() ?? '';
 
-      return cte.includes(query) || draft.includes(query);
+      return cte.includes(query) || draft.includes(query) || nickname.includes(query);
     })
   }, [search, manifestItems])
 
@@ -62,7 +73,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
         if (!isActive) return;
         const message = e instanceof ApiError ? e.message : 'Erro ao carregar dados do manifesto.'
         
-        ToastMessage.error(`Manifest ${manifestSequenceCode}`, message);
+        ToastMessage.error(`Manifesto ${manifestSequenceCode}`, message);
         navigation.goBack();
       } finally {
         if (isActive) setIsLoading(false);
@@ -89,6 +100,51 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     )
   }
 
+  // Handlers
+  const handleAcceptManifest = async () => {
+    try {
+      await manifestStore.acceptManifest(manifestId, new Date().toISOString());
+    } catch (e) {
+      console.log(e)
+      const message = e instanceof ApiError ? e.message : 'Erro ao aceitar o serviço'
+    
+      ToastMessage.error(`Manifesto ${manifestSequenceCode}`, message)
+    }
+  }
+  
+  const handleStartTransport = async (km: number) => {
+    try {
+      await manifestStore.startTransportWithKm(manifestId, km);
+      setDepartureKmVisible(false);
+    } catch (e) {
+      console.log(e)
+      const message = e instanceof ApiError ? e.message : 'Erro ao iniciar o serviço'
+    
+      ToastMessage.error(`Manifesto ${manifestSequenceCode}`, message)
+    }
+  }
+
+  const handleSelectItem = (service: ManifestService) => {
+    const id = service.id;
+    const kind = service.kind;
+
+    deliveryDraftStore.clearSelectedServices();
+    deliveryDraftStore.selectService({ id, kind });
+    
+    if (service.hasArrived) {
+      navigation.navigate('deliveryDraft', { manifestSequenceCode });
+    } else {
+      navigation.navigate('manifestItemArrival', {
+        manifestId,
+        manifestSequenceCode,
+        itemId: id,
+        itemKind: kind,
+      });
+    }
+  }
+
+  // SubComponentes
+
   const renderDatesCard = (title: string, value: string | null) => (
     <View style={[
       styles.datesCardContainer,
@@ -112,40 +168,41 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
       styles.screenContainer,
       { backgroundColor: theme.colors.background }
     ]}>
-      <EslModal
-        title='Comentários do TMS' 
+      <ManifestCommentsModal 
+        comments={manifest.mobile_comments}
         visible={commentsVisible}
         onDismiss={() => setCommentsVisible(false)}
-      >
-        { manifest.mobile_comments && (
-          <Text>
-            { manifest.mobile_comments }
-          </Text>
-        )} 
-        { !manifest.mobile_comments && (
-          <Text style={{ color: theme.colors.textSecondary }}>
-            Nenhum comentário fornecido pelo TMS.
-          </Text>
-        )}
-      </EslModal>
+      />
+
+      <ManifestKmModal 
+        kind='departure'
+        label={`Manifesto ${manifestSequenceCode}`}
+        visible={departureKmVisible}
+        onDismiss={() => setDepartureKmVisible(false)}
+        onConfirm={handleStartTransport}
+      />
+
       <View style={styles.serviceInformationContainer}>
         <View style={styles.datesContainer}>
-          {(!manifest.mobile_accepted_at) ? (
+          {(!manifest.isAccepted) ? (
             <EslButton 
               title='Aceitar Serviço'
               icon='thumbs-up' 
               fontSize={14}
               style={{ flex: 1 }}
               backgroundColor={theme.colors.warning}
+              onPress={handleAcceptManifest}
             />) : renderDatesCard('Serviço aceito', manifest.getMobileAcceptedAt) }
           
-          {(!manifest.departured_at) ? (
+          {(!manifest.isStarted) ? (
             <EslButton 
               title='Iniciar Serviço'
               icon='truck'
               fontSize={14}
               style={{ flex: 1 }}
               backgroundColor={theme.colors.warning} 
+              disabled={!manifest.canStartTransport}
+              onPress={() => setDepartureKmVisible(true) }
             />) : renderDatesCard('Serviço iniciado', manifest.getDeparturedAt) }
         </View>
 
@@ -157,8 +214,18 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
               titleColor={theme.colors.primary300}
             />
             <LabeledValue 
-              title='Data do Manifesto'
+              title='Data Serviço'
               value={manifest.getServiceDate}
+              titleColor={theme.colors.primary300}
+            />
+            <LabeledValue 
+              title='KM Inicial'
+              value={manifest.vehicle_departure_km === 0 ? 'Não inf.' : manifest.vehicle_departure_km}
+              titleColor={theme.colors.primary300}
+            />
+            <LabeledValue 
+              title='KM Final'
+              value={manifest.closing_km === 0 ? 'Não inf.' : manifest.closing_km}
               titleColor={theme.colors.primary300}
             />
           </View>
@@ -188,12 +255,13 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
           </Text>
         }
         renderItem={({ item }) => (
-          <ManifestItemCard
-            manifestItem={item}
-            documentNumber={item.freight?.documentNumber}
+          <ManifestServiceCard
+            service={item}
+            disabled={!manifest.isStarted}
             mapsLabel={item.recipient?.name}
             latitude={item.recipient?.main_address.lat}
             longitude={item.recipient?.main_address.lng}
+            onPress={() => handleSelectItem(item)}
           />
         )}
       />

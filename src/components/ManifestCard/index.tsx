@@ -12,29 +12,31 @@ import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../../themes/AppPaperTheme';
 import { styles } from './styles';
 
-import { ManifestSnapshotOut } from '../../models/Manifest';
-import { SyncProgressBar } from '../SyncProgressBar';
-import { formatDateToLocale, formatDateTimeToLocale } from '../../helpers/dateFormat';
+import { Manifest } from '../../models/Manifest';
+import { SyncProgressBar } from '../shared/SyncProgressBar';
 import { LabeledValue } from '../LabeledValue';
-import { EslButton } from '../shared/EslButton';
+import { EslButton } from '../forms/EslButton';
+import { EslValueLabeledButton } from '../forms/EslValueLabeledButton';
+import { observer } from 'mobx-react-lite';
 
 export interface ManifestCardProps extends TouchableOpacityProps {
-  manifest: ManifestSnapshotOut,
-  onPressComments: () => void;
+  manifest: Manifest,
+  onPressComments?: () => void;
+  onPressDepartureKm?: () => void;
+  onPressClosingKm?: () => void;
 }
 
-export function ManifestCard(props: ManifestCardProps) {
+export const ManifestCard = observer((props: ManifestCardProps) => {
   const theme = useTheme<AppTheme>();
   
   const { 
     manifest,
     onPressComments,
+    onPressDepartureKm,
+    onPressClosingKm,
     ...rest 
   } = props;
 
-  const manifestServiceDate = formatDateToLocale(manifest.service_date);
-  const manifestMobileAcceptedAt = (manifest.mobile_accepted_at) ? formatDateTimeToLocale(manifest.mobile_accepted_at) : '';
-  const manifestMobileDeparturedAt = (manifest.departured_at) ? formatDateTimeToLocale(manifest.departured_at) : '';
   const syncPercentage = manifest.manifest_items_count > 0 ?
     1 - manifest.pending_items_count / manifest.manifest_items_count
     : 0
@@ -91,14 +93,14 @@ export function ManifestCard(props: ManifestCardProps) {
               Veículo { manifest.vehicle_license_plate }
             </Text>
             <Text style={styles.secondaryText}>
-              { manifestServiceDate }
+              { manifest.getServiceDate }
             </Text>
           </View>
         </View>
-        { (manifestMobileAcceptedAt || manifestMobileDeparturedAt) && (  
+        { (manifest.mobile_accepted_at || manifest.departured_at) && (  
           <View style={styles.mobileDatesContainer}>
-            { manifestMobileAcceptedAt && renderMobileDate(manifestMobileAcceptedAt, 'Data de Aceite') }
-            { manifestMobileDeparturedAt && renderMobileDate(manifestMobileDeparturedAt, 'Data de Saída')}
+            { manifest.mobile_accepted_at && renderMobileDate(manifest.getMobileAcceptedAt, 'Data de Aceite') }
+            { manifest.departured_at && renderMobileDate(manifest.getDeparturedAt, 'Data de Saída')}
           </View>
         )}
       </View>
@@ -112,7 +114,7 @@ export function ManifestCard(props: ManifestCardProps) {
 
       <View style={styles.manifestItemsContainer}>
         { manifest.delivery_manifest_items_count !== 0 && renderManifestData('Entregas', manifest.delivery_manifest_items_count) }
-        { manifest.transfer_manifest_items_count !== 0 && renderManifestData('Transferências', manifest.transfer_manifest_items_count) }
+        { manifest.transferCount() !== 0 && renderManifestData('Transferências', manifest.transferCount()) }
         { manifest.pick_manifest_items_count !== 0 && renderManifestData('Coletas', manifest.pick_manifest_items_count) }
         { manifest.reverse_pick_manifest_items_count !== 0 && renderManifestData('Coletas Reversas', manifest.pick_manifest_items_count) }
         { manifest.scheduling_operation_manifest_items_count !== 0 && renderManifestData('Programações', manifest.scheduling_operation_manifest_items_count)}
@@ -123,6 +125,23 @@ export function ManifestCard(props: ManifestCardProps) {
         styles.progressData,
         { borderColor: theme.colors.primary300 }
       ]}>
+        <SyncProgressBar progress={manifest.finishedRatio()} />
+        { manifest.status === 'in_transit' && (
+          <EslValueLabeledButton 
+            title='KM Inicial'
+            value={manifest.vehicle_departure_km}
+            onPress={onPressDepartureKm}
+            disabled={manifest.vehicle_departure_km !== 0}
+          />
+        )}
+        { syncPercentage === 1 && (
+          <EslValueLabeledButton 
+            title='KM Final' 
+            value={manifest.closing_km}
+            onPress={onPressClosingKm}
+            disabled={manifest.closing_km !== 0}
+          />
+        )}
         { manifest.mobile_comments && (
           <EslButton 
             icon='message-circle-warning'
@@ -131,8 +150,7 @@ export function ManifestCard(props: ManifestCardProps) {
             onPress={onPressComments}
           /> 
         )}
-        <SyncProgressBar progress={syncPercentage} />
       </View>
     </TouchableOpacity>
   );
-}
+})

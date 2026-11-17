@@ -13,6 +13,7 @@ import { AppPaperTheme } from './themes/AppPaperTheme';
 
 import { RootStoreProvider, useInitialRootStore } from './stores/useStores';
 import { LoadingOverlay } from './components/shared/LoadingOverlay';
+import { SyncModal } from './components/shared/SyncModal';
 
 export function App() {
   const { rootStore, rehydrated } = useInitialRootStore();
@@ -28,6 +29,7 @@ export function App() {
             <AppNativeStackNavigator />
           </NavigationContainer>
 
+          <SyncModal/>
           <LoadingOverlay />
           <Toast/>
           <StatusBar style='auto' />

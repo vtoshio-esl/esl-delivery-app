@@ -22,7 +22,8 @@ export const UnloadingRecipientModel = ManifestServiceBaseModel
     })
     .views((self): ManifestServiceContract<'unloading_recipient'> => ({
         get kind() { return 'unloading_recipient' as const },
-        get resourceRoute() { return 'unloading_recipients' as const},
+        get resourceRoute() { return 'unloading_recipients' as const },
+        get canRegisterExit() { return false; },
     }))
 
 export interface UnloadingRecipient extends Instance<typeof UnloadingRecipientModel>{};

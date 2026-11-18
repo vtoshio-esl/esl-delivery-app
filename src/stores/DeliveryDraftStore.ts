@@ -139,11 +139,13 @@ export const DeliveryDraftStore = types
         },
         
         loadFromService: (service: ManifestService) => {
-            self.occurrenceId = service.occurrence_id;
-            self.occurrenceAt = service.occurrence_at;
-            self.receiverName = service.receiver ?? '';
-            self.receiverDocument = service.document_number ?? '';
-            self.comments = service.comments ?? '';
+            const occurrence = service.effectiveOccurrence;
+
+            self.occurrenceId = occurrence?.occurrence_id ?? null;
+            self.occurrenceAt = occurrence?.occurrence_at ?? null;
+            self.receiverName = occurrence?.receiver ?? '';
+            self.receiverDocument = occurrence?.document_number ?? '';
+            self.comments = occurrence?.comments ?? '';
         }
     }))
     .actions((self) => ({

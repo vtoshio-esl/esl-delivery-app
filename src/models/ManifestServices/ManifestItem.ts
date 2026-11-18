@@ -66,6 +66,7 @@ export const ManifestItemModel = ManifestServiceBaseModel
     .views((self): ManifestServiceContract<'manifest_item'> => ({
         get kind() { return 'manifest_item' as const },
         get resourceRoute() { return 'items' as const},
+        get canRegisterExit() { return true; },
     }))
     .views((self) => ({
         get isTransfer(): boolean {

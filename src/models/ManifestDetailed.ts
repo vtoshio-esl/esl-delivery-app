@@ -47,7 +47,10 @@ export const ManifestDetailedModel = ManifestModel
                 ...self.reverse_pick_manifest_items,
                 ...self.dispatch_draft_manifest_items,
                 ...self.consolidation_manifest_items,
-            ].sort((a, b) => a.position - b.position);
+            ].sort((a, b) => 
+                Number(a.hasOccurrence) - Number(b.hasOccurrence) ||
+                a.position - b.position
+            );
         },
         getServiceById(id: number, kind: ManifestServiceKind) {
             return this.allManifestItems.find((s) => s.kind === kind && s.id === id) 

@@ -229,13 +229,15 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
               titleColor={theme.colors.primary300}
             />
           </View>
-
-          <EslButton
-            fontSize={20}
-            lightTitle={true}
-            icon='message-circle-warning'
-            onPress={() => setCommentsVisible(true)}
-          />
+          
+          { manifest.mobile_comments && (
+            <EslButton
+              fontSize={20}
+              lightTitle={true}
+              icon='message-circle-warning'
+              onPress={() => setCommentsVisible(true)}
+            />
+          )}
         </View>
       </View>
       

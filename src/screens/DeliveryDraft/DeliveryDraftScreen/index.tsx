@@ -16,9 +16,16 @@ export const DeliveryDraftScreen = observer(({navigation, route}: RootNativeStac
   const theme = useTheme<AppTheme>();
   const { deliveryDraftStore } = useStores()
 
+  const service = deliveryDraftStore.firstSelectedService;
+  const hasOccurrence = !!service?.hasOccurrence;
+
   useEffect(() => {
-    deliveryDraftStore.clearForm();
-  }, [deliveryDraftStore])
+    if (service?.hasOccurrence) {
+      deliveryDraftStore.loadFromService(service);
+    } else {
+      deliveryDraftStore.clearForm();
+    }
+  }, [deliveryDraftStore, service])
 
   const reference = deliveryDraftStore.getExitedAtReference;
 
@@ -63,7 +70,7 @@ export const DeliveryDraftScreen = observer(({navigation, route}: RootNativeStac
       </View>
       
       <SafeAreaView style={styles.tabsContainer}>
-        <DeliveryDraftTabs />
+        <DeliveryDraftTabs initialRouteName={hasOccurrence ? 'confirmation' : 'occurrence'} />
       </SafeAreaView>
     </View>
   );

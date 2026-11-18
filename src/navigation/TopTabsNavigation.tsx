@@ -10,14 +10,19 @@ export type DeliveryDraftTabParamList = {
   confirmation: undefined;
 }
 
+export interface DeliveryDraftTabsProps {
+  initialRouteName?: keyof DeliveryDraftTabParamList;
+}
+
 const Tab = createMaterialTopTabNavigator<DeliveryDraftTabParamList>();
 
-export function DeliveryDraftTabs() {
+export function DeliveryDraftTabs(props: DeliveryDraftTabsProps) {
   const theme = useTheme<AppTheme>();
+  const { initialRouteName = 'occurrence' } = props;
 
   return (
     <Tab.Navigator
-      initialRouteName='occurrence'
+      initialRouteName={initialRouteName}
       tabBarPosition='bottom'
       screenOptions={{
         lazy: true,

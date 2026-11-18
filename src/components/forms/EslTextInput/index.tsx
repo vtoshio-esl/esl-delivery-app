@@ -29,13 +29,11 @@ export function EslTextInput(props: EslTextInputProps) {
     fontSize = 14,
     icon,
     color,
-    disabled,
+    disabled = false,
     style,
     textInputStyle,
     ...rest
   } = props
-
-  const isDisabled = disabled ?? false;
   
   const renderLabel = (): React.ReactNode => {
     if (label && icon) {
@@ -69,7 +67,6 @@ export function EslTextInput(props: EslTextInputProps) {
   return (
     <View style={[
       styles.inputGroup,
-      isDisabled && styles.disabled,
       style
     ]}>
       { label && (
@@ -79,9 +76,11 @@ export function EslTextInput(props: EslTextInputProps) {
         style={[
           styles.textInput,
           { backgroundColor: theme.colors.background },
+          disabled && styles.disabled,
           textInputStyle
         ]}
         { ...rest }
+        editable={!disabled}
       />
     </View>
   );

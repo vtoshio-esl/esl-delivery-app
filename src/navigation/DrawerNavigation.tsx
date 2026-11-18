@@ -12,7 +12,6 @@ import { AppTheme } from '../themes/AppPaperTheme';
 
 import { ManifestsScreen } from '../screens/Drawer/ManifestsScreen';
 import { OccurrencesScreen } from '../screens/Drawer/OccurrencesScreen';
-import { SyncHistoryScreen } from '../screens/Drawer/SyncHistoryScreen';
 import { useStores } from '../stores/useStores';
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
@@ -79,19 +78,6 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
           header: (props) => <EslDrawerHeader {...props}/>,
           drawerIcon: ({color, size}) => (
             <Lucide name='clock' size={size} color={color} />
-          )
-        }}
-      />
-      <Drawer.Screen 
-        name='syncHistory'
-        component={SyncHistoryScreen}
-        options={{
-          headerShown: true,
-          title: 'Histórico de Integrações',
-          drawerLabel: 'Histórico de Integrações',
-          header: (props) => <EslDrawerHeader {...props}/>,
-          drawerIcon: ({color, size}) => (
-            <Lucide name='history' size={size} color={color} />
           )
         }}
       />

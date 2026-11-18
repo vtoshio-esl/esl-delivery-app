@@ -54,6 +54,9 @@ export const DeliveryDraftStore = types
         }
     }))
     .views((self) => ({
+        get firstSelectedService(): ManifestService | undefined {
+            return self.getSelectedServices[0];
+        },
         get getExitedAtReference(): ManifestItem | undefined {
             return self.getSelectedServices.find(
                 (s): s is ManifestItem => s.kind === 'manifest_item'
@@ -133,12 +136,22 @@ export const DeliveryDraftStore = types
             self.signature = null;
             self.attachment = null;
             self.deliveryReceipt = null;
+        },
+        
+        loadFromService: (service: ManifestService) => {
+            self.occurrenceId = service.occurrence_id;
+            self.occurrenceAt = service.occurrence_at;
+            self.receiverName = service.receiver ?? '';
+            self.receiverDocument = service.document_number ?? '';
+            self.comments = service.comments ?? '';
         }
     }))
     .actions((self) => ({
         sendOccurrence: async () => {
             const { manifestItemApi } = getEnv<Environment>(self);
-            const manifest = getRoot<RootStore>(self).manifestStore.selectedManifest;
+            const { manifestStore } = getRoot<RootStore>(self);
+            
+            const manifest = manifestStore.selectedManifest;
             if (!manifest) return;
 
             const services = self.getSelectedServices;
@@ -153,5 +166,7 @@ export const DeliveryDraftStore = types
                     })
                 )
             );
+
+            manifestStore.fetchSelectedManifest(manifest.id);     
         }
     }))

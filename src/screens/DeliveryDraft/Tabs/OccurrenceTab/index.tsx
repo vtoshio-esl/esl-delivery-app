@@ -22,6 +22,8 @@ export const OccurrenceTab = observer(() => {
   const [occurrenceKind, setOccurrenceKind] = useState<OccurrenceKind>('finish');
   
   const selectedItems = deliveryDraftStore.getSelectedServices;
+  const service = deliveryDraftStore.firstSelectedService;
+  const disabledInputs = service?.hasOccurrence ?? true;
   
   const finishOccurrences = occurrencesStore.occurrencesForFinish;
   const dealingOccurrences = occurrencesStore.occurrencesForDealing;
@@ -46,12 +48,16 @@ export const OccurrenceTab = observer(() => {
     setOccurrenceKind(kind);
   }
 
-  const renderOccurrenceKindOption = (kind: OccurrenceKind, label: string, color: string) => {
+  const renderOccurrenceKindOption = (kind: OccurrenceKind, label: string, color: string, disabled?: boolean) => {
     const isSelected = (kind === occurrenceKind)
     
     return (
       <TouchableOpacity 
-        style={styles.occurrenceKindContainer}
+        style={[
+          styles.occurrenceKindContainer,
+          disabled && { opacity: 0.7 }
+        ]}
+        disabled={disabled}
         onPress={() => handleOccurrenceKindChange(kind)}
       >
         <Lucide
@@ -78,12 +84,14 @@ export const OccurrenceTab = observer(() => {
         { renderOccurrenceKindOption(
             'finish', 
             'Entrega com Sucesso',
-            theme.colors.success
+            theme.colors.success,
+            disabledInputs,
         )}
         { renderOccurrenceKindOption(
           'treatment',
           'Tratativa de Entrega',
-          theme.colors.danger
+          theme.colors.danger,
+          disabledInputs,
         )}
       </View>
 
@@ -97,6 +105,7 @@ export const OccurrenceTab = observer(() => {
           searchable
           value={deliveryDraftStore.occurrenceId}
           onChange={(v) => deliveryDraftStore.setOccurrence(v)}
+          disabled={disabledInputs}
           options={occurrencesOptions()}
         />
         
@@ -108,6 +117,7 @@ export const OccurrenceTab = observer(() => {
               searchable
               value={deliveryDraftStore.receiverKinship}
               onChange={deliveryDraftStore.setKinship}
+              disabled={disabledInputs}
               options={deliveryDraftStore.kinshipForSelect}
             />
             <EslTextInput 
@@ -116,6 +126,7 @@ export const OccurrenceTab = observer(() => {
               fontSize={12}
               value={deliveryDraftStore?.receiverName ?? ''}
               onChangeText={deliveryDraftStore.setReceiverName}
+              disabled={disabledInputs}
             />
             <EslTextInput 
               label='Documento'
@@ -123,6 +134,7 @@ export const OccurrenceTab = observer(() => {
               fontSize={12}
               value={deliveryDraftStore.receiverDocument ?? ''}
               onChangeText={deliveryDraftStore.setReceiverDocument}
+              disabled={disabledInputs}
             />
           </>
         ) }
@@ -134,6 +146,7 @@ export const OccurrenceTab = observer(() => {
           value={deliveryDraftStore.comments}
           onChangeText={deliveryDraftStore.setComments}
           numberOfLines={3}
+          disabled={disabledInputs}
         />
       </View>
     </View>

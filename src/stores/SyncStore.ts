@@ -1,5 +1,9 @@
 import { types } from "mobx-state-tree";
 
+// [TODO] Implementar fila de sincronização para:
+// - arrival_at
+// - set_occurrence
+// - exited_at
 export const SyncStoreModel = types
     .model('SyncStore')
     .volatile(() => ({

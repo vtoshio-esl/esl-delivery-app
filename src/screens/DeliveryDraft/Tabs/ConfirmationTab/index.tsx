@@ -16,6 +16,7 @@ export const ConfirmationTab = observer(() => {
   const theme = useTheme<AppTheme>();
   const { deliveryDraftStore, occurrencesStore } = useStores();
 
+  const service = deliveryDraftStore.firstSelectedService;
   const selectedOccurrence = occurrencesStore.occurrenceFromId(deliveryDraftStore.occurrenceId);
 
   // Validações e envio
@@ -51,8 +52,11 @@ export const ConfirmationTab = observer(() => {
     }
   }
 
-  // Renders
+  const handleExit = async () => {
+    ToastMessage.success('Saída', 'Saída realizada com sucesso!')
+  }
 
+  // Renders
   const renderRequiredItem = (
     label: string, 
     value: string | number | null | undefined, 
@@ -170,14 +174,26 @@ export const ConfirmationTab = observer(() => {
           <Text style={{ fontSize: 12, }}>
             { deliveryDraftStore.countSelectedServices } item(s) selecionado(s)
           </Text>
-        </View> 
-        <EslButton 
-          title='Confirmar Baixa'
-          icon='check'
-          lightTitle
-          disabled={!(deliveryDraftStore.occurrenceId !== null && deliveryDraftStore.occurrenceAt !== null)}
-          onPress={async () => await handleSubmit()}
-        />
+        </View>
+
+        { !service?.hasOccurrence && (
+          <EslButton 
+            title='Confirmar Baixa'
+            icon='check'
+            lightTitle
+            disabled={!(deliveryDraftStore.occurrenceId !== null && deliveryDraftStore.occurrenceAt !== null)}
+            onPress={async () => await handleSubmit()}
+          />
+        )}
+        { service?.hasOccurrence && (
+          <EslButton 
+            title='Confirmar Saída do Local'
+            icon='door-open'
+            lightTitle
+            disabled={!(deliveryDraftStore.occurrenceId !== null && deliveryDraftStore.occurrenceAt !== null)}
+            onPress={async () => await handleExit()}
+          />
+        )}
       </View>
     </View>
   );

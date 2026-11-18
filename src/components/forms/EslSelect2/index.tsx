@@ -30,6 +30,7 @@ export interface EslSelect2Props {
   icon?: LucideIconName;
   placeholder?: string;
   searchable?: boolean;
+  disabled?: boolean;
   searchPlaceholder?: string;
   modalTitle?: string;
   options?: EslSelectOption[];
@@ -51,6 +52,7 @@ export function EslSelect2(props: EslSelect2Props) {
     icon,
     placeholder = 'Selecionar...',
     searchable,
+    disabled = false,
     searchPlaceholder = 'Pesquisar...',
     options = [],
     emptyListComponent,
@@ -178,9 +180,11 @@ export function EslSelect2(props: EslSelect2Props) {
     return (
       <TouchableOpacity 
         onPress={handleOpen}
+        disabled={disabled}
         style={[
           styles.triggerContainer,
-          { backgroundColor: theme.colors.background }
+          { backgroundColor: theme.colors.background },
+          disabled && styles.disabled
         ]}
       >
         <Text
@@ -250,4 +254,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 10,
   },
+  disabled: {
+    opacity: 0.7,
+  }
 })

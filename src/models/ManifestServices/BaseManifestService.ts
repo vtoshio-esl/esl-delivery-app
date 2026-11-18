@@ -13,11 +13,19 @@ export const ManifestServiceBaseModel = types
         position: types.optional(types.number, 0),
         comments: types.maybeNull(types.string),
         arrived_at: types.maybeNull(types.string),
-        recipient: types.maybeNull(PersonModel)
+        recipient: types.maybeNull(PersonModel),
+
+        occurrence_id: types.maybeNull(types.number),
+        occurrence_at: types.maybeNull(types.string),
+        receiver: types.maybeNull(types.string),
+        document_number: types.maybeNull(types.string),
     })
     .views((self) => ({
+        get hasOccurrence() {
+            return !!self.occurrence_id;
+        },
         get hasArrived() {
-            return !!self.arrived_at
+            return !!self.arrived_at;
         },
         get formattedArrivedAt() {
             if (!self.arrived_at) return null;

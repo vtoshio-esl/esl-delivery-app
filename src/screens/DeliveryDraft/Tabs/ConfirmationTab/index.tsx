@@ -192,7 +192,7 @@ export const ConfirmationTab = observer(() => {
             onPress={async () => await handleSubmit()}
           />
         )}
-        { service?.hasOccurrence && !(service?.exited_at) && (
+        { service?.hasOccurrence && !(service.hasExited) && (
           <EslButton 
             title='Confirmar Saída do Local'
             icon='door-open'

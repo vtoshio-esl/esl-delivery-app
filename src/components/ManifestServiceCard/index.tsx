@@ -8,6 +8,7 @@ export interface ManifestServiceCardProps extends TouchableOpacityProps {
   service: ManifestService,
   mapsLabel?: string,
   simplified?: boolean,
+  showNavigate?: boolean,
   latitude?: string | null,
   longitude?: string | null
 }

@@ -9,6 +9,10 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
   },
+  recipientDataContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   recipientName: {
     fontSize: 18,
     fontWeight: 'bold'

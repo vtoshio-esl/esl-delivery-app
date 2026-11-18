@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
     gap: 5,
   },
   dateContainer: {
+    flex: 1,
     elevation: 3,
     alignItems: 'center',
     justifyContent: 'center',

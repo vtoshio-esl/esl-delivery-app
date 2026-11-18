@@ -17,6 +17,28 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold'
   },
+  cardHeader: {
+    marginBottom: 5,
+  },
+  manifestItemTitleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  deliveryStatusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10
+  },
+  itemRecipientDataContainer: {
+    flex: 1,
+    width: '100%',
+  },
+  phoneNumberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
   pickDataContainer: { 
     flexDirection: 'row', 
     width: '100%', 

@@ -3,7 +3,6 @@ import { ManifestModel, ManifestSnapshotIn } from "../models/Manifest";
 import { Environment } from "../services/environment";
 import { ManifestDetailedModel } from "../models/ManifestDetailed";
 
-import { ManifestService } from "../models/ManifestServices/types";
 import { withStep } from "../services/api/errors";
 
 export const ManifestStoreModel = types
@@ -84,5 +83,5 @@ export const ManifestStoreModel = types
             } finally {
                 await self.fetchSelectedManifest(manifestId);
             }
-        },
+        }
     }))

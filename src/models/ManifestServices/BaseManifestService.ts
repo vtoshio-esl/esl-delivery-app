@@ -28,6 +28,9 @@ export const ManifestServiceBaseModel = types
         get hasArrived() {
             return !!self.arrived_at;
         },
+        get hasExited() {
+            return !!self.exited_at;
+        },
         get formattedArrivedAt() {
             if (!self.arrived_at) return null;
 

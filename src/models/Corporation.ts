@@ -8,6 +8,8 @@ export const CorporationModel = types
         name: types.optional(types.string, ''),
         nickname: types.maybeNull(types.string),
         cnpj: types.maybeNull(types.string),
+        phone_number: types.maybeNull(types.string),
+        mobile_number: types.maybeNull(types.string),
         type: types.optional(
             types.enumeration(['Company', 'Individual']),
             'Company'

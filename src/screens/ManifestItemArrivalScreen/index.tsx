@@ -48,6 +48,16 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
       { backgroundColor: theme.colors.background }
     ]}>
       <View style={{ flex: 1 }}>
+        <FlashList 
+          data={items}
+          keyExtractor={(item) => `${item.kind}:${item.id}`}
+          renderItem={({ item }) => (
+            <ManifestServiceCard service={item} showNavigate={true}/>
+          )}
+        />
+      </View>
+      
+      <View>
         <View style={styles.counterView}>
           <Text style={[
             styles.counterTitle,
@@ -59,22 +69,14 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
             { deliveryDraftStore.countSelectedServices } itens
           </Text>
         </View>
-        <FlashList 
-          data={items}
-          keyExtractor={(item) => `${item.kind}:${item.id}`}
-          renderItem={({ item }) => (
-            <ManifestServiceCard service={item}/>
-          )}
+        <EslButton 
+          title='Confirmar Chegada'
+          icon='map-pinned'
+          lightTitle
+          style={{ marginBottom: 20 }}
+          onPress={handleConfirmArrival}
         />
       </View>
-
-      <EslButton 
-        title='Confirmar Chegada'
-        icon='map-pinned'
-        lightTitle
-        style={{ marginBottom: 20 }}
-        onPress={handleConfirmArrival}
-      />
     </SafeAreaView>
   );
 })

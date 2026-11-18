@@ -217,7 +217,7 @@ export const DeliveryDraftStore = types
             const services = self.getSelectedServices;
             const payload = self.buildOccurrencePayload;
 
-            await Promise.allSettled(
+            const results = await Promise.allSettled(
                 services.map((service) => 
                     manifestItemApi.setOccurrence({
                         manifestId: manifest.id,
@@ -226,7 +226,18 @@ export const DeliveryDraftStore = types
                     })
                 )
             );
+            
+            manifestStore.fetchSelectedManifest(manifest.id);  
+            
+            const failed = results.filter((r) => r.status === 'rejected');
+            if (failed.length > 0) {
+                const first = (failed[0] as PromiseRejectedResult).reason;
+                
+                if (first?.response?.status === 429) {
+                    throw new Error('Aguarde 30 segundos antes de tentar a baixar deste item novamente.')
+                } 
 
-            manifestStore.fetchSelectedManifest(manifest.id);     
+                throw new Error(`${failed.length} de ${services.length} serviço(s) não tiveram a baixa registrada.`);
+            }
         }
     }))

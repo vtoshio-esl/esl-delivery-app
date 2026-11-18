@@ -58,7 +58,6 @@ export const ManifestItemModel = ManifestServiceBaseModel
         longitude: types.maybeNull(types.number),
         arrived_latitude: types.maybeNull(types.number),
         arrived_longitude: types.maybeNull(types.number),
-        exited_at: types.maybeNull(types.string),
         exited_latitude: types.maybeNull(types.number),
         exited_longitude: types.maybeNull(types.number),
 
@@ -78,11 +77,6 @@ export const ManifestItemModel = ManifestServiceBaseModel
         },
         get typeLabel() {
             return getManifestItemTypeLabel(self.type);
-        },
-        get formattedExitedAt() {
-            if (!self.exited_at) return null;
-
-            return formatDateTimeToLocale(self.exited_at);
         },
     }))
 

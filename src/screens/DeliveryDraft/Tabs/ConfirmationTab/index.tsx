@@ -53,7 +53,14 @@ export const ConfirmationTab = observer(() => {
   }
 
   const handleExit = async () => {
-    ToastMessage.success('Saída', 'Saída realizada com sucesso!')
+    try {
+      await deliveryDraftStore.confirmExitedAt();
+      ToastMessage.success('Saída', 'Saída registrada com sucesso.')
+    } catch (e) {
+      console.log(e);
+      const message = e instanceof ApiError ? e.message : 'Erro ao registrar saída do local.';
+      ToastMessage.error('Saída', message);
+    }
   }
 
   // Renders
@@ -185,7 +192,7 @@ export const ConfirmationTab = observer(() => {
             onPress={async () => await handleSubmit()}
           />
         )}
-        { service?.hasOccurrence && (
+        { service?.hasOccurrence && !(service?.exited_at) && (
           <EslButton 
             title='Confirmar Saída do Local'
             icon='door-open'

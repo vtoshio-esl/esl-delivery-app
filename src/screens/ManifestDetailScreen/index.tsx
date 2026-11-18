@@ -23,7 +23,7 @@ import { EslTextInput } from '../../components/forms/EslTextInput';
 import { ManifestCommentsModal } from '../../components/ManifestCommentsModal';
 import { ManifestKmModal } from '../../components/ManifestKmModal';
 import { ManifestServiceCard } from '../../components/ManifestServiceCard';
-import { ManifestService, ManifestServiceKind } from '../../models/ManifestServices/types';
+import { ManifestService } from '../../models/ManifestServices/types';
 
 type Props = RootNativeStackScreenProps<'manifestDetail'>;
 
@@ -134,12 +134,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     if (service.hasArrived) {
       navigation.navigate('deliveryDraft', { manifestSequenceCode });
     } else {
-      navigation.navigate('manifestItemArrival', {
-        manifestId,
-        manifestSequenceCode,
-        itemId: id,
-        itemKind: kind,
-      });
+      navigation.navigate('manifestItemArrival', { manifestSequenceCode });
     }
   }
 

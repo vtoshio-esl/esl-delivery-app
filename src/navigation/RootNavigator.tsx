@@ -10,10 +10,7 @@ import { AppDrawerNavigator, AppDrawerParamList } from "./DrawerNavigation";
 import { NavigatorScreenParams } from "@react-navigation/native";
 import { ManifestDetailScreen } from "../screens/ManifestDetailScreen";
 
-import { useTheme } from "react-native-paper";
-import { AppTheme } from "../themes/AppPaperTheme";
 import { ManifestItemArrivalScreen } from "../screens/ManifestItemArrivalScreen";
-import { ManifestServiceKind } from "../models/ManifestServices/types";
 import { DeliveryDraftScreen } from "../screens/DeliveryDraft/DeliveryDraftScreen";
 import { EslStackHeader } from "../components/shared/EslStackHeader";
 
@@ -21,12 +18,7 @@ export type RootNativeStackParamList = {
   login: undefined,
   home: NavigatorScreenParams<AppDrawerParamList>,
   manifestDetail: { manifestId: number; sequenceCode: number },
-  manifestItemArrival: { 
-    manifestId: number, 
-    manifestSequenceCode: number, 
-    itemId: number,
-    itemKind: ManifestServiceKind,
-  },
+  manifestItemArrival: { manifestSequenceCode: number, },
   deliveryDraft: { manifestSequenceCode: number },
 }
 
@@ -38,8 +30,7 @@ export type RootNativeStackScreenProps<T extends keyof RootNativeStackParamList>
 const Stack = createNativeStackNavigator<RootNativeStackParamList>();
 
 export const AppNativeStackNavigator = observer(function AppNativeStackNavigator() {
-  const theme = useTheme<AppTheme>();
-  const { userStore, syncStore } = useStores();
+  const { userStore } = useStores();
 
   return (
     <Stack.Navigator>

@@ -13,6 +13,7 @@ export const ManifestServiceBaseModel = types
         position: types.optional(types.number, 0),
         comments: types.maybeNull(types.string),
         arrived_at: types.maybeNull(types.string),
+        exited_at: types.maybeNull(types.string),
         recipient: types.maybeNull(PersonModel),
 
         occurrence_id: types.maybeNull(types.number),
@@ -31,6 +32,11 @@ export const ManifestServiceBaseModel = types
             if (!self.arrived_at) return null;
 
             return formatDateTimeToLocale(self.arrived_at);
+        },
+        get formattedExitedAt() {
+            if (!self.exited_at) return null;
+
+            return formatDateTimeToLocale(self.exited_at)
         }
     }))
 

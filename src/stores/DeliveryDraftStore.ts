@@ -147,6 +147,66 @@ export const DeliveryDraftStore = types
         }
     }))
     .actions((self) => ({
+        confirmArrival: async () => {
+            const { manifestItemApi } = getEnv<Environment>(self);
+            const { manifestStore } = getRoot<RootStore>(self);
+
+            const manifest = manifestStore.selectedManifest;
+            if (!manifest) 
+                throw new Error('Manifesto não encontrado');
+
+            const selectedServices = self.getSelectedServices;
+            if (selectedServices.length === 0)
+                throw new Error('Nenhum item encontrado para dar baixa.')
+
+            const arrivedAt = new Date().toISOString();
+            const results = await Promise.allSettled(
+                selectedServices.map((item) => {
+                    return manifestItemApi.updateArrivalAt({
+                        manifestId: manifest.id,
+                        service: item,
+                        arrivedAt,
+                    })
+                }
+            ))
+
+            await manifestStore.fetchSelectedManifest(manifest.id);
+
+            const failed = results.filter((r) => r.status === 'rejected').length;
+            if (failed > 0) {
+                throw new Error(`${failed} de ${selectedServices.length} serviço(s) não tiveram chegada confirmada.`)
+            } 
+        },
+        confirmExitedAt: async () => {
+            const { manifestItemApi } = getEnv<Environment>(self);
+            const { manifestStore } = getRoot<RootStore>(self);
+
+            const manifest = manifestStore.selectedManifest;
+            if (!manifest) 
+                throw new Error('Manifesto não encontrado');
+
+            const selectedServices = self.getSelectedServices;
+            if (selectedServices.length === 0)
+                throw new Error('Nenhum item encontrado para dar baixa.')
+
+            const exitedAt = new Date().toISOString();
+            const results = await Promise.allSettled(
+                selectedServices.map((item) => {
+                    return manifestItemApi.updateExitedAt({
+                        manifestId: manifest.id,
+                        service: item,
+                        exitedAt,
+                    })
+                }
+            ))
+
+            await manifestStore.fetchSelectedManifest(manifest.id);
+
+            const failed = results.filter((r) => r.status === 'rejected').length;
+            if (failed > 0) {
+                throw new Error(`${failed} de ${selectedServices.length} serviço(s) não tiveram chegada confirmada.`)
+            }
+        },
         sendOccurrence: async () => {
             const { manifestItemApi } = getEnv<Environment>(self);
             const { manifestStore } = getRoot<RootStore>(self);

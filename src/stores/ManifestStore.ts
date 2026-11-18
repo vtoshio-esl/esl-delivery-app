@@ -85,20 +85,4 @@ export const ManifestStoreModel = types
                 await self.fetchSelectedManifest(manifestId);
             }
         },
-        confirmArrival: async (manifestId: number, arrivalDate: string, services: ManifestService[]) => {
-            const { manifestItemApi } = getEnv<Environment>(self);
-            
-            if (services.length === 0)
-                throw new Error('Nenhum item encontrado para dar baixa.')
-            
-            await Promise.allSettled(services.map((item) => {
-                return manifestItemApi.updateArrivalAt({
-                    manifestId,
-                    service: item,
-                    arrivedAt: arrivalDate,
-                })
-            }))
-
-            await self.fetchSelectedManifest(manifestId);
-        }
     }))

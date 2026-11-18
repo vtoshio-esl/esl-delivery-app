@@ -17,32 +17,18 @@ import { FlashList } from '@shopify/flash-list';
 type Props = RootNativeStackScreenProps<'manifestItemArrival'>;
 
 export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalScreen({route, navigation}: Props) {
-  const { manifestId, manifestSequenceCode, itemId } = route.params;
+  const { manifestSequenceCode } = route.params;
   
   const theme = useTheme<AppTheme>();
-  const { manifestStore, deliveryDraftStore } = useStores()
+  const { deliveryDraftStore } = useStores()
   
-  // [TODO] Refatorar depois para baixa multipla
   const items = deliveryDraftStore.getSelectedServices;
 
   const handleConfirmArrival = async () => {
-    if (!items || items.length === 0) {
-      ToastMessage.error(
-        `Serviço ${itemId}`, 
-        'Serviços não foram encontrados para confirmar chegada.'
-      );
-      return;
-    }
-
     try {
-      const arrivalDate = new Date().toISOString();
+      await deliveryDraftStore.confirmArrival()
       
-      items.forEach(async (item) => {
-        await manifestStore.confirmArrival(manifestId, arrivalDate, [item])
-      })
-      
-      // [TODO] Incluir navigate para a tela de dados da baixa
-      ToastMessage.info(`Manifesto ${manifestSequenceCode}`, 'Chegada confirmada com sucesso!')
+      navigation.navigate('deliveryDraft', { manifestSequenceCode })
     } catch (e) {
       console.log('[ManifestItemArrivalScreen] Erro: ', e)
       const message = (e instanceof ApiError) ? e.message : 'Erro ao confirmar chegada.' 

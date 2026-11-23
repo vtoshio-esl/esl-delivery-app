@@ -19,7 +19,7 @@ export const ConfirmationTab = observer(({ navigation }: DeliveryDraftTabScreenP
   const theme = useTheme<AppTheme>();
   const { deliveryDraftStore, manifestStore, occurrencesStore } = useStores();
 
-  const service = deliveryDraftStore.firstSelectedService;
+  const service = deliveryDraftStore.selectedService;
   const selectedOccurrence = occurrencesStore.occurrenceFromId(deliveryDraftStore.occurrenceId);
   const selectedManifest = manifestStore.selectedManifest;
 

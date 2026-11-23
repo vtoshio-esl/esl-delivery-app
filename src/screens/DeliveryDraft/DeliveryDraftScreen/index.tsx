@@ -16,7 +16,7 @@ export const DeliveryDraftScreen = observer(({navigation, route}: RootNativeStac
   const theme = useTheme<AppTheme>();
   const { deliveryDraftStore } = useStores()
 
-  const service = deliveryDraftStore.firstSelectedService;
+  const service = deliveryDraftStore.selectedService;
   const hasOccurrence = !!service?.hasOccurrence;
 
   useEffect(() => {

@@ -128,7 +128,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     const id = service.id;
     const kind = service.kind;
 
-    deliveryDraftStore.clearSelectedServices();
+    deliveryDraftStore.clearSelectedService();
     deliveryDraftStore.selectService({ id, kind });
     
     if (service.hasArrived) {

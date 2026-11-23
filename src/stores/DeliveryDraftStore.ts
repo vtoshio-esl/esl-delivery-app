@@ -1,12 +1,13 @@
 import { getEnv, getRoot, types } from "mobx-state-tree";
+import { File } from "expo-file-system";
+import { uuid } from "expo";
 
 import { ManifestService, ManifestServiceKind } from "../models/ManifestServices/types";
 import { ManifestItem } from "../models/ManifestServices/ManifestItem";
-import { RootStore } from "./RootStore";
+import { addDeliveryReceiptRequest } from "../services/api/schemas/manifestItemSchemas";
 import { formatDateTimeToLocale } from "../helpers/dateFormat";
+import { RootStore } from "./RootStore";
 import { Environment } from "../services/environment";
-import { uuid } from "expo";
-import { File } from "expo-file-system";
 
 export type ServiceKey = {
     id: number;
@@ -16,7 +17,7 @@ export type ServiceKey = {
 export const DeliveryDraftStore = types
     .model('DeliveryDraftStore')
     .props({
-        selectedKeys: types.array(types.frozen<ServiceKey>()),
+        selectedKey: types.maybeNull(types.frozen<ServiceKey>()),
 
         occurrenceId: types.maybeNull(types.number),
         occurrenceAt: types.maybeNull(types.string),
@@ -32,15 +33,13 @@ export const DeliveryDraftStore = types
     })
     .views((self) => ({
         get countSelectedServices(): number {
-            return self.selectedKeys.length;
+            return self.selectedKey ? 1 : 0;
         },
-        get getSelectedServices(): ManifestService[] {
+        get selectedService(): ManifestService | undefined {
             const manifest = getRoot<RootStore>(self).manifestStore.selectedManifest;
-            if (!manifest) return [];
+            if (!manifest || !self.selectedKey) return undefined;
 
-            return self.selectedKeys
-                .map((k) => manifest.getServiceById(k.id, k.kind))
-                .filter((s): s is ManifestService => s !== undefined)
+            return manifest.getServiceById(self.selectedKey.id, self.selectedKey.kind);
         },
         get formattedOccurrenceAt(): string {
             if (!self.occurrenceAt) return '';
@@ -55,17 +54,12 @@ export const DeliveryDraftStore = types
         }
     }))
     .views((self) => ({
-        get firstSelectedService(): ManifestService | undefined {
-            return self.getSelectedServices[0];
-        },
-        get getServicesForImages(): ManifestItem[] {
-            return self.getSelectedServices
-                .filter((s): s is ManifestItem => s.kind === 'manifest_item' && !!s.freight)
-        },
-        get getExitedAtReference(): ManifestItem | undefined {
-            return self.getSelectedServices.find(
-                (s): s is ManifestItem => s.kind === 'manifest_item'
-            )
+        get serviceForImages(): ManifestItem | undefined {
+            const service = self.selectedService;
+            
+            return (service?.kind === 'manifest_item' && !!service.freight) 
+                ? service
+                : undefined;  
         },
         get kinshipList() {
             return [
@@ -114,10 +108,10 @@ export const DeliveryDraftStore = types
     }))
     .actions((self) => ({
         selectService: (service: ServiceKey) => {
-            self.selectedKeys.push(service); 
+            self.selectedKey = { id: service.id, kind: service.kind }; 
         },
-        clearSelectedServices: () => {
-            self.selectedKeys.clear();
+        clearSelectedService: () => {
+            self.selectedKey = null;
         },
         
         setOccurrence: (id: number) => {
@@ -159,155 +153,109 @@ export const DeliveryDraftStore = types
     }))
     .actions((self) => ({
         reloadFromSelected: () => {
-            const service = self.firstSelectedService;
+            const service = self.selectedService;
             if (service) self.loadFromService(service);
         }
     }))
-    .actions((self) => ({
-        confirmArrival: async () => {
-            const { manifestItemApi } = getEnv<Environment>(self);
+    .actions((self) => { 
+        const requireContext = () => {
             const { manifestStore } = getRoot<RootStore>(self);
 
             const manifest = manifestStore.selectedManifest;
-            if (!manifest) 
-                throw new Error('Manifesto não encontrado');
+            if (!manifest) throw new Error('Manifesto não encontrado.')
 
-            const selectedServices = self.getSelectedServices;
-            if (selectedServices.length === 0)
-                throw new Error('Nenhum item encontrado para dar baixa.')
+            const service = self.selectedService;
+            if (!service) throw new Error('Nenhum serviço selecionado.')
+        
+            return { manifestStore, manifest, service }
+        }
 
-            const arrivedAt = new Date().toISOString();
-            const results = await Promise.allSettled(
-                selectedServices.map((item) => {
-                    return manifestItemApi.updateArrivalAt({
-                        manifestId: manifest.id,
-                        service: item,
-                        arrivedAt,
-                    })
-                }
-            ))
+        return {
+            confirmArrival: async () => {
+                const { manifestItemApi } = getEnv<Environment>(self);
+                const { manifestStore, manifest, service } = requireContext();
 
-            await manifestStore.fetchSelectedManifest(manifest.id);
-
-            const failed = results.filter((r) => r.status === 'rejected').length;
-            if (failed > 0) {
-                throw new Error(`${failed} de ${selectedServices.length} serviço(s) não tiveram chegada confirmada.`)
-            } 
-        },
-        confirmExitedAt: async () => {
-            const { manifestItemApi } = getEnv<Environment>(self);
-            const { manifestStore } = getRoot<RootStore>(self);
-
-            const manifest = manifestStore.selectedManifest;
-            if (!manifest) 
-                throw new Error('Manifesto não encontrado');
-
-            const selectedServices = self.getSelectedServices;
-            if (selectedServices.length === 0)
-                throw new Error('Nenhum item encontrado para dar baixa.')
-
-            const exitedAt = new Date().toISOString();
-            const results = await Promise.allSettled(
-                selectedServices.map((item) => {
-                    return manifestItemApi.updateExitedAt({
-                        manifestId: manifest.id,
-                        service: item,
-                        exitedAt,
-                    })
-                }
-            ))
-
-            await manifestStore.fetchSelectedManifest(manifest.id);
-
-            const failed = results.filter((r) => r.status === 'rejected').length;
-            if (failed > 0) {
-                throw new Error(`${failed} de ${selectedServices.length} serviço(s) não tiveram chegada confirmada.`)
-            }
-        },
-        sendReceipt: async () => {
-            const { manifestStore } = getRoot<RootStore>(self);
-            const { manifestItemApi } = getEnv<Environment>(self);
-            
-            const services = self.getServicesForImages;
-            const manifest = manifestStore.selectedManifest;
-
-            if (!manifest)
-                throw Error('Nenhum manifesto selecionado para envio de comprovante.');
-
-            const uri = self.deliveryReceipt;
-            if (!uri || services.length === 0) 
-                throw Error('Comprovante não encontrado para envio ao TMS.');
-
-            const base64 = new File(uri).base64Sync();
-            console.log('[RECEIPT] Base64 da Imagem:', base64);
-
-            await Promise.allSettled(services.map((service) => {
-                const payload = {
+                const arrivedAt = new Date().toISOString();
+                
+                await manifestItemApi.updateArrivalAt({
+                    manifestId: manifest.id,
+                    service,
+                    arrivedAt
+                })
+    
+                await manifestStore.fetchSelectedManifest(manifest.id);    
+            },
+            confirmExitedAt: async () => {
+                const { manifestItemApi } = getEnv<Environment>(self);
+                const { manifestStore, manifest, service } = requireContext();
+    
+                const exitedAt = new Date().toISOString();
+                await manifestItemApi.updateExitedAt({
+                    manifestId: manifest.id,
+                    service,
+                    exitedAt
+                })
+    
+                await manifestStore.fetchSelectedManifest(manifest.id);
+            },
+            sendReceipt: async (): Promise<void> => {
+                const { manifestItemApi } = getEnv<Environment>(self);
+                const { manifest } = requireContext();
+                
+                const service = self.serviceForImages;
+    
+                const uri = self.deliveryReceipt;
+                if (!uri || !service) 
+                    throw Error('Comprovante não encontrado para envio ao TMS.');
+    
+                const base64 = new File(uri).base64Sync();
+                const payload: addDeliveryReceiptRequest = {
                     manifestId: manifest.id,
                     isSignature: false,
                     service,
                     base64,
                 }
-
+                console.log('[RECEIPT] Payload de envio:', payload);
+                
+    
                 return service.type === 'ManifestItem::ReversePick'
                     ? manifestItemApi.addReversePickReceipt(payload)
                     : manifestItemApi.addDeliveryReceipt(payload)
-            }))
-        },
-        sendAttachment: async () => {
-            const { manifestStore } = getRoot<RootStore>(self);
-            const { manifestItemApi } = getEnv<Environment>(self);
+            },
+            sendAttachment: async (): Promise<void> => {
+                const { manifestItemApi } = getEnv<Environment>(self);
+                const { manifest } = requireContext();
 
-            const services = self.getServicesForImages;
-            const manifest = manifestStore.selectedManifest;
-
-            if (!manifest)
-                throw new Error('Nenhum manifesto selecionado para envio de comprovante.');
-
-            const uri = self.attachment;
-            if (!uri) 
-                throw new Error('Anexo não encontrado para envio ao TMS.');
-
-            await Promise.allSettled(services.map((service) => {
-                manifestItemApi.addImage({
-                    manifestId: manifest.id,
-                    service,
-                    uri
-                })
-            }))
-        },
-        sendOccurrence: async () => {
-            const { manifestItemApi } = getEnv<Environment>(self);
-            const { manifestStore } = getRoot<RootStore>(self);
-            
-            const manifest = manifestStore.selectedManifest;
-            if (!manifest) return;
-
-            const services = self.getSelectedServices;
-            const payload = self.buildOccurrencePayload;
-
-            const results = await Promise.allSettled(
-                services.map((service) => 
-                    manifestItemApi.setOccurrence({
+                const service = self.serviceForImages;
+                const uri = self.attachment;
+    
+                if (!uri || !service) 
+                    throw new Error('Anexo não encontrado para envio ao TMS.');
+    
+                return manifestItemApi.addImage({ manifestId: manifest.id, service, uri })                        
+            },
+            sendOccurrence: async () => {
+                const { manifestItemApi } = getEnv<Environment>(self);
+                const { manifest, service } = requireContext();
+                    
+                const payload = self.buildOccurrencePayload;
+    
+                try {
+                    await manifestItemApi.setOccurrence({
                         manifestId: manifest.id,
-                        service,
                         payload,
+                        service
                     })
-                )
-            );
-            
-            const failed = results.filter((r) => r.status === 'rejected');
-            if (failed.length > 0) {
-                const first = (failed[0] as PromiseRejectedResult).reason;
-                
-                if (first?.response?.status === 429) {
-                    throw new Error('Aguarde 30 segundos antes de tentar a baixar deste item novamente.')
-                } 
+                } catch (e: any) {
+                    if (e?.response?.status === 429) {
+                        throw new Error('Aguarde 30 segundos antes de tentar baixar esse item novamente.')
+                    }
 
-                throw new Error(`${failed.length} de ${services.length} serviço(s) não tiveram a baixa registrada.`);
+                    throw e;
+                }
             }
         }
-    }))
+    })
     .actions((self) => ({
         submitDelivery: async () => {
             const { manifestStore } = getRoot<RootStore>(self);

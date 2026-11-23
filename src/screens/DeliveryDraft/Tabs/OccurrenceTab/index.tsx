@@ -21,8 +21,7 @@ export const OccurrenceTab = observer(() => {
   
   const [occurrenceKind, setOccurrenceKind] = useState<OccurrenceKind>('finish');
   
-  const selectedItems = deliveryDraftStore.getSelectedServices;
-  const service = deliveryDraftStore.firstSelectedService;
+  const service = deliveryDraftStore.selectedService;
   const disabledInputs = service?.hasOccurrence ?? true;
   
   const finishOccurrences = occurrencesStore.occurrencesForFinish;
@@ -74,11 +73,15 @@ export const OccurrenceTab = observer(() => {
 
   return (
     <View style={styles.tabContainer}>
-      <ScrollView contentContainerStyle={{ width: '100%' }} horizontal={true}>
-        { selectedItems.map((item) => (
-          <ManifestServiceCard key={`${item.kind}:${item.id}`} service={item} simplified={true} />
-        ))}
-      </ScrollView>
+      { service && (
+        <View style={{ width: '100%' }}>
+          <ManifestServiceCard 
+            key={`${service.kind}:${service.id}`} 
+            service={service} 
+            simplified 
+          />
+        </View>
+      )}
 
       <View style={styles.occurrenceKindOptionsContainer}>
         { renderOccurrenceKindOption(

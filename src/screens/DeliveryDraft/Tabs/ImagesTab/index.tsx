@@ -18,7 +18,6 @@ import { CameraKind } from '../../../../navigation/RootNavigator';
 import { DeliveryDraftTabScreenProps } from '../../../../navigation/TopTabsNavigation';
 
 import { EslButton } from '../../../../components/forms/EslButton';
-import { ToastMessage } from '../../../../helpers/toastMessage';
 import Lucide from '@react-native-vector-icons/lucide';
 
 
@@ -27,7 +26,7 @@ export const ImagesTab = observer(({ navigation }: DeliveryDraftTabScreenProps<'
   const { deliveryDraftStore } = useStores();
 
   const [permission, requestPermission] = useCameraPermissions();
-  const service = deliveryDraftStore.firstSelectedService;
+  const service = deliveryDraftStore.selectedService;
   
   const openCamera = (kind: CameraKind) => {
     navigation.navigate('camera', { kind })

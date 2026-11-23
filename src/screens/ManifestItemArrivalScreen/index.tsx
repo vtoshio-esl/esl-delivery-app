@@ -12,7 +12,6 @@ import { EslButton } from '../../components/forms/EslButton';
 import { ApiError } from '../../services/api/errors';
 import { ToastMessage } from '../../helpers/toastMessage';
 import { ManifestServiceCard } from '../../components/ManifestServiceCard';
-import { FlashList } from '@shopify/flash-list';
 
 type Props = RootNativeStackScreenProps<'manifestItemArrival'>;
 
@@ -22,13 +21,13 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
   const theme = useTheme<AppTheme>();
   const { deliveryDraftStore } = useStores()
   
-  const items = deliveryDraftStore.getSelectedServices;
+  const service = deliveryDraftStore.selectedService;
 
   const handleConfirmArrival = async () => {
     try {
       await deliveryDraftStore.confirmArrival()
       
-      navigation.navigate('deliveryDraft', { manifestSequenceCode })
+      navigation.replace('deliveryDraft', { manifestSequenceCode })
     } catch (e) {
       console.log('[ManifestItemArrivalScreen] Erro: ', e)
       const message = (e instanceof ApiError) ? e.message : 'Erro ao confirmar chegada.' 
@@ -37,10 +36,10 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
   }
 
   useEffect(() => {
-    if (!items || items.length === 0) navigation.goBack();
-  }, [items, navigation])
+    if (!service) navigation.goBack();
+  }, [service, navigation])
     
-  if (!items || items.length === 0) return null;
+  if (!service) return null;
 
   return (
     <SafeAreaView style={[
@@ -48,12 +47,9 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
       { backgroundColor: theme.colors.background }
     ]}>
       <View style={{ flex: 1 }}>
-        <FlashList 
-          data={items}
-          keyExtractor={(item) => `${item.kind}:${item.id}`}
-          renderItem={({ item }) => (
-            <ManifestServiceCard service={item} showNavigate={true}/>
-          )}
+        <ManifestServiceCard 
+          service={service} 
+          showNavigate={true}
         />
       </View>
       

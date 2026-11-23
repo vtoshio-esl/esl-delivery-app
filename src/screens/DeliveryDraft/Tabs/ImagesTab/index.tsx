@@ -1,16 +1,16 @@
-import { observer } from 'mobx-react-lite';
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { 
   Alert,
   Image,
   Linking,
-  StyleSheet, 
   Text, 
   View 
 } from 'react-native';
 import { useCameraPermissions } from 'expo-camera';
+import { launchImageLibraryAsync, useMediaLibraryPermissions } from 'expo-image-picker';
 
-// import { styles } from './styles';
+import { styles } from './styles';
 import { useTheme } from 'react-native-paper';
 import { useStores } from '../../../../stores/useStores';
 import { AppTheme } from '../../../../themes/AppPaperTheme';
@@ -20,25 +20,40 @@ import { DeliveryDraftTabScreenProps } from '../../../../navigation/TopTabsNavig
 import { EslButton } from '../../../../components/forms/EslButton';
 import Lucide from '@react-native-vector-icons/lucide';
 
-
 export const ImagesTab = observer(({ navigation }: DeliveryDraftTabScreenProps<'images'>) => {
   const theme = useTheme<AppTheme>();
   const { deliveryDraftStore } = useStores();
 
-  const [permission, requestPermission] = useCameraPermissions();
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [galleryPermission, requestGalleryPermission] = useMediaLibraryPermissions();   
   const service = deliveryDraftStore.selectedService;
   
   const openCamera = (kind: CameraKind) => {
     navigation.navigate('camera', { kind })
   }
 
+  const openGallery = async (kind: CameraKind) => {
+    const result = await launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    }) 
+
+    if (!result.canceled) {
+      if (kind === 'deliveryReceipt') 
+         deliveryDraftStore.setDeliveryReceipt(result.assets[0].uri);
+      else 
+        deliveryDraftStore.setAttachment(result.assets[0].uri); 
+    }
+  }
+
   const handleRedirectCamera = async (kind: CameraKind) => {
-    if (permission?.granted) {
+    if (cameraPermission?.granted) {
       return openCamera(kind);
     }
 
-    if (permission?.canAskAgain !== false) {
-      const result = await requestPermission();
+    if (cameraPermission?.canAskAgain !== false) {
+      const result = await requestCameraPermission();
       if (result.granted) return openCamera(kind);
       if (result.canAskAgain) return
     }
@@ -46,6 +61,30 @@ export const ImagesTab = observer(({ navigation }: DeliveryDraftTabScreenProps<'
     Alert.alert(
       'Câmera bloqueada',
       'Para fotografar o comprovante, libere o acesso à câmera nas configurações do aparelho.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Abrir configurações', onPress: () => Linking.openSettings() }
+      ]
+    )
+  }
+
+  const handleOpenGallery = async (kind: CameraKind) => {
+    if (galleryPermission?.granted) {
+      return openGallery(kind);
+    }
+
+    if (galleryPermission?.canAskAgain !== false) {
+      const result = await requestGalleryPermission();
+      
+      if (result.granted) 
+        return openGallery(kind);
+      if (result.canAskAgain) 
+        return;
+    }
+
+    Alert.alert(
+      'Galeria bloqueada',
+      'Para acessar fotos de comprovantes pela galeria, libere o acesso à galeria nas configurações do aparelho',
       [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Abrir configurações', onPress: () => Linking.openSettings() }
@@ -117,6 +156,7 @@ export const ImagesTab = observer(({ navigation }: DeliveryDraftTabScreenProps<'
                 icon='images'
                 style={{ width: '50%' }}
                 lightTitle
+                onPress={() => handleOpenGallery(kind)}
               />
             </>
           ) }
@@ -155,56 +195,3 @@ export const ImagesTab = observer(({ navigation }: DeliveryDraftTabScreenProps<'
     </View>
   );
 })
-
-export const styles = StyleSheet.create({
-  imagesTabContainer: {
-    flexDirection: 'column',
-    paddingHorizontal: 10,
-    gap: 10
-  },
-  imageSectionContainer: {
-    gap: 5,
-    padding: 20,
-    elevation: 3,
-    borderRadius: 15,
-  },
-  photoContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 10,
-    width: '100%',
-  },
-  imageSize: {
-    height: 150,
-    width: '100%',
-    borderRadius: 10,
-  },
-  noImageContainer: {
-    elevation: 3,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
-
-    padding: 20,
-    borderRadius: 10,
-  },
-  noImageText: {
-    fontSize: 16,
-    textAlign: 'center'
-  },
-  buttonGroupContainer: {
-    flexDirection: 'row',
-    gap: 5
-  },
-  unloadingRecipientsContainer: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center',
-    gap: 10,
-  },
-  unloadingRecipientsText: { 
-    width: '80%', 
-    textAlign: 'center',
-    fontSize: 16,
-  }
-});

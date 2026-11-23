@@ -6,6 +6,7 @@ import { RootStore } from "./RootStore";
 import { formatDateTimeToLocale } from "../helpers/dateFormat";
 import { Environment } from "../services/environment";
 import { uuid } from "expo";
+import { File } from "expo-file-system";
 
 export type ServiceKey = {
     id: number;
@@ -56,6 +57,10 @@ export const DeliveryDraftStore = types
     .views((self) => ({
         get firstSelectedService(): ManifestService | undefined {
             return self.getSelectedServices[0];
+        },
+        get getServicesForImages(): ManifestItem[] {
+            return self.getSelectedServices
+                .filter((s): s is ManifestItem => s.kind === 'manifest_item' && !!s.freight)
         },
         get getExitedAtReference(): ManifestItem | undefined {
             return self.getSelectedServices.find(
@@ -124,6 +129,10 @@ export const DeliveryDraftStore = types
         setComments: (v: string) => self.comments = v,
         setKinship: (v: number) => self.receiverKinship = v,
         
+        setSignature: (uri: string) => self.signature = uri,
+        setDeliveryReceipt: (uri: string) => self.deliveryReceipt = uri,
+        setAttachment: (uri: string) => self.attachment = uri,
+
         clearForm: () => {
             self.receiverName = '';
             self.receiverDocument = '';
@@ -146,6 +155,12 @@ export const DeliveryDraftStore = types
             self.receiverName = occurrence?.receiver ?? '';
             self.receiverDocument = occurrence?.document_number ?? '';
             self.comments = occurrence?.comments ?? '';
+        }
+    }))
+    .actions((self) => ({
+        reloadFromSelected: () => {
+            const service = self.firstSelectedService;
+            if (service) self.loadFromService(service);
         }
     }))
     .actions((self) => ({
@@ -209,6 +224,58 @@ export const DeliveryDraftStore = types
                 throw new Error(`${failed} de ${selectedServices.length} serviço(s) não tiveram chegada confirmada.`)
             }
         },
+        sendReceipt: async () => {
+            const { manifestStore } = getRoot<RootStore>(self);
+            const { manifestItemApi } = getEnv<Environment>(self);
+            
+            const services = self.getServicesForImages;
+            const manifest = manifestStore.selectedManifest;
+
+            if (!manifest)
+                throw Error('Nenhum manifesto selecionado para envio de comprovante.');
+
+            const uri = self.deliveryReceipt;
+            if (!uri || services.length === 0) 
+                throw Error('Comprovante não encontrado para envio ao TMS.');
+
+            const base64 = new File(uri).base64Sync();
+            console.log('[RECEIPT] Base64 da Imagem:', base64);
+
+            await Promise.allSettled(services.map((service) => {
+                const payload = {
+                    manifestId: manifest.id,
+                    isSignature: false,
+                    service,
+                    base64,
+                }
+
+                return service.type === 'ManifestItem::ReversePick'
+                    ? manifestItemApi.addReversePickReceipt(payload)
+                    : manifestItemApi.addDeliveryReceipt(payload)
+            }))
+        },
+        sendAttachment: async () => {
+            const { manifestStore } = getRoot<RootStore>(self);
+            const { manifestItemApi } = getEnv<Environment>(self);
+
+            const services = self.getServicesForImages;
+            const manifest = manifestStore.selectedManifest;
+
+            if (!manifest)
+                throw new Error('Nenhum manifesto selecionado para envio de comprovante.');
+
+            const uri = self.attachment;
+            if (!uri) 
+                throw new Error('Anexo não encontrado para envio ao TMS.');
+
+            await Promise.allSettled(services.map((service) => {
+                manifestItemApi.addImage({
+                    manifestId: manifest.id,
+                    service,
+                    uri
+                })
+            }))
+        },
         sendOccurrence: async () => {
             const { manifestItemApi } = getEnv<Environment>(self);
             const { manifestStore } = getRoot<RootStore>(self);
@@ -229,8 +296,6 @@ export const DeliveryDraftStore = types
                 )
             );
             
-            manifestStore.fetchSelectedManifest(manifest.id);  
-            
             const failed = results.filter((r) => r.status === 'rejected');
             if (failed.length > 0) {
                 const first = (failed[0] as PromiseRejectedResult).reason;
@@ -241,5 +306,28 @@ export const DeliveryDraftStore = types
 
                 throw new Error(`${failed.length} de ${services.length} serviço(s) não tiveram a baixa registrada.`);
             }
+        }
+    }))
+    .actions((self) => ({
+        submitDelivery: async () => {
+            const { manifestStore } = getRoot<RootStore>(self);
+
+            const manifest = manifestStore.selectedManifest;
+            if (!manifest) 
+                throw new Error('Manifesto não encontrado.');
+
+            try {
+                await Promise.all([
+                    (self.deliveryReceipt) ? await self.sendReceipt() : null,
+                    (self.attachment) ? await self.sendAttachment() : null,
+                ])
+                await self.sendOccurrence();
+            } catch (e) {
+                console.log('[submitDelivery] ERRO:', e);
+                throw e;
+            }
+            
+            await manifestStore.fetchSelectedManifest(manifest.id);
+            await self.reloadFromSelected();
         }
     }))

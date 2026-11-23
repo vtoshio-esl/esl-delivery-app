@@ -1,15 +1,21 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createMaterialTopTabNavigator, MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 
-import { useTheme } from 'react-native-paper';
-import { AppTheme } from '../themes/AppPaperTheme';
 import { OccurrenceTab } from '../screens/DeliveryDraft/Tabs/OccurrenceTab';
+import { ImagesTab } from '../screens/DeliveryDraft/Tabs/ImagesTab';
 import { ConfirmationTab } from '../screens/DeliveryDraft/Tabs/ConfirmationTab';
+import { RootNativeStackScreenProps } from './RootNavigator';
+import { CompositeScreenProps } from '@react-navigation/native';
 
 export type DeliveryDraftTabParamList = {
   occurrence: undefined;
+  images: undefined;
   confirmation: undefined;
 }
 
+export type DeliveryDraftTabScreenProps<T extends keyof DeliveryDraftTabParamList> = CompositeScreenProps<
+  MaterialTopTabScreenProps<DeliveryDraftTabParamList, T>,
+  RootNativeStackScreenProps<'deliveryDraft'>
+>;
 export interface DeliveryDraftTabsProps {
   initialRouteName?: keyof DeliveryDraftTabParamList;
 }
@@ -17,7 +23,6 @@ export interface DeliveryDraftTabsProps {
 const Tab = createMaterialTopTabNavigator<DeliveryDraftTabParamList>();
 
 export function DeliveryDraftTabs(props: DeliveryDraftTabsProps) {
-  const theme = useTheme<AppTheme>();
   const { initialRouteName = 'occurrence' } = props;
 
   return (
@@ -26,13 +31,18 @@ export function DeliveryDraftTabs(props: DeliveryDraftTabsProps) {
       tabBarPosition='bottom'
       screenOptions={{
         lazy: true,
-        tabBarScrollEnabled: true,
+        tabBarScrollEnabled: false,
       }}
     >
       <Tab.Screen 
         name='occurrence'
         component={OccurrenceTab}
         options={{ title: 'Dados' }}
+      />
+      <Tab.Screen 
+        name='images'
+        component={ImagesTab}
+        options={{ title: 'Imagens' }}
       />
       <Tab.Screen 
         name='confirmation'

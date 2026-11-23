@@ -13,6 +13,9 @@ import { ManifestDetailScreen } from "../screens/ManifestDetailScreen";
 import { ManifestItemArrivalScreen } from "../screens/ManifestItemArrivalScreen";
 import { DeliveryDraftScreen } from "../screens/DeliveryDraft/DeliveryDraftScreen";
 import { EslStackHeader } from "../components/shared/EslStackHeader";
+import { CameraScreen } from "../screens/CameraScreen";
+
+export type CameraKind = 'deliveryReceipt' | 'attachment';
 
 export type RootNativeStackParamList = {
   login: undefined,
@@ -20,6 +23,7 @@ export type RootNativeStackParamList = {
   manifestDetail: { manifestId: number; sequenceCode: number },
   manifestItemArrival: { manifestSequenceCode: number, },
   deliveryDraft: { manifestSequenceCode: number },
+  camera: { kind: CameraKind }
 }
 
 export type RootNativeStackScreenProps<T extends keyof RootNativeStackParamList> = NativeStackScreenProps<
@@ -64,6 +68,11 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
               title: `Manifesto ${route.params.manifestSequenceCode}`,
               header: (props) => <EslStackHeader {...props}/>,
             })}
+          />
+          <Stack.Screen 
+            name="camera"
+            component={CameraScreen}
+            options={{ headerShown: false }}
           />
         </>
       ) : (

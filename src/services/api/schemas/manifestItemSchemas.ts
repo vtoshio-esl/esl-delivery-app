@@ -1,3 +1,4 @@
+import { ManifestItemModel } from "../../../models/ManifestServices/ManifestItem";
 import { ManifestService } from "../../../models/ManifestServices/types";
 
 export interface UpdateArrivalAtRequest {
@@ -27,4 +28,17 @@ export interface UpdateExitedAtRequest {
     manifestId: number;
     service: ManifestService;
     exitedAt: string;
+}
+
+export interface addDeliveryReceiptRequest {
+    manifestId: number;
+    service: ManifestService;
+    base64: string;
+    isSignature: boolean;
+}
+
+export interface addImageRequest {
+    manifestId: number;
+    service: ManifestService;
+    uri: string;
 }

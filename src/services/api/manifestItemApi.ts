@@ -1,6 +1,8 @@
 import { AxiosRequestConfig } from "axios";
 import { Api } from "./base";
 import { 
+    addDeliveryReceiptRequest,
+    addImageRequest,
     SetOccurrenceRequest, 
     UpdateArrivalAtRequest, 
     UpdateExitedAtRequest 
@@ -53,4 +55,54 @@ export class ManifestItemApi {
             config
         )
     }
-}
+
+    async addDeliveryReceipt(
+        { manifestId, service, base64, isSignature }: addDeliveryReceiptRequest, 
+        config?: AxiosRequestConfig
+    ) {
+        const url = `${this.baseUrl}/${manifestId}/${service.resourceRoute}/${service.id}/add_delivery_receipt`;
+        
+        await this.api.client.post(
+            url, 
+            { image: base64, signature: isSignature }, 
+            config
+        );
+    }
+
+    async addReversePickReceipt(
+        { manifestId, service, base64, isSignature }: addDeliveryReceiptRequest, 
+        config?: AxiosRequestConfig
+    ) {
+        const url = `${this.baseUrl}/${manifestId}/${service.resourceRoute}/${service.id}/add_reverse_pick_receipt`;
+        
+        await this.api.client.post(
+            url, 
+            { image: base64, signature: isSignature },
+            config
+        );
+    }
+
+    async addImage(
+        { manifestId, service, uri }: addImageRequest,
+        config?: AxiosRequestConfig
+) {
+        const form = new FormData();
+        form.append(
+            'image', 
+            { uri, name: 'anexo.jpg', type: 'image/jpeg' } as any
+        );
+        
+        const url = `${this.baseUrl}/${manifestId}/${service.resourceRoute}/${service.id}/add_image`;
+        
+        await this.api.client.post(
+            url, 
+            form, 
+            { 
+                ...config,  
+                headers: { 
+                    'Content-Type': 'multipart/form-data' 
+                },
+            },
+        );
+    }
+}   

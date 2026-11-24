@@ -18,13 +18,15 @@ import { ToastMessage } from '../../helpers/toastMessage';
 import { EslButton } from '../forms/EslButton';
 
 export interface ManifestUnloadingRecipientCardProps extends TouchableOpacityProps {
-  unloadingRecipient: UnloadingRecipient,
-  simplified?: boolean,
-  showNavigate?: boolean,
-  mapsLabel?: string,
-  latitude?: string | null | undefined,
-  longitude?: string | null | undefined,
-  errors?: string[],
+  unloadingRecipient: UnloadingRecipient;
+  simplified?: boolean;
+  showNavigate?: boolean;
+  mapsLabel?: string;
+  latitude?: string | null | undefined;
+  longitude?: string | null | undefined;
+  fontSize?: number;
+  titleFontSize?: number;
+  errors?: string[];
 }
 
 export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipientCardProps) {
@@ -38,10 +40,14 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
     longitude,
     mapsLabel,
     disabled,
+    fontSize = simplified ? 12 : 14,
+    titleFontSize = simplified ? 16 : 18,
     errors = [],
     ...rest
   } = props;
   
+  const iconSize = simplified ? 25 : 30;
+
   const handleNavigateToRecipient = () => {
     if (!latitude || !longitude) {
       console.log('[UnloadingRecipient::Recipient]', unloadingRecipient.recipient)
@@ -70,7 +76,7 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
           <Text 
             style={[
               styles.recipientName,
-              { color: theme.colors.primary300 }
+              { color: theme.colors.primary300, fontSize: titleFontSize }
             ]}
           >
             { unloadingRecipient.recipient?.nickname }
@@ -80,17 +86,17 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
             ? <Lucide 
                 name='package-check' 
                 color={theme.colors.success} 
-                size={30} 
+                size={iconSize} 
               />
             : <Lucide 
                 name='package' 
                 color={theme.colors.gray400} 
-                size={30}
+                size={iconSize}
               />
           }
         </View>
         
-        <Text style={{ color: theme.colors.textSecondary }}>
+        <Text style={{ color: theme.colors.textSecondary, fontSize }}>
           { unloadingRecipient.recipient?.main_address.formattedAddress }
         </Text>
       </View>
@@ -106,7 +112,7 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
                 title='Navegar'
                 icon='map'
                 lightTitle
-                fontSize={12}
+                fontSize={fontSize - 2}
                 style={{ width: '33%' }}
                 onPress={handleNavigateToRecipient}
               />
@@ -115,25 +121,25 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
               <LabeledValue 
                 title='Tipo'
                 value={'Transf.'}
-                fontSize={12}
+                fontSize={fontSize - 2}
                 style={{ flex: 1 }}
               />
               <LabeledValue 
                 title='Qt. Docs'
                 value={unloadingRecipient.freights_count}
-                fontSize={12}
+                fontSize={fontSize - 2}
                 style={{ flex: 1 }}
               />
               <LabeledValue 
                 title='Qt. NFs'
                 value={unloadingRecipient.invoices_count}
-                fontSize={12}
+                fontSize={fontSize - 2}
                 style={{ flex: 1 }}
               />
               <LabeledValue 
                 title='Qt. Vol.'
                 value={unloadingRecipient.freights_volumes}
-                fontSize={12}
+                fontSize={fontSize - 2}
                 style={{ flex: 1 }}
               />
             </View>
@@ -150,9 +156,9 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
                 key={`${message}:${index}`}
                 style={styles.warning}
               >
-                <Lucide name='circle-alert' size={18} color={theme.colors.warning} />
+                <Lucide name='circle-alert' size={fontSize + 2} color={theme.colors.warning} />
                 <Text style={
-                  { color: theme.colors.warning }
+                  { color: theme.colors.warning, fontSize }
                 }>
                   { message }
                 </Text>

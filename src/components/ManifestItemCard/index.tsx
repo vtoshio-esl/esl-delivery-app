@@ -23,6 +23,8 @@ export interface ManifestItemCardProps extends TouchableOpacityProps {
   simplified?: boolean,
   showNavigate?: boolean,
   mapsLabel?: string,
+  fontSize?: number,
+  titleFontSize?: number,
   latitude?: string | null | undefined,
   longitude?: string | null | undefined,
   errors?: string[],
@@ -40,10 +42,14 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
     mapsLabel,
     documentNumber,
     disabled,
+    fontSize = simplified ? 12 : 14,
+    titleFontSize = simplified ? 16 : 18,
     errors = [],
     ...rest
   } = props;
-  
+
+  const iconSize = simplified ? 25 : 30;
+
   const handleNavigateToRecipient = () => {
     if (!latitude || !longitude) {
       console.log('[ManifestItem::Recipient]', manifestItem.recipient)
@@ -71,20 +77,20 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
         <View style={styles.manifestItemTitleContainer}>
           <View style={styles.itemRecipientDataContainer}>
             { manifestItem.freight && 
-              <Text>
+              <Text style={{ fontSize }}>
                 { manifestItem.freight?.documentNumber }
               </Text>
             }
 
             { manifestItem.pick && 
-              <Text>
+              <Text style={{ fontSize }}>
                 { manifestItem.pick?.sequence_code }
               </Text>
             }
             <Text 
               style={[
                 styles.recipientName,
-                { color: theme.colors.primary300 }
+                { color: theme.colors.primary300, fontSize: titleFontSize },
               ]}
             >
               { manifestItem.recipient?.nickname }
@@ -105,12 +111,12 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
               ? <Lucide 
                   name='package-check' 
                   color={theme.colors.success} 
-                  size={30} 
+                  size={iconSize} 
                 />
               : <Lucide 
                   name='package' 
                   color={theme.colors.gray400} 
-                  size={30}
+                  size={iconSize}
                 />
             }
           </View>
@@ -118,8 +124,10 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
         
         { manifestItem.recipient?.phone_number && (
           <View style={styles.phoneNumberContainer}>
-            <Lucide name='phone' size={14} color={theme.colors.primary200} />
-            <Text style={{ color: theme.colors.textSecondary }}>
+            <Lucide name='phone' size={fontSize + 2} color={theme.colors.primary200} />
+            <Text style={{ 
+              color: theme.colors.textSecondary, fontSize 
+            }}>
               { manifestItem.recipient.phone_number }
             </Text>
           </View>
@@ -127,22 +135,22 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
 
         { manifestItem.sender && (
           <View style={styles.recipientDataContainer}>
-            <Text style={{ color: theme.colors.primary200 }}>
+            <Text style={{ color: theme.colors.primary200, fontSize }}>
               Remetente:
             </Text>
 
-            <Text style ={{ color: theme.colors.textSecondary }}>
+            <Text style ={{ color: theme.colors.textSecondary, fontSize }}>
               { manifestItem.sender?.name }
             </Text>
           </View>
         )}
         
         { manifestItem.destination_address ? (
-          <Text style={{ color: theme.colors.textSecondary }}>
+          <Text style={{ color: theme.colors.textSecondary, fontSize }}>
             { manifestItem.destination_address?.formattedAddress }
           </Text>
         ) : (
-          <Text style={{ color: theme.colors.textSecondary }}>
+          <Text style={{ color: theme.colors.textSecondary, fontSize }}>
             { manifestItem.recipient?.main_address.formattedAddress }
           </Text>
         )}
@@ -240,9 +248,9 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
                 key={`${message}:${index}`}
                 style={styles.warning}
               >
-                <Lucide name='circle-alert' size={18} color={theme.colors.warning} />
+                <Lucide name='circle-alert' size={fontSize + 2} color={theme.colors.warning} />
                 <Text style={
-                  { color: theme.colors.warning }
+                  { color: theme.colors.warning, fontSize }
                 }>
                   { message }
                 </Text>

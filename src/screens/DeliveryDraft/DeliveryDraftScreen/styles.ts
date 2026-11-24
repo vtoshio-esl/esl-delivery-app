@@ -9,14 +9,12 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   headerContainer: {
-    width: '100%',
-    gap: 5,
-  },
-  datesView: {
+    flexDirection: 'row',
     width: '100%',
     gap: 5,
   },
   dateContainer: {
+    flex: 1,
     elevation: 3,
     alignItems: 'center',
     justifyContent: 'center',

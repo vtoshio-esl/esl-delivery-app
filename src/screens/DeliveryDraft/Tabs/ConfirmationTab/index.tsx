@@ -11,12 +11,17 @@ import { styles } from './styles';
 import { EslButton } from '../../../../components/forms/EslButton';
 import { ToastMessage } from '../../../../helpers/toastMessage';
 import { ApiError } from '../../../../services/api/errors';
+import { DeliveryDraftTabScreenProps } from '../../../../navigation/TopTabsNavigation';
 
-export const ConfirmationTab = observer(() => {
+const NO_IMAGE_FROM_TMS_MESSAGE = 'Verificar imagem no TMS.'
+
+export const ConfirmationTab = observer(({ navigation }: DeliveryDraftTabScreenProps<'confirmation'>) => {
   const theme = useTheme<AppTheme>();
-  const { deliveryDraftStore, occurrencesStore } = useStores();
+  const { deliveryDraftStore, manifestStore, occurrencesStore } = useStores();
 
+  const service = deliveryDraftStore.selectedService;
   const selectedOccurrence = occurrencesStore.occurrenceFromId(deliveryDraftStore.occurrenceId);
+  const selectedManifest = manifestStore.selectedManifest;
 
   // Validações e envio
   const validateOccurrenceData = (): boolean => {
@@ -42,7 +47,7 @@ export const ConfirmationTab = observer(() => {
     if (!validateOccurrenceData()) return;
 
     try {
-      await deliveryDraftStore.sendOccurrence();
+      await deliveryDraftStore.submitDelivery();
       ToastMessage.success('Baixa', 'Baixa realizada com sucesso.')
     } catch (e) {
       console.log(e);
@@ -51,8 +56,27 @@ export const ConfirmationTab = observer(() => {
     }
   }
 
-  // Renders
+  const handleExit = async () => {
+    try {
+      await deliveryDraftStore.confirmExitedAt();
+      ToastMessage.success('Saída', 'Saída registrada com sucesso.')
 
+      if (selectedManifest) {
+        navigation.popTo('manifestDetail', { 
+          manifestId: selectedManifest.id,
+          sequenceCode: selectedManifest.sequence_code,
+        });
+      } else {
+        navigation.popTo('home', { screen: 'manifests' });
+      }
+    } catch (e) {
+      console.log(e);
+      const message = e instanceof ApiError ? e.message : 'Erro ao registrar saída do local.';
+      ToastMessage.error('Saída', message);
+    }
+  }
+
+  // Renders
   const renderRequiredItem = (
     label: string, 
     value: string | number | null | undefined, 
@@ -89,6 +113,42 @@ export const ConfirmationTab = observer(() => {
     )
   }
 
+  const renderRequiredPhoto = (
+    label: string, 
+    photoUri: string | number | null | undefined, 
+    placeholder: string,
+    date?: string,
+  ) => {
+    const color = (photoUri) ? theme.colors.success : theme.colors.warning; 
+
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10}}>
+        <Lucide name='circle-check' size={40} color={color}/>
+        <View>
+          <Text style={{ fontSize: 14, fontWeight: 'bold', color: theme.colors.primary300 }}>
+            { label }
+          </Text>
+          
+          { photoUri ? (
+            <Text>
+              { label } capturada com sucesso.
+            </Text>
+          ) : (
+            <Text>
+              { placeholder }
+            </Text>
+          )}
+
+          { date && (
+            <Text>
+              Data: { date }
+            </Text>
+          )}
+        </View>
+      </View>
+    )
+  };
+
   return (
     <View style={styles.confirmationTabContainer}>
       <View style={styles.confirmationHeader}>
@@ -121,20 +181,20 @@ export const ConfirmationTab = observer(() => {
           deliveryDraftStore.receiverDocument?.trim(),
           'Documento não foi preenchido.'
         )}
-        { renderRequiredItem(
+        { renderRequiredPhoto(
           'Comprovante de Entrega',
           deliveryDraftStore.deliveryReceipt,
-          'Comprovante de entrega não foi preenchido.'
-        )}
-        { renderRequiredItem(
+          !(service?.hasOccurrence) ? 'Comprovante ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
+         )}
+        { renderRequiredPhoto(
           'Assinatura',
           deliveryDraftStore.signature,
-          'Assinatura não foi preenchida.'
+          !(service?.hasOccurrence) ? 'Assinatura ainda não foi capturada.' : NO_IMAGE_FROM_TMS_MESSAGE
         )}
-        { renderRequiredItem(
+        { renderRequiredPhoto(
           'Anexo',
           deliveryDraftStore.attachment,
-          'Anexo não foi preenchido.'
+          !(service?.hasOccurrence) ? 'Anexo ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
         )}
 
         <View style={{ gap: 5 }}>
@@ -170,14 +230,26 @@ export const ConfirmationTab = observer(() => {
           <Text style={{ fontSize: 12, }}>
             { deliveryDraftStore.countSelectedServices } item(s) selecionado(s)
           </Text>
-        </View> 
-        <EslButton 
-          title='Confirmar Baixa'
-          icon='check'
-          lightTitle
-          disabled={!(deliveryDraftStore.occurrenceId !== null && deliveryDraftStore.occurrenceAt !== null)}
-          onPress={async () => await handleSubmit()}
-        />
+        </View>
+
+        { !service?.hasOccurrence && (
+          <EslButton 
+            title='Confirmar Baixa'
+            icon='check'
+            lightTitle
+            disabled={!(deliveryDraftStore.occurrenceId !== null && deliveryDraftStore.occurrenceAt !== null)}
+            onPress={async () => await handleSubmit()}
+          />
+        )}
+        { service?.canRegisterExit && service?.hasOccurrence && !(service.hasExited) && (
+          <EslButton 
+            title='Confirmar Saída do Local'
+            icon='door-open'
+            lightTitle
+            disabled={!(deliveryDraftStore.occurrenceId !== null && deliveryDraftStore.occurrenceAt !== null)}
+            onPress={async () => await handleExit()}
+          />
+        )}
       </View>
     </View>
   );

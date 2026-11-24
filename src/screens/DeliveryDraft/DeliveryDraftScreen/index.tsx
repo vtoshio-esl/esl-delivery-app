@@ -16,17 +16,22 @@ export const DeliveryDraftScreen = observer(({navigation, route}: RootNativeStac
   const theme = useTheme<AppTheme>();
   const { deliveryDraftStore } = useStores()
 
-  useEffect(() => {
-    deliveryDraftStore.clearForm();
-  }, [deliveryDraftStore])
+  const service = deliveryDraftStore.selectedService;
+  const hasOccurrence = !!service?.hasOccurrence;
 
-  const reference = deliveryDraftStore.getExitedAtReference;
+  useEffect(() => {
+    if (service?.hasOccurrence) {
+      deliveryDraftStore.loadFromService(service);
+    } else {
+      deliveryDraftStore.clearForm();
+    }
+  }, [deliveryDraftStore, service])
 
   const renderDates = (kind: 'arrival' | 'exit') => {
     const title = (kind === 'arrival') ? 'Chegada' : 'Saída';
     const date = (kind === 'arrival')
-      ? reference?.formattedArrivedAt
-      : reference?.formattedExitedAt
+      ? service?.formattedArrivedAt
+      : service?.formattedExitedAt
 
     if (!date) return;
 
@@ -56,14 +61,12 @@ export const DeliveryDraftScreen = observer(({navigation, route}: RootNativeStac
       { backgroundColor: theme.colors.background }
     ]}>
       <View style={styles.headerContainer}>
-        <View style={styles.datesView}>
-          { renderDates('arrival') }
-          { renderDates('exit') }
-        </View>
+        { renderDates('arrival') }
+        { renderDates('exit') }
       </View>
       
       <SafeAreaView style={styles.tabsContainer}>
-        <DeliveryDraftTabs />
+        <DeliveryDraftTabs initialRouteName={hasOccurrence ? 'confirmation' : 'occurrence'} />
       </SafeAreaView>
     </View>
   );

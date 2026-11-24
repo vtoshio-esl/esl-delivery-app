@@ -3,26 +3,29 @@ import {
   TouchableOpacity, 
   TouchableOpacityProps, 
   View,
-  Text
+  Text,
 } from 'react-native';
+import Lucide from '@react-native-vector-icons/lucide';
 
 import { useTheme } from 'react-native-paper';
 import { AppTheme } from '../../themes/AppPaperTheme';
 import { styles } from './styles';
 
 import { ManifestItem } from '../../models/ManifestServices/ManifestItem';
-import { EslButton } from '../forms/EslButton';
 import { LabeledValue } from '../LabeledValue';
 import { openMaps } from '../../helpers/openMaps';
 import { ToastMessage } from '../../helpers/toastMessage';
+import { EslButton } from '../forms/EslButton';
 
 export interface ManifestItemCardProps extends TouchableOpacityProps {
   manifestItem: ManifestItem,
   documentNumber?: string | undefined,
   simplified?: boolean,
+  showNavigate?: boolean,
   mapsLabel?: string,
   latitude?: string | null | undefined,
   longitude?: string | null | undefined,
+  errors?: string[],
 }
 
 export function ManifestItemCard(props: ManifestItemCardProps) {
@@ -31,11 +34,13 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
   const {
     manifestItem,
     simplified = false,
+    showNavigate = false,
     latitude,
     longitude,
     mapsLabel,
     documentNumber,
     disabled,
+    errors = [],
     ...rest
   } = props;
   
@@ -62,28 +67,63 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
       ]} 
       {...rest}
     >
-      <View style={{ marginBottom: 5 }}>
-        { manifestItem.freight && 
-          <Text>
-            { manifestItem.freight?.documentNumber }
-          </Text>
-        }
+      <View style={styles.cardHeader}>
+        <View style={styles.manifestItemTitleContainer}>
+          <View style={styles.itemRecipientDataContainer}>
+            { manifestItem.freight && 
+              <Text>
+                { manifestItem.freight?.documentNumber }
+              </Text>
+            }
 
-        { manifestItem.pick && 
-          <Text>
-            { manifestItem.pick?.sequence_code }
-          </Text>
-        }
+            { manifestItem.pick && 
+              <Text>
+                { manifestItem.pick?.sequence_code }
+              </Text>
+            }
+            <Text 
+              style={[
+                styles.recipientName,
+                { color: theme.colors.primary300 }
+              ]}
+            >
+              { manifestItem.recipient?.nickname }
+            </Text>
+          </View>
+          
+          
+          <View style={{ flexDirection: 'row', gap: 5 }}>
+            { manifestItem.hasToConfirmExit && (
+                <Lucide 
+                  name='door-open' 
+                  color={theme.colors.danger} 
+                  size={30} 
+                />
+            )}
 
-        <Text 
-          style={[
-            styles.recipientName,
-            { color: theme.colors.primary300 }
-          ]}
-        >
-          { manifestItem.recipient?.nickname }
-        </Text>
+            { (manifestItem.hasOccurrence)
+              ? <Lucide 
+                  name='package-check' 
+                  color={theme.colors.success} 
+                  size={30} 
+                />
+              : <Lucide 
+                  name='package' 
+                  color={theme.colors.gray400} 
+                  size={30}
+                />
+            }
+          </View>
+        </View>
         
+        { manifestItem.recipient?.phone_number && (
+          <View style={styles.phoneNumberContainer}>
+            <Lucide name='phone' size={14} color={theme.colors.primary200} />
+            <Text style={{ color: theme.colors.textSecondary }}>
+              { manifestItem.recipient.phone_number }
+            </Text>
+          </View>
+        ) }
 
         { manifestItem.sender && (
           <View style={styles.recipientDataContainer}>
@@ -137,17 +177,19 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
       { !simplified && (
         <View style={[
           styles.footerContainer,
-          { borderColor: theme.colors.primary300 }
+          { borderColor: theme.colors.primary300 },
+          (errors.length > 0) && { paddingBottom: 10, }
         ]}>
-          <EslButton 
-            title='Navegar'
-            icon='map'
-            fontSize={12}
-            disabled={disabled}
-            onPress={handleNavigateToRecipient}
-            style={{ width: '30%' }}
-            lightTitle={true}
-          />
+          { showNavigate && (
+            <EslButton 
+              title='Navegar'
+              icon='map'
+              lightTitle
+              fontSize={12}
+              style={{ width: '33%' }}
+              onPress={handleNavigateToRecipient}
+            />
+          )}
 
           <View style={styles.freightData}>
             <LabeledValue 
@@ -185,6 +227,27 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
               </>
             )}
           </View>
+        </View>
+      )}
+
+      { errors.length > 0 && (
+        <View style={[
+          styles.warningsSectionContainer,
+          { borderColor: theme.colors.primary300 }
+        ]}>
+            { errors.map((message, index) => (
+              <View 
+                key={`${message}:${index}`}
+                style={styles.warning}
+              >
+                <Lucide name='circle-alert' size={18} color={theme.colors.warning} />
+                <Text style={
+                  { color: theme.colors.warning }
+                }>
+                  { message }
+                </Text>
+              </View>
+            ))}
         </View>
       )}
     </TouchableOpacity>

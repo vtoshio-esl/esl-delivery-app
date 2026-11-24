@@ -29,7 +29,7 @@ export function SyncProgressBar(props: SyncProgressBarProps) {
 
   // Garante que o valor fique entre 0 e 1
   const clampedProgress = Math.min(Math.max(progress, 0), 1);
-  const percentage = Math.round(clampedProgress * 100);
+  const percentage = (clampedProgress * 100).toFixed(2);
 
   return (
     <View style={[styles.container, style]} {...rest}>
@@ -39,7 +39,7 @@ export function SyncProgressBar(props: SyncProgressBarProps) {
         </Text>
         { showPercentage && (
           <Text style={[styles.percentageText, { color: theme.colors.primary300 }]}>
-            { percentage }%
+            { percentage } %
           </Text>
         )}
       </View>
@@ -50,7 +50,7 @@ export function SyncProgressBar(props: SyncProgressBarProps) {
           { height, borderRadius: height / 2, backgroundColor: theme.colors.primary100 },
         ]}
         accessibilityRole="progressbar"
-        accessibilityValue={{ min: 0, max: 100, now: percentage }}
+        accessibilityValue={{ min: 0, max: 100, now: parseFloat(percentage) }}
       >
         <View
           style={[

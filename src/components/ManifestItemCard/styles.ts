@@ -17,6 +17,28 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold'
   },
+  cardHeader: {
+    marginBottom: 5,
+  },
+  manifestItemTitleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  deliveryStatusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10
+  },
+  itemRecipientDataContainer: {
+    flex: 1,
+    width: '100%',
+  },
+  phoneNumberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
   pickDataContainer: { 
     flexDirection: 'row', 
     width: '100%', 
@@ -28,12 +50,24 @@ export const styles = StyleSheet.create({
     flexDirection: 'row', 
     gap: 5, 
     borderTopWidth: 1, 
-    paddingTop: 15 
+    paddingTop: 10,
   },
   freightData: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 10,
-  }
+  },
+  warningsSectionContainer: {
+    flexDirection: 'column',
+    gap: 5,
+    borderTopWidth: 1,
+    paddingTop: 3,
+  },
+  warning: { 
+    marginVertical: 5, 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 5 
+  },
 })

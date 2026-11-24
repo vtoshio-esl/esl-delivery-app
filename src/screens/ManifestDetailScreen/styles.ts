@@ -39,11 +39,13 @@ export const styles = StyleSheet.create({
   },
   topDataContainer: { 
     flexDirection: 'row', 
-    justifyContent: 'space-between' 
+    justifyContent: 'space-between',
   },
   manifestDataContainer: {
+    flex: 1,
+    width: '100%',
     flexDirection: 'row',
-    gap: 10,
+    justifyContent: 'space-evenly',
   },
   searchBar: {
     width: '95%',

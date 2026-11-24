@@ -6,7 +6,6 @@ import { ManifestServiceBaseModel, ManifestServiceContract } from "./BaseManifes
 import { FreightModel } from "../Freight";
 import { PickModel } from "../Pick";
 import { AddressModel } from "../Address";
-import { formatDateTimeToLocale } from "../../helpers/dateFormat";
 
 export interface Sender {
     id: number,
@@ -58,7 +57,6 @@ export const ManifestItemModel = ManifestServiceBaseModel
         longitude: types.maybeNull(types.number),
         arrived_latitude: types.maybeNull(types.number),
         arrived_longitude: types.maybeNull(types.number),
-        exited_at: types.maybeNull(types.string),
         exited_latitude: types.maybeNull(types.number),
         exited_longitude: types.maybeNull(types.number),
 
@@ -68,8 +66,12 @@ export const ManifestItemModel = ManifestServiceBaseModel
     .views((self): ManifestServiceContract<'manifest_item'> => ({
         get kind() { return 'manifest_item' as const },
         get resourceRoute() { return 'items' as const},
+        get canRegisterExit() { return true; },
     }))
     .views((self) => ({
+        get hasToConfirmExit() {
+            return self.hasOccurrence && !self.hasExited
+        },
         get isTransfer(): boolean {
             return self.type === 'ManifestItem::Transfer' && self.manifestable_type !== 'container'
         },
@@ -78,11 +80,6 @@ export const ManifestItemModel = ManifestServiceBaseModel
         },
         get typeLabel() {
             return getManifestItemTypeLabel(self.type);
-        },
-        get formattedExitedAt() {
-            if (!self.exited_at) return null;
-
-            return formatDateTimeToLocale(self.exited_at);
         },
     }))
 

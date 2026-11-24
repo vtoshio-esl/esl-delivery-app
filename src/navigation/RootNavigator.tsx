@@ -10,24 +10,20 @@ import { AppDrawerNavigator, AppDrawerParamList } from "./DrawerNavigation";
 import { NavigatorScreenParams } from "@react-navigation/native";
 import { ManifestDetailScreen } from "../screens/ManifestDetailScreen";
 
-import { useTheme } from "react-native-paper";
-import { AppTheme } from "../themes/AppPaperTheme";
 import { ManifestItemArrivalScreen } from "../screens/ManifestItemArrivalScreen";
-import { ManifestServiceKind } from "../models/ManifestServices/types";
 import { DeliveryDraftScreen } from "../screens/DeliveryDraft/DeliveryDraftScreen";
 import { EslStackHeader } from "../components/shared/EslStackHeader";
+import { CameraScreen } from "../screens/CameraScreen";
+
+export type CameraKind = 'deliveryReceipt' | 'attachment';
 
 export type RootNativeStackParamList = {
   login: undefined,
   home: NavigatorScreenParams<AppDrawerParamList>,
   manifestDetail: { manifestId: number; sequenceCode: number },
-  manifestItemArrival: { 
-    manifestId: number, 
-    manifestSequenceCode: number, 
-    itemId: number,
-    itemKind: ManifestServiceKind,
-  },
+  manifestItemArrival: { manifestSequenceCode: number, },
   deliveryDraft: { manifestSequenceCode: number },
+  camera: { kind: CameraKind }
 }
 
 export type RootNativeStackScreenProps<T extends keyof RootNativeStackParamList> = NativeStackScreenProps<
@@ -38,8 +34,7 @@ export type RootNativeStackScreenProps<T extends keyof RootNativeStackParamList>
 const Stack = createNativeStackNavigator<RootNativeStackParamList>();
 
 export const AppNativeStackNavigator = observer(function AppNativeStackNavigator() {
-  const theme = useTheme<AppTheme>();
-  const { userStore, syncStore } = useStores();
+  const { userStore } = useStores();
 
   return (
     <Stack.Navigator>
@@ -55,7 +50,7 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
             component={ManifestDetailScreen}
             options={({ route}) => ({
               title: `Manifesto ${route.params.sequenceCode}`,
-              header: (props) => <EslStackHeader {...props}/>,
+              header: (props) => <EslStackHeader showSync={false} {...props}/>,
             })}
           />
           <Stack.Screen 
@@ -71,8 +66,13 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
             component={DeliveryDraftScreen}
             options={({route}) => ({
               title: `Manifesto ${route.params.manifestSequenceCode}`,
-              header: (props) => <EslStackHeader {...props}/>,
+              header: (props) => <EslStackHeader showSync={false} {...props}/>,
             })}
+          />
+          <Stack.Screen 
+            name="camera"
+            component={CameraScreen}
+            options={{ headerShown: false }}
           />
         </>
       ) : (

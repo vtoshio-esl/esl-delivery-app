@@ -113,19 +113,6 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
         keyExtractor={(item) => String(item.id)}
         refreshing={refreshing}
         onRefresh={handleRefreshManifests}
-        ListEmptyComponent={
-          <View style={[
-            styles.noManifestContainer,
-            { backgroundColor: theme.colors.background }
-          ]}>
-            <Text>
-              Nenhum manifesto sincronizado no momento.
-            </Text>
-            <Text>
-              Arraste para baixo para atualizar a lista de manifestos.
-            </Text>
-          </View>
-        }
         renderItem={({item}) =>
           <ManifestCard 
             manifest={item}

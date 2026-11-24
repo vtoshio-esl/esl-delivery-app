@@ -37,22 +37,33 @@ export const ManifestDetailedModel = ManifestModel
             []
         ),
     })
-    .views((self) => ({
-        get allManifestItems(): ManifestService[] {
-            return [
-                ...self.unloading_recipients,
-                ...self.delivery_manifest_items,
-                ...self.transfer_manifest_items,
-                ...self.pick_manifest_items,
-                ...self.reverse_pick_manifest_items,
-                ...self.dispatch_draft_manifest_items,
-                ...self.consolidation_manifest_items,
-            ].sort((a, b) => a.position - b.position);
-        },
-        getServiceById(id: number, kind: ManifestServiceKind) {
-            return this.allManifestItems.find((s) => s.kind === kind && s.id === id) 
+    .views((self) => {
+        const getSortPriority = (s: ManifestService) => {
+            if (!s.hasOccurrence) return 0
+            if (s.canRegisterExit && !s.hasExited) return 1;
+            return 2;
         }
-    }))
+
+        return {
+            get allManifestItems(): ManifestService[] {
+                return [
+                    ...self.unloading_recipients,
+                    ...self.delivery_manifest_items,
+                    ...self.transfer_manifest_items,
+                    ...self.pick_manifest_items,
+                    ...self.reverse_pick_manifest_items,
+                    ...self.dispatch_draft_manifest_items,
+                    ...self.consolidation_manifest_items,
+                ].sort((a, b) => 
+                    getSortPriority(a) - getSortPriority(b) ||
+                    a.position - b.position
+                );
+            },
+            getServiceById(id: number, kind: ManifestServiceKind) {
+                return this.allManifestItems.find((s) => s.kind === kind && s.id === id) 
+            }
+        }
+    })
 
 export interface ManifestDetailed extends Instance<typeof ManifestDetailedModel>{};
 export interface ManifestDetailedSnapshotIn extends SnapshotIn<typeof ManifestDetailedModel>{};

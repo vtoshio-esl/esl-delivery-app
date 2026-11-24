@@ -23,7 +23,7 @@ import { EslTextInput } from '../../components/forms/EslTextInput';
 import { ManifestCommentsModal } from '../../components/ManifestCommentsModal';
 import { ManifestKmModal } from '../../components/ManifestKmModal';
 import { ManifestServiceCard } from '../../components/ManifestServiceCard';
-import { ManifestService, ManifestServiceKind } from '../../models/ManifestServices/types';
+import { ManifestService } from '../../models/ManifestServices/types';
 
 type Props = RootNativeStackScreenProps<'manifestDetail'>;
 
@@ -128,18 +128,13 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
     const id = service.id;
     const kind = service.kind;
 
-    deliveryDraftStore.clearSelectedServices();
+    deliveryDraftStore.clearSelectedService();
     deliveryDraftStore.selectService({ id, kind });
     
     if (service.hasArrived) {
       navigation.navigate('deliveryDraft', { manifestSequenceCode });
     } else {
-      navigation.navigate('manifestItemArrival', {
-        manifestId,
-        manifestSequenceCode,
-        itemId: id,
-        itemKind: kind,
-      });
+      navigation.navigate('manifestItemArrival', { manifestSequenceCode });
     }
   }
 
@@ -229,13 +224,15 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
               titleColor={theme.colors.primary300}
             />
           </View>
-
-          <EslButton
-            fontSize={20}
-            lightTitle={true}
-            icon='message-circle-warning'
-            onPress={() => setCommentsVisible(true)}
-          />
+          
+          { manifest.mobile_comments && (
+            <EslButton
+              fontSize={20}
+              lightTitle={true}
+              icon='message-circle-warning'
+              onPress={() => setCommentsVisible(true)}
+            />
+          )}
         </View>
       </View>
       

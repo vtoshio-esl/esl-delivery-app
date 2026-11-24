@@ -3,7 +3,6 @@ import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { observer } from 'mobx-react-lite';
 import { FlashList } from '@shopify/flash-list';
-import { getSnapshot } from 'mobx-state-tree';
 
 import { useStores } from '../../../stores/useStores';
 import { useTheme } from 'react-native-paper';
@@ -18,22 +17,25 @@ export const OccurrencesScreen = observer(function OccurrencesScreen() {
   const theme = useTheme<AppTheme>();
   const [search, setSearch] = useState<string>();
 
-  const occurrences = getSnapshot(occurrencesStore.occurrences);
+  const occurrences = occurrencesStore.occurrences;
 
   const filtered = useMemo(() => {
     const query = search;
     if (!query) return occurrences;
 
     return occurrences.filter((item) => 
-      String(item.code).includes(query)
+      String(item.code).includes(query) || String(item.description).includes(query)
     );
   }, [occurrences, search]);
 
   if (occurrences.length === 0) {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <Text>
-          Nenhuma ocorrência está carregada. Por gentileza, atualize as ocorrências pelo menu.
+      <SafeAreaView style={styles.emptyOccurrenceListContainer}>
+        <Text style={[
+          styles.notFoundOccurrenceText,
+          { color: theme.colors.textSecondary }          
+        ]}>
+          Nenhuma ocorrência sincronizada. Por gentileza, atualize as ocorrências pelo menu.
         </Text>
       </SafeAreaView>
     )
@@ -54,6 +56,14 @@ export const OccurrencesScreen = observer(function OccurrencesScreen() {
       <FlashList
         data={filtered}
         keyExtractor={(item) => String(item.id)}
+        ListEmptyComponent={
+          <Text style={[
+            styles.notFoundOccurrenceText,
+            { color: theme.colors.textSecondary }
+          ]}>
+            Nenhum item encontrado.
+          </Text>
+        }
         renderItem={({ item }) => 
           <OccurrenceCard occurrence={item}/>
         }

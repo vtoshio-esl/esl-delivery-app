@@ -62,7 +62,7 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
           headerShown: true,
           title: 'Manifestos',
           drawerLabel: 'Manifestos',
-          header: (props) => <EslDrawerHeader {...props}/>,
+          header: (props) => <EslDrawerHeader showSync={false} {...props}/>,
           drawerIcon: ({color, size}) => (
             <Lucide name='truck' size={size} color={color} />
           )
@@ -75,7 +75,7 @@ export const AppDrawerNavigator = observer(function AppDrawerNavigator() {
           headerShown: true,
           title: 'Ocorrências',
           drawerLabel: 'Ocorrências',
-          header: (props) => <EslDrawerHeader {...props}/>,
+          header: (props) => <EslDrawerHeader showSync={false} {...props}/>,
           drawerIcon: ({color, size}) => (
             <Lucide name='clock' size={size} color={color} />
           )

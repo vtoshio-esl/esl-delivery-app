@@ -8,14 +8,20 @@ import { AppTheme } from '../../../themes/AppPaperTheme';
 
 import { SyncButton } from '../SyncButton';
 
-export function EslDrawerHeader(props: DrawerHeaderProps) {
+export interface EslDrawerHeaderProps extends DrawerHeaderProps {
+  showSync?: boolean;
+}
+
+export function EslDrawerHeader(props: EslDrawerHeaderProps) {
   const theme = useTheme<AppTheme>();
   const {
     route,
     options,
     layout,
+    showSync = true,
   } = props
   
+
   return (
     <Header 
       layout={layout}
@@ -26,10 +32,11 @@ export function EslDrawerHeader(props: DrawerHeaderProps) {
         options.headerLeft ??
           ((props) => <DrawerToggleButton tintColor={props.tintColor} />)
       }
-      headerRight={
-        options.headerRight ??
-          (() => <SyncButton />)
-      }
+      headerRight={() => (
+        showSync 
+          ? <SyncButton />
+          : null
+      )}
     />
   );
 }

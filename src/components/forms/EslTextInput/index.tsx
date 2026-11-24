@@ -5,7 +5,8 @@ import {
   TextInput,
   TextInputProps,
   StyleProp,
-  ViewStyle
+  ViewStyle,
+  TextInputInstance
 } from 'react-native';
 
 import { styles } from './styles';
@@ -14,17 +15,19 @@ import { AppTheme } from '../../../themes/AppPaperTheme';
 import Lucide, { LucideIconName } from '@react-native-vector-icons/lucide';
 
 export interface EslTextInputProps extends TextInputProps {
-  label?: string
-  fontSize?: number
-  icon?: LucideIconName,
-  color?: string,
-  disabled?: boolean,
+  ref?: React.Ref<TextInputInstance>,
+  label?: string;
+  fontSize?: number;
+  icon?: LucideIconName;
+  color?: string;
+  disabled?: boolean;
   textInputStyle?: StyleProp<ViewStyle>;
 }
 
 export function EslTextInput(props: EslTextInputProps) {
   const theme = useTheme<AppTheme>();
   const {
+    ref,
     label,
     fontSize = 14,
     icon,
@@ -80,7 +83,9 @@ export function EslTextInput(props: EslTextInputProps) {
           textInputStyle
         ]}
         { ...rest }
+        ref={ref}
         editable={!disabled}
+        placeholderTextColor={theme.colors.textSecondary}
       />
     </View>
   );

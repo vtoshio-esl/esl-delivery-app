@@ -24,6 +24,7 @@ export interface ManifestUnloadingRecipientCardProps extends TouchableOpacityPro
   mapsLabel?: string,
   latitude?: string | null | undefined,
   longitude?: string | null | undefined,
+  errors?: string[],
 }
 
 export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipientCardProps) {
@@ -37,6 +38,7 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
     longitude,
     mapsLabel,
     disabled,
+    errors = [],
     ...rest
   } = props;
   
@@ -73,7 +75,7 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
           >
             { unloadingRecipient.recipient?.nickname }
           </Text>
-          
+
           { (unloadingRecipient.hasOccurrence)
             ? <Lucide 
                 name='package-check' 
@@ -96,7 +98,8 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
       { !simplified && (
         <View style={[
             styles.footerContainer,
-            { borderColor: theme.colors.primary300 }
+            { borderColor: theme.colors.primary300 },
+            (errors.length > 0) && { paddingBottom: 10, }
           ]}>
             { showNavigate && (
               <EslButton 
@@ -104,7 +107,7 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
                 icon='map'
                 lightTitle
                 fontSize={12}
-                style={{ width: '33%'}}
+                style={{ width: '33%' }}
                 onPress={handleNavigateToRecipient}
               />
             )}
@@ -134,6 +137,27 @@ export function ManifestUnloadingRecipientCard(props: ManifestUnloadingRecipient
                 style={{ flex: 1 }}
               />
             </View>
+        </View>
+      )}
+
+      { errors.length > 0 && (
+        <View style={[
+          styles.warningsSectionContainer,
+          { borderColor: theme.colors.primary300 }
+        ]}>
+            { errors.map((message, index) => (
+              <View 
+                key={`${message}:${index}`}
+                style={styles.warning}
+              >
+                <Lucide name='circle-alert' size={18} color={theme.colors.warning} />
+                <Text style={
+                  { color: theme.colors.warning }
+                }>
+                  { message }
+                </Text>
+              </View>
+            ))}
         </View>
       )}
     </TouchableOpacity>

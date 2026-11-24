@@ -2,17 +2,12 @@ import { getEnv, getRoot, types } from "mobx-state-tree";
 import { File } from "expo-file-system";
 import { uuid } from "expo";
 
-import { ManifestService, ManifestServiceKind } from "../models/ManifestServices/types";
+import { ManifestService, ServiceKey } from "../models/ManifestServices/types";
 import { ManifestItem } from "../models/ManifestServices/ManifestItem";
 import { addDeliveryReceiptRequest } from "../services/api/schemas/manifestItemSchemas";
 import { formatDateTimeToLocale } from "../helpers/dateFormat";
 import { RootStore } from "./RootStore";
 import { Environment } from "../services/environment";
-
-export type ServiceKey = {
-    id: number;
-    kind: ManifestServiceKind;
-}
 
 export const DeliveryDraftStore = types
     .model('DeliveryDraftStore')
@@ -261,19 +256,17 @@ export const DeliveryDraftStore = types
             const { manifestStore } = getRoot<RootStore>(self);
 
             const manifest = manifestStore.selectedManifest;
-            if (!manifest) 
-                throw new Error('Manifesto não encontrado.');
+            const service = self.selectedService;
 
-            try {
-                await Promise.all([
-                    (self.deliveryReceipt) ? await self.sendReceipt() : null,
-                    (self.attachment) ? await self.sendAttachment() : null,
-                ])
+            if (!manifest) throw new Error('Manifesto não encontrado.');
+            if (!service) throw new Error('Nenhum serviço selecionado.');
+
+            await manifestStore.trackServiceErrors(service, async () => {
+                if (self.deliveryReceipt) await self.sendReceipt();
+                if (self.attachment) await self.sendAttachment();
+
                 await self.sendOccurrence();
-            } catch (e) {
-                console.log('[submitDelivery] ERRO:', e);
-                throw e;
-            }
+            })
             
             await manifestStore.fetchSelectedManifest(manifest.id);
             await self.reloadFromSelected();

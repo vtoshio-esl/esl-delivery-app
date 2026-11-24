@@ -19,12 +19,18 @@ interface ApiErrorBody {
 export class ApiError extends Error {
     kind: ApiErrorKind
     status?: number
+    errors?: string[]
 
-    constructor(kind: ApiErrorKind, message: string, status?: number) {
+    constructor(kind: ApiErrorKind, message: string, status?: number, errors: string[] = []) {
         super(message);
         this.name = 'ApiError';
         this.kind = kind;
         this.status = status;
+        this.errors = errors;
+    }
+
+    get isValidation() {
+        return this.status === 422;
     }
 }
 
@@ -44,12 +50,15 @@ export function toApiError(error: unknown): ApiError {
         const status = error.response?.status;
         const kind = resolveKind(status, error.code);
         const data = error.response?.data;
-        const bodyMessage = data?.formatted_errors?.filter(Boolean).join('\n') || data?.error ;
+        
+        const formatted = data?.formatted_errors;
+        const errors = Array.isArray(formatted) ? formatted.filter(Boolean) : [];
+        const bodyMessage = errors.join('\n') || data?.error;
         const message = typeof bodyMessage === 'string' && bodyMessage.trim()
             ? bodyMessage
             : DEFAULT_MESSAGES[kind];
-
-        return new ApiError(kind, message, status);
+        
+        return new ApiError(kind, message, status, errors)
     }
 
     return new ApiError('unknown', DEFAULT_MESSAGES.unknown);
@@ -57,5 +66,10 @@ export function toApiError(error: unknown): ApiError {
 
 export function withStep(error: unknown, step: string): ApiError {
     const apiError = toApiError(error);
-    return new ApiError(apiError.kind, `${step}: ${apiError.message}`, apiError.status);
+    return new ApiError(
+        apiError.kind, 
+        `${step}: ${apiError.message}`, 
+        apiError.status, 
+        apiError.errors
+    );
 }

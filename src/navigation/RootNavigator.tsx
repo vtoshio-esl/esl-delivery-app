@@ -50,7 +50,7 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
             component={ManifestDetailScreen}
             options={({ route}) => ({
               title: `Manifesto ${route.params.sequenceCode}`,
-              header: (props) => <EslStackHeader {...props}/>,
+              header: (props) => <EslStackHeader showSync={false} {...props}/>,
             })}
           />
           <Stack.Screen 
@@ -66,7 +66,7 @@ export const AppNativeStackNavigator = observer(function AppNativeStackNavigator
             component={DeliveryDraftScreen}
             options={({route}) => ({
               title: `Manifesto ${route.params.manifestSequenceCode}`,
-              header: (props) => <EslStackHeader {...props}/>,
+              header: (props) => <EslStackHeader showSync={false} {...props}/>,
             })}
           />
           <Stack.Screen 

@@ -25,6 +25,7 @@ export interface ManifestItemCardProps extends TouchableOpacityProps {
   mapsLabel?: string,
   latitude?: string | null | undefined,
   longitude?: string | null | undefined,
+  errors?: string[],
 }
 
 export function ManifestItemCard(props: ManifestItemCardProps) {
@@ -39,6 +40,7 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
     mapsLabel,
     documentNumber,
     disabled,
+    errors = [],
     ...rest
   } = props;
   
@@ -90,18 +92,28 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
           </View>
           
           
-          { (manifestItem.hasOccurrence)
-            ? <Lucide 
-                name='package-check' 
-                color={theme.colors.success} 
-                size={30} 
-              />
-            : <Lucide 
-                name='package' 
-                color={theme.colors.gray400} 
-                size={30}
-              />
-          }
+          <View style={{ flexDirection: 'row', gap: 5 }}>
+            { manifestItem.hasToConfirmExit && (
+                <Lucide 
+                  name='door-open' 
+                  color={theme.colors.danger} 
+                  size={30} 
+                />
+            )}
+
+            { (manifestItem.hasOccurrence)
+              ? <Lucide 
+                  name='package-check' 
+                  color={theme.colors.success} 
+                  size={30} 
+                />
+              : <Lucide 
+                  name='package' 
+                  color={theme.colors.gray400} 
+                  size={30}
+                />
+            }
+          </View>
         </View>
         
         { manifestItem.recipient?.phone_number && (
@@ -134,16 +146,6 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
             { manifestItem.recipient?.main_address.formattedAddress }
           </Text>
         )}
-
-
-        { manifestItem.hasOccurrence && !manifestItem.hasExited && (
-          <View style={{ marginVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-            <Lucide name='triangle-alert' size={16} color={theme.colors.danger} />
-            <Text style={{ fontSize: 14, color: theme.colors.danger }}>
-              Confirmar Saída
-            </Text>
-          </View>
-        )}
       </View>
 
       { manifestItem.pick && !simplified && (
@@ -175,7 +177,8 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
       { !simplified && (
         <View style={[
           styles.footerContainer,
-          { borderColor: theme.colors.primary300 }
+          { borderColor: theme.colors.primary300 },
+          (errors.length > 0) && { paddingBottom: 10, }
         ]}>
           { showNavigate && (
             <EslButton 
@@ -224,6 +227,27 @@ export function ManifestItemCard(props: ManifestItemCardProps) {
               </>
             )}
           </View>
+        </View>
+      )}
+
+      { errors.length > 0 && (
+        <View style={[
+          styles.warningsSectionContainer,
+          { borderColor: theme.colors.primary300 }
+        ]}>
+            { errors.map((message, index) => (
+              <View 
+                key={`${message}:${index}`}
+                style={styles.warning}
+              >
+                <Lucide name='circle-alert' size={18} color={theme.colors.warning} />
+                <Text style={
+                  { color: theme.colors.warning }
+                }>
+                  { message }
+                </Text>
+              </View>
+            ))}
         </View>
       )}
     </TouchableOpacity>

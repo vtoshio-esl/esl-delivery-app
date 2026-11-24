@@ -50,12 +50,24 @@ export const styles = StyleSheet.create({
     flexDirection: 'row', 
     gap: 5, 
     borderTopWidth: 1, 
-    paddingTop: 15 
+    paddingTop: 10,
   },
   freightData: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 10,
-  }
+  },
+  warningsSectionContainer: {
+    flexDirection: 'column',
+    gap: 5,
+    borderTopWidth: 1,
+    paddingTop: 3,
+  },
+  warning: { 
+    marginVertical: 5, 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 5 
+  },
 })

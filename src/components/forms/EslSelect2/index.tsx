@@ -81,6 +81,7 @@ export function EslSelect2(props: EslSelect2Props) {
 
   const handleSelect = (item: EslSelectOption) => {
     onChange?.(item.value);
+    handleClose();
   }
 
   // Renders

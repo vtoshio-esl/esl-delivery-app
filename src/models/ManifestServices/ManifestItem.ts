@@ -69,6 +69,9 @@ export const ManifestItemModel = ManifestServiceBaseModel
         get canRegisterExit() { return true; },
     }))
     .views((self) => ({
+        get hasToConfirmExit() {
+            return self.hasOccurrence && !self.hasExited
+        },
         get isTransfer(): boolean {
             return self.type === 'ManifestItem::Transfer' && self.manifestable_type !== 'container'
         },

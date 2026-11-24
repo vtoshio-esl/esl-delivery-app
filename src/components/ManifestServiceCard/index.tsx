@@ -3,6 +3,7 @@ import { ManifestItemCard } from '../ManifestItemCard';
 import { ManifestUnloadingRecipientCard } from '../ManifestUnloadingRecipientCard';
 import { TouchableOpacityProps } from 'react-native';
 import { ManifestService } from '../../models/ManifestServices/types';
+import { useStores } from '../../stores/useStores';
 
 export interface ManifestServiceCardProps extends TouchableOpacityProps {
   service: ManifestService,
@@ -19,12 +20,16 @@ export const ManifestServiceCard = observer((props: ManifestServiceCardProps) =>
     simplified,
     ...componentProps
   } = props;
+  
+  const { manifestStore } = useStores();
+  const errors = manifestStore.errorsFor(service);
 
   if (service.kind === 'unloading_recipient') {
     return (
       <ManifestUnloadingRecipientCard 
         unloadingRecipient={service}
         simplified={simplified}
+        errors={errors}
         { ...componentProps } 
       />
     )
@@ -35,6 +40,7 @@ export const ManifestServiceCard = observer((props: ManifestServiceCardProps) =>
       manifestItem={service}
       simplified={simplified}
       documentNumber={service.freight?.documentNumber}
+      errors={errors}
       { ...componentProps }
     />
   )

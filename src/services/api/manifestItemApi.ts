@@ -3,6 +3,7 @@ import { Api } from "./base";
 import { 
     addDeliveryReceiptRequest,
     addImageRequest,
+    SetEventRequest,
     SetOccurrenceRequest, 
     UpdateArrivalAtRequest, 
     UpdateExitedAtRequest 
@@ -85,7 +86,7 @@ export class ManifestItemApi {
     async addImage(
         { manifestId, service, uri }: addImageRequest,
         config?: AxiosRequestConfig
-) {
+    ) {
         const form = new FormData();
         form.append(
             'image', 
@@ -105,4 +106,17 @@ export class ManifestItemApi {
             },
         );
     }
-}   
+
+    async setEvent(
+        { manifestId, service, payload }: SetEventRequest, 
+        config?: AxiosRequestConfig
+    ) {
+        const url = `${this.baseUrl}/${manifestId}/${service.resourceRoute}/${service.id}/set_events`;
+
+        await this.api.client.post(
+            url, 
+            { item_occurrence: payload }, 
+            config
+        );
+    }
+}

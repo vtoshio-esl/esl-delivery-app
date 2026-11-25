@@ -24,6 +24,7 @@ export const UnloadingRecipientModel = ManifestServiceBaseModel
         get kind() { return 'unloading_recipient' as const },
         get resourceRoute() { return 'unloading_recipients' as const },
         get canRegisterExit() { return false; },
+        get canRegisterEvent() { return true; },
     }))
 
 export interface UnloadingRecipient extends Instance<typeof UnloadingRecipientModel>{};

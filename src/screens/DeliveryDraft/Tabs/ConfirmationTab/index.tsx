@@ -197,25 +197,28 @@ export const ConfirmationTab = observer(({ navigation }: DeliveryDraftTabScreenP
           !(service?.hasOccurrence) ? 'Anexo ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
         )}
 
-        <View style={{ gap: 5 }}>
-          { selectedOccurrence?.require_receiver && !deliveryDraftStore.hasReceiverData && (
-            <Text style={[
-              styles.validationWarningText,
-              { color: theme.colors.danger }
-            ]}>
-              Essa ocorrência obriga o envio dos dados do recebedor.
-            </Text>
-          )}
 
-          { selectedOccurrence?.require_photo_on_mobile && !deliveryDraftStore.hasPhotoTaken && (
-            <Text style={[
-              styles.validationWarningText,
-              { color: theme.colors.danger }
-            ]}>
-              Essa ocorrência obriga o envio de pelo menos uma imagem (comprovante, assinatura ou anexo).
-            </Text>
-          )}
-        </View>
+        { !service?.hasOccurrence && (
+          <View style={{ gap: 5 }}>
+            { selectedOccurrence?.require_receiver && !deliveryDraftStore.hasReceiverData && (
+              <Text style={[
+                styles.validationWarningText,
+                { color: theme.colors.danger }
+              ]}>
+                Essa ocorrência obriga o envio dos dados do recebedor.
+              </Text>
+            )}
+
+            { selectedOccurrence?.require_photo_on_mobile && !deliveryDraftStore.hasPhotoTaken && (
+              <Text style={[
+                styles.validationWarningText,
+                { color: theme.colors.danger }
+              ]}>
+                Essa ocorrência obriga o envio de pelo menos uma imagem (comprovante, assinatura ou anexo).
+              </Text>
+            )}
+          </View>
+        )}
       </View>
 
       <View style={styles.confirmationFooter}>

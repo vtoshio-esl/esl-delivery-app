@@ -23,6 +23,7 @@ export const RootStoreModel = types
             self.userStore.logout();
             self.eventsStore.logout();
             self.occurrencesStore.logout();
+            self.deliveryDraftStore.clearForm();
         }
     }))
 

@@ -115,8 +115,8 @@ export const ManifestStoreModel = types
                             ? e.errors 
                             : [e.message]
                     )
-                    throw e;
                 }
+                throw e;
             }
         },
     }))

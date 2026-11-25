@@ -6,7 +6,8 @@ export const styles = StyleSheet.create({
         padding: 10,
     },
     occurrencesContainer: { 
-        flex: 1 
+        flex: 1,
+        marginTop: 5
     },
     inputContainer: { 
         width: '90%', 

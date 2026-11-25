@@ -19,6 +19,7 @@ import { ManifestCommentsModal } from '../../../components/ManifestCommentsModal
 import { KmKind, ManifestKmModal } from '../../../components/ManifestKmModal';
 import { ApiError } from '../../../services/api/errors';
 import { Manifest } from '../../../models/Manifest';
+import { useFocusEffect } from '@react-navigation/native';
 
 type Props = AppDrawerScreenProps<'manifests'>;
 
@@ -38,6 +39,8 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
 
   const { manifestStore } = useStores();
   const manifests = manifestStore.manifests.slice();
+
+  
 
   const setKmTargetWithLabel = (kind: KmKind, item: Manifest) => {
     setKmTarget({
@@ -86,11 +89,20 @@ export const ManifestsScreen = observer(function ManifestsScreen({ navigation }:
     }
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      handleRefreshManifests();
+    }, [handleRefreshManifests])
+  );
+
   return (
-    <SafeAreaView style={[
-      styles.manifestsContainer,
-      { backgroundColor: theme.colors.background }
-    ]}>
+    <SafeAreaView 
+      edges={['bottom', 'left', 'right']}
+      style={[
+        styles.manifestsContainer,
+        { backgroundColor: theme.colors.background }
+      ]}
+    >
       <ManifestCommentsModal 
         comments={selectedComments}
         visible={selectedComments !== null}

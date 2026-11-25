@@ -86,9 +86,12 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
   
   if (!manifest || isLoading) {
     return (
-      <SafeAreaView style={[
-        styles.loadingContainer
-      ]}>
+      <SafeAreaView 
+        edges={['bottom', 'left', 'right']}
+        style={[
+          styles.loadingContainer
+        ]}
+      >
         <ActivityIndicator color={theme.colors.primary300} size={60} />
         <Text style={[
           styles.loadingText,
@@ -159,10 +162,13 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
   )
 
   return (
-    <SafeAreaView style={[
-      styles.screenContainer,
-      { backgroundColor: theme.colors.background }
-    ]}>
+    <SafeAreaView
+      edges={['bottom', 'left', 'right']} 
+      style={[
+        styles.screenContainer,
+        { backgroundColor: theme.colors.background }
+      ]}
+    >
       <ManifestCommentsModal 
         comments={manifest.mobile_comments}
         visible={commentsVisible}
@@ -246,6 +252,7 @@ export const ManifestDetailScreen = observer(function ManifestDetailScreen( { na
       />
       <FlashList 
         data={filteredItems}
+        onRefresh={() => manifestStore.fetchSelectedManifest(manifestId)}
         ListEmptyComponent={
           <Text style={{ textAlign: 'center', marginTop: 15, }}>
             Nenhum serviço foi encontrado.

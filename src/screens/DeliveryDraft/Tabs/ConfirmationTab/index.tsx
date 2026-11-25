@@ -88,13 +88,13 @@ export const ConfirmationTab = observer(({ navigation }: DeliveryDraftTabScreenP
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10}}>
         <Lucide name='circle-check' size={40} color={color}/>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 14, fontWeight: 'bold', color: theme.colors.primary300 }}>
             { label }
           </Text>
           
           { value ? (
-            <Text>
+            <Text style={{ flexWrap: 'wrap' }}>
               { value }
             </Text>
           ) : (
@@ -124,7 +124,7 @@ export const ConfirmationTab = observer(({ navigation }: DeliveryDraftTabScreenP
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10}}>
         <Lucide name='circle-check' size={40} color={color}/>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 14, fontWeight: 'bold', color: theme.colors.primary300 }}>
             { label }
           </Text>
@@ -181,20 +181,20 @@ export const ConfirmationTab = observer(({ navigation }: DeliveryDraftTabScreenP
           deliveryDraftStore.receiverDocument?.trim(),
           'Documento não foi preenchido.'
         )}
-        { renderRequiredPhoto(
-          'Comprovante de Entrega',
-          deliveryDraftStore.deliveryReceipt,
-          !(service?.hasOccurrence) ? 'Comprovante ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
-         )}
-        { renderRequiredPhoto(
-          'Assinatura',
-          deliveryDraftStore.signature,
-          !(service?.hasOccurrence) ? 'Assinatura ainda não foi capturada.' : NO_IMAGE_FROM_TMS_MESSAGE
-        )}
-        { renderRequiredPhoto(
-          'Anexo',
-          deliveryDraftStore.attachment,
-          !(service?.hasOccurrence) ? 'Anexo ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
+
+        { service?.kind === 'manifest_item' && (
+          <>
+            { renderRequiredPhoto(
+              'Comprovante de Entrega',
+              deliveryDraftStore.deliveryReceipt,
+              !(service?.hasOccurrence) ? 'Comprovante ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
+            )}
+            { renderRequiredPhoto(
+              'Anexo',
+              deliveryDraftStore.attachment,
+              !(service?.hasOccurrence) ? 'Anexo ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
+            )}
+          </>
         )}
 
 

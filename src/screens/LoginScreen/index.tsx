@@ -65,7 +65,7 @@ export const LoginScreen = observer(function LoginScreen() {
     setIsLoading(true);
 
     try {
-      await userStore.login(tenant, email, password);
+      await userStore.login(data.tenant, data.email, data.password);
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Erro desconhecido.'
 
@@ -138,6 +138,7 @@ export const LoginScreen = observer(function LoginScreen() {
               ref={passwordRef}
               returnKeyType='done'
               onSubmitEditing={handleLogin}
+              color={theme.colors.textPrimary}
             />
           </View>
 
@@ -146,9 +147,7 @@ export const LoginScreen = observer(function LoginScreen() {
             icon='lock-keyhole-open'
             lightTitle={true}
             onPress={handleLogin}
-            disabled={
-              isLoading
-            }
+            disabled={isLoading}
           />
         </View>
       </View>

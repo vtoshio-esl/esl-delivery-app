@@ -20,6 +20,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'column',
     width: '100%',
     paddingHorizontal: 10,
+    marginTop: 10
   },
   serviceInformationContainer: {
     marginBottom: 10,

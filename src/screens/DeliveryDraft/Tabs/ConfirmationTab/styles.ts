@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native"
 export const styles = StyleSheet.create({
   confirmationTabContainer: {
     flex: 1,
+    width: '100%',
     flexDirection: 'column',
     justifyContent: 'space-between',
     paddingHorizontal: 5,

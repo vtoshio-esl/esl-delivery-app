@@ -146,7 +146,7 @@ export const EslDrawer = observer(function EslDrawer(props: DrawerContentCompone
             VERSÃO APP
           </Text>
           <Text style={[styles.appVersion]}>
-            0.0.1
+            1.0.0
           </Text>
         </View>
         <EslButton 

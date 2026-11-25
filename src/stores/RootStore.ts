@@ -5,6 +5,7 @@ import { UiStoreModel } from "./UiStore";
 import { ManifestStoreModel } from "./ManifestStore";
 import { DeliveryDraftStore } from "./DeliveryDraftStore";
 import { SyncStoreModel } from "./SyncStore";
+import { EventsStoreModel } from "./EventsStore";
 
 export const RootStoreModel = types
     .model("RootStoreModel")
@@ -14,11 +15,15 @@ export const RootStoreModel = types
         occurrencesStore: types.optional(OccurrencesStoreModel, {}),
         manifestStore: types.optional(ManifestStoreModel, {}),
         deliveryDraftStore: types.optional(DeliveryDraftStore, {}),
+        eventsStore: types.optional(EventsStoreModel, {}),
         syncStore: types.optional(SyncStoreModel, {}),
     })
     .actions((self) => ({
         logout: () => {
-            self.userStore.logout()
+            self.userStore.logout();
+            self.eventsStore.logout();
+            self.occurrencesStore.logout();
+            self.deliveryDraftStore.clearForm();
         }
     }))
 

@@ -88,13 +88,13 @@ export const ConfirmationTab = observer(({ navigation }: DeliveryDraftTabScreenP
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10}}>
         <Lucide name='circle-check' size={40} color={color}/>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 14, fontWeight: 'bold', color: theme.colors.primary300 }}>
             { label }
           </Text>
           
           { value ? (
-            <Text>
+            <Text style={{ flexWrap: 'wrap' }}>
               { value }
             </Text>
           ) : (
@@ -124,7 +124,7 @@ export const ConfirmationTab = observer(({ navigation }: DeliveryDraftTabScreenP
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10}}>
         <Lucide name='circle-check' size={40} color={color}/>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 14, fontWeight: 'bold', color: theme.colors.primary300 }}>
             { label }
           </Text>
@@ -181,41 +181,44 @@ export const ConfirmationTab = observer(({ navigation }: DeliveryDraftTabScreenP
           deliveryDraftStore.receiverDocument?.trim(),
           'Documento não foi preenchido.'
         )}
-        { renderRequiredPhoto(
-          'Comprovante de Entrega',
-          deliveryDraftStore.deliveryReceipt,
-          !(service?.hasOccurrence) ? 'Comprovante ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
-         )}
-        { renderRequiredPhoto(
-          'Assinatura',
-          deliveryDraftStore.signature,
-          !(service?.hasOccurrence) ? 'Assinatura ainda não foi capturada.' : NO_IMAGE_FROM_TMS_MESSAGE
-        )}
-        { renderRequiredPhoto(
-          'Anexo',
-          deliveryDraftStore.attachment,
-          !(service?.hasOccurrence) ? 'Anexo ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
+
+        { service?.kind === 'manifest_item' && (
+          <>
+            { renderRequiredPhoto(
+              'Comprovante de Entrega',
+              deliveryDraftStore.deliveryReceipt,
+              !(service?.hasOccurrence) ? 'Comprovante ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
+            )}
+            { renderRequiredPhoto(
+              'Anexo',
+              deliveryDraftStore.attachment,
+              !(service?.hasOccurrence) ? 'Anexo ainda não foi capturado.' : NO_IMAGE_FROM_TMS_MESSAGE
+            )}
+          </>
         )}
 
-        <View style={{ gap: 5 }}>
-          { selectedOccurrence?.require_receiver && !deliveryDraftStore.hasReceiverData && (
-            <Text style={[
-              styles.validationWarningText,
-              { color: theme.colors.danger }
-            ]}>
-              Essa ocorrência obriga o envio dos dados do recebedor.
-            </Text>
-          )}
 
-          { selectedOccurrence?.require_photo_on_mobile && !deliveryDraftStore.hasPhotoTaken && (
-            <Text style={[
-              styles.validationWarningText,
-              { color: theme.colors.danger }
-            ]}>
-              Essa ocorrência obriga o envio de pelo menos uma imagem (comprovante, assinatura ou anexo).
-            </Text>
-          )}
-        </View>
+        { !service?.hasOccurrence && (
+          <View style={{ gap: 5 }}>
+            { selectedOccurrence?.require_receiver && !deliveryDraftStore.hasReceiverData && (
+              <Text style={[
+                styles.validationWarningText,
+                { color: theme.colors.danger }
+              ]}>
+                Essa ocorrência obriga o envio dos dados do recebedor.
+              </Text>
+            )}
+
+            { selectedOccurrence?.require_photo_on_mobile && !deliveryDraftStore.hasPhotoTaken && (
+              <Text style={[
+                styles.validationWarningText,
+                { color: theme.colors.danger }
+              ]}>
+                Essa ocorrência obriga o envio de pelo menos uma imagem (comprovante, assinatura ou anexo).
+              </Text>
+            )}
+          </View>
+        )}
       </View>
 
       <View style={styles.confirmationFooter}>

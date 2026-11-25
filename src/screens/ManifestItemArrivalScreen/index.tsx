@@ -22,6 +22,9 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
   const { deliveryDraftStore } = useStores()
   
   const service = deliveryDraftStore.selectedService;
+  const address = 
+    (service?.kind === 'manifest_item' ? service.destination_address : null)
+    ?? service?.recipient?.main_address;
 
   const handleConfirmArrival = async () => {
     try {
@@ -42,14 +45,20 @@ export const ManifestItemArrivalScreen = observer(function ManifestItemArrivalSc
   if (!service) return null;
 
   return (
-    <SafeAreaView style={[
-      styles.arrivalView,
-      { backgroundColor: theme.colors.background }
-    ]}>
+    <SafeAreaView 
+      edges={['bottom', 'left', 'right']}  
+      style={[
+        styles.arrivalView,
+        { backgroundColor: theme.colors.background }
+      ]}
+    >
       <View style={{ flex: 1 }}>
         <ManifestServiceCard 
           service={service} 
           showNavigate={true}
+          mapsLabel={service.recipient?.name ?? undefined}
+          latitude={address?.lat}
+          longitude={address?.lng}
         />
       </View>
       
@@ -81,6 +90,7 @@ export const styles = StyleSheet.create({
   arrivalView: {
     flex: 1,
     paddingHorizontal: 10,
+    marginTop: 5,
   },
   counterView: {
     flexDirection: 'row',

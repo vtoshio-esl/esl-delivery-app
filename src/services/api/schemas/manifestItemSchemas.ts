@@ -1,3 +1,4 @@
+import { number } from "mobx-state-tree/dist/internal";
 import { ManifestItemModel } from "../../../models/ManifestServices/ManifestItem";
 import { ManifestService } from "../../../models/ManifestServices/types";
 
@@ -41,4 +42,16 @@ export interface addImageRequest {
     manifestId: number;
     service: ManifestService;
     uri: string;
+}
+
+export interface SetEventData {
+    occurrence_id: number;
+    occurrence_at: string;
+    comments?: string;
+}
+
+export interface SetEventRequest {
+    manifestId: number;
+    service: ManifestService;
+    payload: SetEventData;
 }

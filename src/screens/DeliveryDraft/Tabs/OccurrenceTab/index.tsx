@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Text, TextInput, TextInputInstance, TouchableOpacity, View } from 'react-native';
 import Lucide from '@react-native-vector-icons/lucide';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../../../stores/useStores';
@@ -20,13 +20,16 @@ export const OccurrenceTab = observer(() => {
   const { deliveryDraftStore, occurrencesStore } = useStores()
   
   const [occurrenceKind, setOccurrenceKind] = useState<OccurrenceKind>('finish');
-  
+  const receiverRef = useRef<TextInputInstance>(null);
+  const documentRef = useRef<TextInputInstance>(null);
+  const commentsRef = useRef<TextInputInstance>(null);
+
   const service = deliveryDraftStore.selectedService;
   const disabledInputs = service?.hasOccurrence ?? true;
   
   const finishOccurrences = occurrencesStore.occurrencesForFinish;
   const dealingOccurrences = occurrencesStore.occurrencesForDealing;
-
+  
   useEffect(() => {
     if (finishOccurrences.length === 0 || dealingOccurrences.length === 0) {
       ToastMessage.info(
@@ -130,7 +133,11 @@ export const OccurrenceTab = observer(() => {
               value={deliveryDraftStore?.receiverName ?? ''}
               onChangeText={deliveryDraftStore.setReceiverName}
               disabled={disabledInputs}
-            />
+              ref={receiverRef}
+              returnKeyType='next'
+              submitBehavior='submit'
+              onSubmitEditing={() => documentRef.current?.focus()}
+            /> 
             <EslTextInput 
               label='Documento'
               icon='id-card'
@@ -138,6 +145,10 @@ export const OccurrenceTab = observer(() => {
               value={deliveryDraftStore.receiverDocument ?? ''}
               onChangeText={deliveryDraftStore.setReceiverDocument}
               disabled={disabledInputs}
+              ref={documentRef}
+              returnKeyType='next'
+              submitBehavior='submit'
+              onSubmitEditing={() => commentsRef.current?.focus()}
             />
           </>
         ) }
@@ -150,6 +161,8 @@ export const OccurrenceTab = observer(() => {
           onChangeText={deliveryDraftStore.setComments}
           numberOfLines={3}
           disabled={disabledInputs}
+          ref={commentsRef}
+          returnKeyType='done'
         />
       </View>
     </View>

@@ -67,6 +67,7 @@ export const ManifestItemModel = ManifestServiceBaseModel
         get kind() { return 'manifest_item' as const },
         get resourceRoute() { return 'items' as const},
         get canRegisterExit() { return true; },
+        get canRegisterEvent() { return !!self.freight; },
     }))
     .views((self) => ({
         get hasToConfirmExit() {

@@ -42,10 +42,13 @@ export const OccurrencesScreen = observer(function OccurrencesScreen() {
   }
 
   return (
-    <SafeAreaView style={[
-      styles.occurrencesContainer,
-      { backgroundColor: theme.colors.background }
-    ]}>
+    <SafeAreaView 
+      edges={['bottom', 'left', 'right']}
+      style={[
+        styles.occurrencesContainer,
+        { backgroundColor: theme.colors.background }
+      ]}
+    >
       <View style={styles.inputContainer}>
         <EslTextInput 
           label='Pesquisar'
@@ -56,6 +59,7 @@ export const OccurrencesScreen = observer(function OccurrencesScreen() {
       <FlashList
         data={filtered}
         keyExtractor={(item) => String(item.id)}
+        onRefresh={occurrencesStore.fetchOccurrences}
         ListEmptyComponent={
           <Text style={[
             styles.notFoundOccurrenceText,

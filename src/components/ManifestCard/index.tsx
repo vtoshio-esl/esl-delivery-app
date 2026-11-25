@@ -116,7 +116,7 @@ export const ManifestCard = observer((props: ManifestCardProps) => {
         { manifest.delivery_manifest_items_count !== 0 && renderManifestData('Entregas', manifest.delivery_manifest_items_count) }
         { manifest.transferCount() !== 0 && renderManifestData('Transferências', manifest.transferCount()) }
         { manifest.pick_manifest_items_count !== 0 && renderManifestData('Coletas', manifest.pick_manifest_items_count) }
-        { manifest.reverse_pick_manifest_items_count !== 0 && renderManifestData('Coletas Reversas', manifest.pick_manifest_items_count) }
+        { manifest.reverse_pick_manifest_items_count !== 0 && renderManifestData('Coletas Reversas', manifest.reverse_pick_manifest_items_count) }
         { manifest.scheduling_operation_manifest_items_count !== 0 && renderManifestData('Programações', manifest.scheduling_operation_manifest_items_count)}
         { manifest.consolidation_manifest_items_count !== 0 && renderManifestData('Consolidações', manifest.consolidation_manifest_items_count)}
       </View>

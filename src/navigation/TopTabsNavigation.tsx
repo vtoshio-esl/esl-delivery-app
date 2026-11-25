@@ -5,9 +5,11 @@ import { ImagesTab } from '../screens/DeliveryDraft/Tabs/ImagesTab';
 import { ConfirmationTab } from '../screens/DeliveryDraft/Tabs/ConfirmationTab';
 import { RootNativeStackScreenProps } from './RootNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
+import { EventsTab } from '../screens/DeliveryDraft/Tabs/EventsTab';
 
 export type DeliveryDraftTabParamList = {
   occurrence: undefined;
+  events: undefined;
   images: undefined;
   confirmation: undefined;
 }
@@ -39,6 +41,11 @@ export function DeliveryDraftTabs(props: DeliveryDraftTabsProps) {
         component={OccurrenceTab}
         options={{ title: 'Dados' }}
       />
+      <Tab.Screen
+        name='events'
+        component={EventsTab}
+        options={{ title: 'Eventos' }}
+      />
       <Tab.Screen 
         name='images'
         component={ImagesTab}
@@ -47,7 +54,7 @@ export function DeliveryDraftTabs(props: DeliveryDraftTabsProps) {
       <Tab.Screen 
         name='confirmation'
         component={ConfirmationTab}  
-        options={{ title: 'Confirmação' }}
+        options={{ title: 'Confirm.' }}
       />
     </Tab.Navigator>
   )

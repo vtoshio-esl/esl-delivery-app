@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { 
   Text, 
   View,
   Image,
+  TextInputInstance,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -32,6 +33,10 @@ export const LoginScreen = observer(function LoginScreen() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
+  const tenantRef = useRef<TextInputInstance>(null);
+  const emailRef = useRef<TextInputInstance>(null);
+  const passwordRef = useRef<TextInputInstance>(null);
+
   const validateFields = (): LoginData | null => {
     const data = {
       tenant: tenant.trim().toLowerCase(),
@@ -60,7 +65,7 @@ export const LoginScreen = observer(function LoginScreen() {
     setIsLoading(true);
 
     try {
-      await userStore.login(tenant, email, password);
+      await userStore.login(data.tenant, data.email, data.password);
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Erro desconhecido.'
 
@@ -104,6 +109,10 @@ export const LoginScreen = observer(function LoginScreen() {
               value={tenant}
               onChangeText={setTenant}
               disabled={isLoading}
+              ref={tenantRef}
+              returnKeyType='next'
+              submitBehavior='submit'
+              onSubmitEditing={() => emailRef.current?.focus()}
             />
             <EslTextInput
               label='E-mail'
@@ -113,6 +122,10 @@ export const LoginScreen = observer(function LoginScreen() {
               value={email}
               onChangeText={setEmail}
               disabled={isLoading}
+              ref={emailRef}
+              returnKeyType='next'
+              submitBehavior='submit'
+              onSubmitEditing={() => passwordRef.current?.focus()}
             />
             <EslTextInput
               label='Senha'
@@ -122,6 +135,10 @@ export const LoginScreen = observer(function LoginScreen() {
               onChangeText={setPassword}
               secureTextEntry
               disabled={isLoading}
+              ref={passwordRef}
+              returnKeyType='done'
+              onSubmitEditing={handleLogin}
+              color={theme.colors.textPrimary}
             />
           </View>
 
@@ -130,9 +147,7 @@ export const LoginScreen = observer(function LoginScreen() {
             icon='lock-keyhole-open'
             lightTitle={true}
             onPress={handleLogin}
-            disabled={
-              isLoading
-            }
+            disabled={isLoading}
           />
         </View>
       </View>

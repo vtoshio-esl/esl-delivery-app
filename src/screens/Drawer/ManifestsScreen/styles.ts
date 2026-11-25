@@ -4,6 +4,7 @@ export const styles = StyleSheet.create({
   manifestsContainer: {
     flex: 1,
     width: '100%',
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
+    marginTop: 10,
   }
 })

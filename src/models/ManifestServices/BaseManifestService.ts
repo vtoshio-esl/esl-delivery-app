@@ -7,6 +7,7 @@ export interface ManifestServiceContract<K extends string = string> {
     readonly kind: K;
     readonly resourceRoute: string;
     readonly canRegisterExit: boolean;
+    readonly canRegisterEvent: boolean;
 }
 
 export const ManifestServiceBaseModel = types

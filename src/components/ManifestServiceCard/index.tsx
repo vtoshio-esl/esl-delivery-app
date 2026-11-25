@@ -10,6 +10,8 @@ export interface ManifestServiceCardProps extends TouchableOpacityProps {
   mapsLabel?: string,
   simplified?: boolean,
   showNavigate?: boolean,
+  fontSize?: number,
+  titleFontSize?: number,
   latitude?: string | null,
   longitude?: string | null
 }
@@ -18,6 +20,8 @@ export const ManifestServiceCard = observer((props: ManifestServiceCardProps) =>
   const {
     service,
     simplified,
+    fontSize,
+    titleFontSize,
     ...componentProps
   } = props;
   
@@ -30,6 +34,8 @@ export const ManifestServiceCard = observer((props: ManifestServiceCardProps) =>
         unloadingRecipient={service}
         simplified={simplified}
         errors={errors}
+        fontSize={fontSize}
+        titleFontSize={titleFontSize}
         { ...componentProps } 
       />
     )
@@ -41,6 +47,8 @@ export const ManifestServiceCard = observer((props: ManifestServiceCardProps) =>
       simplified={simplified}
       documentNumber={service.freight?.documentNumber}
       errors={errors}
+      fontSize={fontSize}
+      titleFontSize={titleFontSize}
       { ...componentProps }
     />
   )

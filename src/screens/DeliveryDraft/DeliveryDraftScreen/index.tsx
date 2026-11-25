@@ -65,7 +65,10 @@ export const DeliveryDraftScreen = observer(({navigation, route}: RootNativeStac
         { renderDates('exit') }
       </View>
       
-      <SafeAreaView style={styles.tabsContainer}>
+      <SafeAreaView 
+        edges={['bottom', 'left', 'right']}
+        style={styles.tabsContainer}
+      >
         <DeliveryDraftTabs initialRouteName={hasOccurrence ? 'confirmation' : 'occurrence'} />
       </SafeAreaView>
     </View>

@@ -40,6 +40,9 @@ export const OccurrenceModel = types
         get isDealing(): boolean {
             return (DEALING_TRIGGERS as readonly string[]).includes(self.trigger);
         },
+        get isEvent(): boolean {
+            return self.trigger === 'nothing' && self.active && !self.require_receiver;
+        },
         get availableForLabel() {
             return self.available_for.map(getAvailableForLabel);
         },

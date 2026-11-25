@@ -16,6 +16,10 @@ export const OccurrencesStoreModel = types
             return self.occurrences
                 .filter((o) => o.isDealing)
         },
+        get occurrencesForEvents(): Occurrence[] {
+            return self.occurrences
+                .filter((o) => o.isEvent)
+        },
         occurrenceFromId: (id: number | null): Occurrence | undefined => {
             if (!id) return;
 
@@ -25,6 +29,9 @@ export const OccurrencesStoreModel = types
     .actions((self) => ({
         setOccurrences: (occurrences: OccurrenceSnapshotIn[]) => {
             self.occurrences = cast(occurrences);
+        },
+        logout: () => {
+            self.occurrences.clear();
         }
     }))
     .actions((self) => ({
